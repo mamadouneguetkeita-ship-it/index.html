@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!--
+  ╔══════════════════════════════════════════════════════════════════╗
+  ║              STOCKNET GN — Solution Intégrale 2026               ║
+  ║                  Hébergé sur GitHub Pages                        ║
+  ║                                                                  ║
+  ║  DÉPLOIEMENT GITHUB PAGES :                                      ║
+  ║  1. Créer un dépôt GitHub (public ou privé avec plan payant)     ║
+  ║  2. Placer ce fichier à la racine sous le nom  index.html        ║
+  ║  3. Créer un fichier vide  .nojekyll  à la racine du dépôt       ║
+  ║  4. Aller dans Settings → Pages → Source : branch main / root    ║
+  ║  5. Votre app sera disponible sur :                              ║
+  ║     https://<username>.github.io/<repo-name>/                   ║
+  ║                                                                  ║
+  ║  SÉCURITÉ FIREBASE :                                             ║
+  ║  Configurez les règles Firebase Realtime Database :              ║
+  ║  {                                                               ║
+  ║    "rules": {                                                     ║
+  ║      ".read": false,                                             ║
+  ║      ".write": false,                                            ║
+  ║      "companies": {                                              ║
+  ║        ".read": true,                                            ║
+  ║        ".write": true                                            ║
+  ║      }                                                           ║
+  ║    }                                                             ║
+  ║  }                                                               ║
+  ╚══════════════════════════════════════════════════════════════════╝
+  -->
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="StockNet GN — Solution intégrale de gestion de stock multi-agences pour la Guinée. Transferts en temps réel, points de vente, impressions multi-formats.">
+  <meta name="theme-color" content="#f2c94c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Open Graph (partage sur réseaux sociaux) -->
+  <meta property="og:title" content="StockNet GN — Gestion de Stock Réseau">
+  <meta property="og:description" content="Solution intégrale de gestion de stock multi-agences — Guinée">
+  <meta property="og:type" content="website">
+
+  <title>StockNet GN — Gestion de Stock Réseau</title>
+
+  <!-- Favicon généré en base64 (pas de fichier externe nécessaire) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23f2c94c'/><text y='.9em' font-size='75' x='12'>📦</text></svg>">
+
+  <!-- Firebase SDK (CDN HTTPS — compatible GitHub Pages) -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+  <style>
+/* ══════════════════════════════════════════════════
+   VARIABLES & RESET
+══════════════════════════════════════════════════ */
+:root {
+  --gold:   #f2c94c;
+  --bg:     #05050a;
+  --card:   #0f0f1e;
+  --text:   #e4e6f4;
+  --border: rgba(255,255,255,0.1);
+  --red:    #eb5757;
+  --green:  #27ae60;
+  --blue:   #2f80ed;
+  --purple: #9b59b6;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 60px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #2a2a40; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* ── HEADER ── */
+header {
+  background: #0b0b1d;
+  padding: 14px 28px;
+  border-bottom: 2px solid var(--gold);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.logo {
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── LAYOUT ── */
+.container { max-width: 1200px; margin: 22px auto; padding: 0 20px; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+
+/* ── ONGLETS ── */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.tab-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: #888;
+  padding: 9px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 13px;
+  transition: all .2s;
+}
+.tab-btn:hover:not(.active) { border-color: var(--gold); color: var(--gold); }
+.tab-btn.active { background: var(--gold); color: #000; font-weight: 700; border-color: var(--gold); }
+
+/* ── TITRES ── */
+h3 {
+  color: var(--gold);
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  margin: 0 0 16px;
+  border-left: 3px solid var(--gold);
+  padding-left: 10px;
+}
+
+/* ── FORMULAIRES ── */
+input, select {
+  width: 100%;
+  padding: 11px 13px;
+  margin: 7px 0;
+  background: #080816;
+  border: 1px solid var(--border);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 13px;
+  transition: border-color .2s;
+}
+input:focus, select:focus { outline: none; border-color: var(--gold); }
+input::placeholder { color: #444; }
+select option { background: #0f0f1e; }
+label.field-label {
+  display: block;
+  font-size: 10px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+  margin-top: 8px;
+}
+
+/* ── BOUTONS ── */
+.btn {
+  background: var(--gold);
+  color: #000;
+  border: none;
+  padding: 11px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 13px;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  transition: all .2s;
+}
+.btn:hover { opacity: .88; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn-blue   { background: var(--blue);   color: #fff; }
+.btn-green  { background: var(--green);  color: #fff; }
+.btn-red    { background: var(--red);    color: #fff; }
+.btn-purple { background: var(--purple); color: #fff; }
+.btn-dark   { background: #1a1a2e; color: #aaa; border: 1px solid var(--border); }
+.btn-dark:hover { border-color: var(--gold); color: var(--gold); }
+
+/* Bouton RETOUR */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #111128;
+  color: #888;
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  width: auto;
+  margin-bottom: 18px;
+  transition: all .2s;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.btn-back:hover { border-color: var(--gold); color: var(--gold); }
+
+.btn-small  { padding: 5px 11px; font-size: 11px; width: auto; margin: 2px; border-radius: 5px; }
+.btn-icon   { padding: 10px 14px; font-size: 13px; width: auto; }
+.btn-inline { width: auto; padding: 9px 18px; }
+
+/* ── TABLEAUX ── */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  text-align: left;
+  padding: 11px 12px;
+  color: #5a5a7a;
+  border-bottom: 1px solid var(--border);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  white-space: nowrap;
+}
+tbody td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.025); vertical-align: middle; }
+tbody tr:hover { background: rgba(255,255,255,.02); }
+
+/* ── BADGES ── */
+.st-badge { padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.st-actif  { background: rgba(39,174,96,.2);  color: #2ecc71; }
+.st-bloque { background: rgba(235,87,87,.2);  color: #eb5757; }
+.st-warn   { background: rgba(242,201,76,.2); color: #f2c94c; }
+
+/* ── INFO BOX ── */
+.info-box {
+  background: rgba(47,128,237,.08);
+  border: 1px solid rgba(47,128,237,.25);
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 12px;
+  color: #7ec8e3;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.warn-box {
+  background: rgba(242,201,76,.08);
+  border: 1px solid rgba(242,201,76,.25);
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 12px;
+  color: #f2c94c;
+  margin-bottom: 12px;
+}
+
+/* ── TOAST ── */
+#toast-container { position: fixed; bottom: 22px; right: 22px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  background: #12122a;
+  border: 1px solid var(--gold);
+  color: var(--text);
+  padding: 13px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  animation: tIn .3s ease;
+  max-width: 320px;
+  line-height: 1.4;
+}
+.toast.ok    { border-color: var(--green); }
+.toast.error { border-color: var(--red); }
+.toast.info  { border-color: var(--blue); }
+@keyframes tIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ── GRILLE PRODUITS RAPIDE (PdV) ── */
+.prod-tile {
+  background: #080816;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: all .18s;
+  user-select: none;
+}
+.prod-tile:hover { border-color: var(--gold); background: rgba(242,201,76,.06); transform: translateY(-1px); }
+.prod-tile:active { transform: translateY(0); }
+
+/* ── PANIER ── */
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  gap: 8px;
+}
+.cart-item:last-child { border-bottom: none; }
+
+/* ══════════════════════════════════════════════════
+   OVERLAY D'IMPRESSION MULTI-FORMAT
+══════════════════════════════════════════════════ */
+#print-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.85);
+  z-index: 4000;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+#print-overlay.open { display: flex; }
+
+.print-modal {
+  background: #0d0d20;
+  border: 1px solid var(--gold);
+  border-radius: 16px;
+  padding: 26px;
+  width: 100%;
+  max-width: 860px;
+  margin: auto;
+}
+.fmt-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.fmt-btn {
+  padding: 8px 16px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all .2s;
+}
+.fmt-btn.active { background: var(--gold); color: #000; border-color: var(--gold); }
+.fmt-btn:hover:not(.active) { border-color: var(--gold); color: var(--gold); }
+
+.print-preview-wrap { background: #f0f0f0; border-radius: 8px; padding: 16px; overflow-x: auto; }
+
+/* ── TICKET 80mm ── */
+#preview-ticket { display: none; width: 302px; margin: 0 auto; background: #fff; color: #111; font-family: 'Courier New', monospace; font-size: 12px; padding: 14px; border-radius: 4px; }
+#preview-ticket.show { display: block; }
+
+/* ── A5 ── */
+#preview-a5 { display: none; width: 560px; margin: 0 auto; background: #fff; color: #111; font-family: 'Segoe UI', sans-serif; font-size: 13px; padding: 28px; border-radius: 4px; }
+#preview-a5.show { display: block; }
+
+/* ── A4 ── */
+#preview-a4 { display: none; width: 794px; margin: 0 auto; background: #fff; color: #111; font-family: 'Segoe UI', sans-serif; font-size: 13px; padding: 40px; border-radius: 4px; }
+#preview-a4.show { display: block; }
+
+/* Composants communs reçus */
+.r-sep   { border: none; border-top: 1px dashed #999; margin: 8px 0; }
+.r-row   { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px; align-items: center; }
+.r-row.bold { font-weight: 700; font-size: 13px; }
+.r-total-line { display: flex; justify-content: space-between; border-top: 2px solid #111; padding-top: 8px; margin-top: 8px; font-weight: 900; font-size: 15px; }
+.r-footer-receipt { text-align: center; font-size: 10px; color: #666; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #ccc; line-height: 1.6; }
+
+.r-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+.r-table thead th { background: #f5f5f5; padding: 9px 11px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #555; border: 1px solid #e0e0e0; }
+.r-table tbody td { padding: 9px 11px; border: 1px solid #efefef; font-size: 13px; }
+.r-table tfoot td { padding: 10px 11px; font-weight: 700; background: #f9f9f9; border: 1px solid #e0e0e0; }
+
+.r-total-box { background: #111; color: #fff; padding: 14px 18px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+.r-total-box .r-lbl { font-size: 13px; font-weight: 600; opacity: .8; }
+.r-total-box .r-amt { font-size: 22px; font-weight: 900; color: #f2c94c; }
+
+.r-client-box { background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 8px; padding: 14px; margin-top: 14px; font-size: 13px; }
+.r-footer-a4  { text-align: center; font-size: 11px; color: #999; margin-top: 24px; padding-top: 12px; border-top: 1px solid #e0e0e0; line-height: 1.7; }
+
+/* ── IMPRESSION RÉELLE ── */
+@media print {
+  body, body * { visibility: hidden !important; }
+  #active-print-zone, #active-print-zone * { visibility: visible !important; }
+  #active-print-zone {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important;
+    width: 100% !important;
+    background: #fff !important;
+    z-index: 99999 !important;
+    padding: 0 !important;
+  }
+}
+
+/* ── ÉCRAN DE CHARGEMENT ── */
+#loading-screen {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999; flex-direction: column; gap: 14px;
+}
+.loader {
+  width: 40px; height: 40px;
+  border: 3px solid rgba(242,201,76,.2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  header { padding: 12px 16px; }
+  .container { padding: 0 12px; }
+  .grid { grid-template-columns: 1fr; }
+  #preview-a4, #preview-a5 { width: 100%; }
+  .tabs { gap: 5px; }
+  .tab-btn { padding: 8px 12px; font-size: 12px; }
+}
+  </style>
+</head>
+<body>
+
+<!-- Zone d'impression (invisible sauf lors de window.print()) -->
+<div id="active-print-zone" style="display:none"></div>
+
+<!-- Écran de chargement Firebase -->
+<div id="loading-screen">
+  <div style="font-size:40px">📦</div>
+  <div class="loader"></div>
+  <div style="color:#666; font-size:13px">Connexion à Firebase…</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     OVERLAY D'IMPRESSION MULTI-FORMAT
+════════════════════════════════════════════ -->
+<div id="print-overlay">
+  <div class="print-modal">
+    <!-- En-tête -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px">
+      <div>
+        <div style="font-size:15px; font-weight:800; color:var(--gold); text-transform:uppercase; letter-spacing:1px">🖨️ Aperçu & Impression</div>
+        <div style="font-size:11px; color:#666; margin-top:3px">Choisissez le format avant d'imprimer</div>
+      </div>
+      <button onclick="closePrintOverlay()" style="background:none; border:none; color:#666; font-size:26px; cursor:pointer; line-height:1">×</button>
+    </div>
+
+    <!-- Sélecteur de format -->
+    <div class="fmt-tabs">
+      <span style="font-size:11px; color:#555; align-self:center; margin-right:4px">Format :</span>
+      <button class="fmt-btn active" onclick="switchFormat('ticket',this)">🧾 Ticket 80mm</button>
+      <button class="fmt-btn"        onclick="switchFormat('a5',this)">📄 A5</button>
+      <button class="fmt-btn"        onclick="switchFormat('a4',this)">📋 A4</button>
+    </div>
+
+    <!-- Sélecteur de type de document -->
+    <div class="fmt-tabs" style="margin-bottom:18px">
+      <span style="font-size:11px; color:#555; align-self:center; margin-right:4px">Document :</span>
+      <button class="fmt-btn active" id="dtype-vente"      onclick="switchDocType('vente',this)">💰 Reçu de vente</button>
+      <button class="fmt-btn"        id="dtype-transfert"  onclick="switchDocType('transfert',this)">🚚 Bon de transfert</button>
+    </div>
+
+    <!-- Zone de prévisualisation -->
+    <div class="print-preview-wrap">
+
+      <!-- TICKET 80mm -->
+      <div id="preview-ticket">
+        <div style="text-align:center; margin-bottom:10px">
+          <div style="font-size:16px; font-weight:900; text-transform:uppercase; letter-spacing:2px" id="t-comp"></div>
+          <div style="font-size:11px; margin-top:2px; color:#444" id="t-pdv-line"></div>
+          <div style="font-size:10px; color:#777; margin-top:2px" id="t-date"></div>
+        </div>
+        <hr class="r-sep">
+        <div class="r-row"><span>N° Doc.</span><strong id="t-num"></strong></div>
+        <div id="t-client-block" style="margin: 5px 0"></div>
+        <hr class="r-sep">
+        <div style="font-size:10px; text-transform:uppercase; color:#777; margin-bottom:7px">Désignation · Qté · P.U. · Montant</div>
+        <div id="t-items"></div>
+        <div class="r-total-line"><span>TOTAL</span><strong id="t-total"></strong></div>
+        <div class="r-footer-receipt">
+          Merci pour votre confiance !<br>
+          StockNet GN — Conakry, Guinée<br>
+          <span id="t-ref" style="font-size:9px; color:#aaa"></span>
+        </div>
+      </div>
+
+      <!-- FORMAT A5 -->
+      <div id="preview-a5">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; padding-bottom:14px; border-bottom:2px solid #111">
+          <div>
+            <div style="font-size:19px; font-weight:900; text-transform:uppercase; letter-spacing:1px" id="a5-comp"></div>
+            <div style="font-size:11px; color:#666; margin-top:3px" id="a5-pdv-line"></div>
+          </div>
+          <div style="text-align:right">
+            <div style="background:#111; color:#fff; padding:5px 12px; border-radius:5px; font-size:11px; font-weight:700; text-transform:uppercase" id="a5-type-badge"></div>
+            <div style="font-size:11px; color:#666; margin-top:7px" id="a5-date"></div>
+            <div style="font-size:12px; font-weight:700; margin-top:2px" id="a5-num"></div>
+          </div>
+        </div>
+        <div id="a5-client-block" style="margin-bottom:14px"></div>
+        <table class="r-table">
+          <thead><tr><th>Désignation</th><th>Qté</th><th>Prix Unitaire</th><th>Montant</th></tr></thead>
+          <tbody id="a5-items"></tbody>
+          <tfoot><tr>
+            <td colspan="3" style="text-align:right; font-weight:700">TOTAL</td>
+            <td id="a5-total" style="font-weight:900; font-size:15px"></td>
+          </tr></tfoot>
+        </table>
+        <div class="r-footer-a4">StockNet GN — Solution Intégrale de Gestion de Stock — Conakry, Guinée</div>
+      </div>
+
+      <!-- FORMAT A4 -->
+      <div id="preview-a4">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:26px; padding-bottom:18px; border-bottom:3px solid #111">
+          <div>
+            <div style="font-size:26px; font-weight:900; text-transform:uppercase; letter-spacing:2px" id="a4-comp"></div>
+            <div style="font-size:12px; color:#666; margin-top:4px" id="a4-pdv-line"></div>
+            <div style="font-size:12px; color:#888; margin-top:2px">Conakry, République de Guinée</div>
+          </div>
+          <div style="text-align:right">
+            <div style="background:#111; color:#fff; padding:6px 16px; border-radius:6px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px" id="a4-type-badge"></div>
+            <div style="font-size:12px; color:#555; margin-top:10px" id="a4-date"></div>
+            <div style="font-size:13px; font-weight:800; margin-top:2px" id="a4-num"></div>
+          </div>
+        </div>
+        <div id="a4-client-block" style="margin-bottom:16px"></div>
+        <table class="r-table">
+          <thead><tr><th>#</th><th>Désignation</th><th>Quantité</th><th>Prix Unitaire (GNF)</th><th>Montant (GNF)</th></tr></thead>
+          <tbody id="a4-items"></tbody>
+        </table>
+        <div class="r-total-box">
+          <span class="r-lbl">TOTAL À PAYER</span>
+          <span class="r-amt" id="a4-total"></span>
+        </div>
+        <div id="a4-client-box"></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:32px">
+          <div style="border-top:1px solid #ccc; padding-top:8px; text-align:center; font-size:12px; color:#666">Signature du Vendeur / Expéditeur</div>
+          <div style="border-top:1px solid #ccc; padding-top:8px; text-align:center; font-size:12px; color:#666">Signature du Client / Receveur</div>
+        </div>
+        <div class="r-footer-a4">
+          Document généré par StockNet GN — Solution Intégrale de Gestion de Stock — Conakry, Guinée<br>
+          Ce document est généré électroniquement et fait foi sans signature manuscrite additionnelle.
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions impression -->
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:18px; padding-top:14px; border-top:1px solid var(--border)">
+      <button onclick="closePrintOverlay()" class="btn btn-dark btn-inline">Fermer</button>
+      <button onclick="doPrint()" class="btn btn-inline">🖨️ Imprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     ÉCRAN DE CONNEXION
+════════════════════════════════════════════ -->
+<div id="login-screen" style="display:none; min-height:100vh; align-items:center; justify-content:center; padding:20px">
+  <div style="width:100%; max-width:380px">
+    <!-- Logo -->
+    <div style="text-align:center; margin-bottom:28px">
+      <div style="font-size:52px; margin-bottom:10px">📦</div>
+      <div style="font-size:22px; font-weight:900; color:var(--gold); letter-spacing:1px">STOCKNET GN</div>
+      <div style="font-size:12px; color:#555; margin-top:5px">Solution Intégrale de Gestion de Stock</div>
+    </div>
+
+    <div class="card" style="border-top:4px solid var(--gold)">
+      <h3>Connexion Sécurisée</h3>
+      <label class="field-label">Email / Identifiant</label>
+      <input id="auth-email" type="email" placeholder="votre@email.com" autocomplete="email">
+      <label class="field-label">Code PIN</label>
+      <input id="auth-pin" type="password" placeholder="••••••" autocomplete="current-password">
+      <button class="btn" style="margin-top:12px" onclick="handleAuth()">🔐 Se Connecter</button>
+      <div id="auth-err" style="display:none; color:var(--red); font-size:12px; text-align:center; margin-top:10px; padding:8px; background:rgba(235,87,87,.1); border-radius:6px">
+        Accès non autorisé. Vérifiez vos identifiants.
+      </div>
+    </div>
+
+    <div style="text-align:center; font-size:11px; color:#333; margin-top:14px">
+      Hébergé sur GitHub Pages · Données sur Firebase
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     APPLICATION PRINCIPALE
+════════════════════════════════════════════ -->
+<div id="app-screen" style="display:none">
+  <header>
+    <div class="logo">
+      <span>📦</span>
+      STOCKNET
+      <span id="display-comp-name" style="color:#fff; font-size:12px; font-weight:400; opacity:.5"></span>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px">
+      <span id="header-role-badge" style="font-size:11px; padding:3px 10px; border-radius:12px; font-weight:700"></span>
+      <span id="header-user-info" style="font-size:12px; color:#555; display:none"></span>
+      <button class="btn btn-red btn-inline" style="padding:7px 16px; font-size:12px" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ═══════ VUE SUPER ADMIN ═══════ -->
+    <div id="view-super" style="display:none">
+      <div style="margin-bottom:20px">
+        <div style="font-size:22px; font-weight:800; color:var(--text)">🛡️ Super Administration</div>
+        <div style="font-size:13px; color:#555; margin-top:3px">Déploiement et gestion des licences clients</div>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3>➕ Nouvelle Licence Client</h3>
+          <label class="field-label">Nom de l'entreprise</label>
+          <input id="new-comp-name"  placeholder="Ex: Distribution Conakry SARL">
+          <label class="field-label">Email administrateur</label>
+          <input id="new-comp-email" type="email" placeholder="admin@entreprise.com">
+          <label class="field-label">PIN administrateur</label>
+          <input id="new-comp-pin"   placeholder="Code PIN maître">
+          <button class="btn btn-blue" style="margin-top:10px" onclick="createClientCompany()">Enregistrer la Licence</button>
+        </div>
+        <div class="card">
+          <h3>📋 Clients Enregistrés</h3>
+          <div style="overflow-x:auto">
+            <table id="table-saas-clients">
+              <thead><tr><th>Société</th><th>Admin</th><th>État</th><th>Actions</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ VUE ADMINISTRATEUR ═══════ -->
+    <div id="view-admin" style="display:none">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('tab-stock',this)">📦 Stocks</button>
+        <button class="tab-btn"        onclick="switchTab('tab-transfert',this)">🚚 Transferts</button>
+        <button class="tab-btn"        onclick="switchTab('tab-ag',this)">🏢 Agences</button>
+        <button class="tab-btn"        onclick="switchTab('tab-caiss',this)">💰 Vente Siège</button>
+        <button class="tab-btn"        onclick="switchTab('tab-logs',this)">📋 Historique</button>
+      </div>
+
+      <!-- ── STOCKS ── -->
+      <div id="tab-stock" class="tab-content">
+        <div class="grid">
+          <div class="card">
+            <h3>📥 Réception au Stock Central</h3>
+            <label class="field-label">Désignation du produit</label>
+            <input id="p-name"  placeholder="Ex: Riz parfumé 5kg">
+            <label class="field-label">Prix unitaire (GNF)</label>
+            <input id="p-price" type="number" placeholder="0">
+            <label class="field-label">Quantité reçue</label>
+            <input id="p-qty"   type="number" placeholder="0">
+            <button class="btn" style="margin-top:10px" onclick="createProduct()">✅ Entrer au Stock Central</button>
+          </div>
+          <div class="card">
+            <h3>📊 État du Stock Central</h3>
+            <div style="max-height:340px; overflow-y:auto">
+              <table id="table-central-stock">
+                <thead><tr><th>Produit</th><th>Prix Unit.</th><th>Quantité</th><th>Valeur</th></tr></thead>
+                <tbody><tr><td colspan="4" style="text-align:center; color:#333; padding:20px">Chargement…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TRANSFERTS ── -->
+      <div id="tab-transfert" class="tab-content" style="display:none">
+        <div class="grid">
+          <div class="card">
+            <h3>🚀 Transfert Direct vers Agence</h3>
+            <div class="info-box">
+              ℹ️ Le stock est <strong>immédiatement disponible</strong> au point de vente dès validation.
+              Aucune étape de réception manuelle nécessaire.
+            </div>
+            <label class="field-label">Produit à transférer</label>
+            <select id="trans-product" onchange="updateTransferInfo()"></select>
+            <div id="trans-stock-info" style="font-size:11px; color:var(--gold); font-family:monospace; margin:-3px 0 8px; min-height:16px"></div>
+            <label class="field-label">Agence destinataire</label>
+            <select id="trans-dest" onchange="updateTransferInfo()"></select>
+            <div id="trans-dest-info" style="font-size:11px; color:#2f80ed; font-family:monospace; margin:-3px 0 8px; min-height:16px"></div>
+            <label class="field-label">Quantité</label>
+            <input id="trans-qty" type="number" placeholder="Quantité à transférer">
+            <button class="btn btn-blue" style="margin-top:10px" onclick="executeTransfer()">🚀 Envoyer Maintenant</button>
+          </div>
+          <div class="card">
+            <h3>📑 Bon de Transfert — Dernier Envoi</h3>
+            <div id="last-transfer-preview" style="color:#333; padding:20px; text-align:center; font-size:13px">
+              Aucun transfert encore effectué dans cette session.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── AGENCES ── -->
+      <div id="tab-ag" class="tab-content" style="display:none">
+        <div class="grid">
+          <div class="card">
+            <h3>➕ Nouvelle Agence / Point de Vente</h3>
+            <label class="field-label">Nom de l'agence</label>
+            <input id="pdv-name"  placeholder="Ex: Agence Kaloum">
+            <label class="field-label">Email du responsable</label>
+            <input id="pdv-email" type="email" placeholder="responsable@agence.com">
+            <label class="field-label">Code PIN d'accès</label>
+            <input id="pdv-pin"   placeholder="Minimum 4 caractères">
+            <div class="warn-box" style="margin-top:10px">
+              ⚠️ Partagez le PIN <strong>uniquement</strong> au responsable de l'agence.
+            </div>
+            <button class="btn btn-blue" onclick="createPDV()">Créer l'Agence</button>
+          </div>
+          <div class="card">
+            <h3>🏢 Agences Enregistrées</h3>
+            <div style="overflow-x:auto">
+              <table id="table-control-pdv">
+                <thead><tr><th>Agence</th><th>Email</th><th>Stock dispo</th><th>Statut</th><th>Actions</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VENTE AU SIÈGE ── -->
+      <div id="tab-caiss" class="tab-content" style="display:none">
+        <button class="btn-back" onclick="switchTab('tab-stock', document.querySelector('.tab-btn'))">
+          ← Retour aux Stocks
+        </button>
+        <div class="card" style="max-width:640px; margin:0 auto">
+          <h3>💰 Vente Directe au Siège</h3>
+          <div class="grid" style="grid-template-columns:1fr 1fr; gap:10px; margin-bottom:0">
+            <div>
+              <label class="field-label">Nom du client *</label>
+              <input id="client-name-admin" placeholder="Nom complet">
+            </div>
+            <div>
+              <label class="field-label">Téléphone *</label>
+              <input id="client-tel-admin" placeholder="Ex: 622 000 000">
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:flex-end; margin-top:4px">
+            <div style="flex:1">
+              <label class="field-label">Produit</label>
+              <select id="admin-sale-p"></select>
+            </div>
+            <div>
+              <label class="field-label">Qté</label>
+              <input id="admin-sale-qty" type="number" value="1" style="width:70px">
+            </div>
+            <button class="btn btn-blue btn-icon" onclick="addToCart('ADMIN')" style="margin-bottom:7px">+ Ajouter</button>
+          </div>
+          <div id="admin-cart-list" style="margin:14px 0; min-height:40px; max-height:220px; overflow-y:auto; border-top:1px solid var(--border); padding-top:10px"></div>
+          <div style="text-align:right; font-size:18px; font-weight:800; margin-bottom:14px">
+            Total : <span id="admin-cart-total" style="color:var(--gold)">0</span>
+            <span style="font-size:13px; color:#555; font-weight:400"> GNF</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+            <button class="btn btn-green" onclick="finalizeSale('ADMIN')">✅ Finaliser & Imprimer</button>
+            <button class="btn btn-dark"  onclick="clearCart('ADMIN')">🗑️ Vider le Panier</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── HISTORIQUE ── -->
+      <div id="tab-logs" class="tab-content" style="display:none">
+        <button class="btn-back" onclick="switchTab('tab-stock', document.querySelector('.tab-btn'))">
+          ← Retour aux Stocks
+        </button>
+        <div class="grid">
+          <div class="card">
+            <h3>📤 Historique des Transferts</h3>
+            <div style="max-height:420px; overflow-y:auto">
+              <table id="table-logs-transfert">
+                <thead><tr><th>Date/Heure</th><th>Produit</th><th>Vers</th><th>Qté</th><th>Action</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <h3>💳 Historique des Ventes</h3>
+            <div style="max-height:420px; overflow-y:auto">
+              <table id="table-logs-ventes">
+                <thead><tr><th>Date/Heure</th><th>Agence</th><th>Client</th><th>Total</th><th>Action</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /view-admin -->
+
+    <!-- ═══════ VUE POINT DE VENTE ═══════ -->
+    <div id="view-pdv" style="display:none">
+      <!-- En-tête PdV -->
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:10px">
+        <div>
+          <div style="font-size:20px; font-weight:800; color:var(--gold)" id="pdv-title">Caisse</div>
+          <div style="font-size:13px; color:#555; margin-top:2px" id="pdv-subtitle"></div>
+        </div>
+        <div style="display:flex; gap:8px">
+          <button class="btn-back" id="btn-back-pdv" style="display:none; margin-bottom:0" onclick="showPDVSection('sale')">← Caisse</button>
+          <button class="btn btn-dark btn-inline" style="padding:9px 16px; font-size:12px" onclick="showPDVSection('history')">📋 Historique</button>
+        </div>
+      </div>
+
+      <!-- Caisse PdV -->
+      <div id="pdv-sale-section">
+        <div style="display:grid; grid-template-columns:1fr 340px; gap:20px; align-items:start">
+
+          <!-- Sélection produits -->
+          <div class="card">
+            <h3>🛍️ Catalogue Disponible</h3>
+            <div style="display:flex; gap:8px; align-items:flex-end; margin-bottom:14px">
+              <div style="flex:1">
+                <label class="field-label">Sélectionner un produit</label>
+                <select id="pdv-sale-p"></select>
+              </div>
+              <div>
+                <label class="field-label">Qté</label>
+                <input id="pdv-sale-qty" type="number" value="1" style="width:70px">
+              </div>
+              <button class="btn btn-blue btn-icon" onclick="addToCart('PDV')" style="margin-bottom:7px">+</button>
+            </div>
+            <!-- Tuiles rapides -->
+            <div id="pdv-product-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px"></div>
+          </div>
+
+          <!-- Panier PdV -->
+          <div class="card" style="position:sticky; top:80px">
+            <h3>🧾 Panier</h3>
+            <div>
+              <label class="field-label">Nom du client *</label>
+              <input id="client-name-pdv" placeholder="Nom complet">
+              <label class="field-label">Téléphone *</label>
+              <input id="client-tel-pdv"  placeholder="Ex: 622 000 000">
+              <label class="field-label">Adresse (optionnel)</label>
+              <input id="client-addr-pdv" placeholder="Quartier, ville…">
+            </div>
+            <div id="pdv-cart-list" style="min-height:40px; max-height:200px; overflow-y:auto; border-top:1px solid var(--border); margin-top:10px; padding-top:10px"></div>
+            <div style="text-align:right; font-size:17px; font-weight:800; margin:10px 0">
+              Total : <span id="pdv-cart-total" style="color:var(--gold)">0</span>
+              <span style="font-size:12px; color:#555; font-weight:400"> GNF</span>
+            </div>
+            <button class="btn btn-green" onclick="finalizeSale('PDV')">✅ Valider & Imprimer Reçu</button>
+            <button class="btn btn-dark"  onclick="clearCart('PDV')" style="margin-top:8px">🗑️ Vider le Panier</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Historique PdV -->
+      <div id="pdv-history-section" style="display:none">
+        <button class="btn-back" onclick="showPDVSection('sale')">← Retour à la Caisse</button>
+        <div class="card">
+          <h3>📋 Mes Ventes — Historique Complet</h3>
+          <div style="overflow-x:auto">
+            <table id="table-pdv-history">
+              <thead><tr><th>Date/Heure</th><th>N° Reçu</th><th>Client</th><th>Tél.</th><th>Total</th><th>Action</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div><!-- /view-pdv -->
+
+  </div><!-- /container -->
+</div><!-- /app-screen -->
+
+<div id="toast-container"></div>
+
+<!-- ════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════ -->
+<script>
+/* ════════════════════════════════════════════
+   FIREBASE — Configuration
+   ⚠️  Remplacez ces valeurs par celles de votre
+   propre projet Firebase si nécessaire.
+════════════════════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey:      "AIzaSyDxtMeYoigD5pLHJFaE3hFYZsWxgINmnXA",
+  databaseURL: "https://planning-with-ai-e9826-default-rtdb.firebaseio.com/",
+  projectId:   "planning-with-ai-e9826"
+};
+
+firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.database();
+
+/* ════════════════════════════════════════════
+   ÉTAT GLOBAL
+════════════════════════════════════════════ */
+let _SESSION   = {};
+let _ALL_DATA  = {};
+let _CART_ADMIN = [];
+let _CART_PDV   = [];
+let _CUR_FORMAT   = 'ticket';
+let _CUR_DOC_TYPE = 'vente';
+let _PENDING_DOC  = null;
+
+/* ════════════════════════════════════════════
+   DÉMARRAGE — Écoute Firebase
+════════════════════════════════════════════ */
+db.ref('/').on('value', snap => {
+  _ALL_DATA = snap.val() || {};
+  hideSplash();
+  if (_SESSION.role) updateUI();
+}, err => {
+  hideSplash();
+  toast('Erreur de connexion Firebase : ' + err.message, 'error', 8000);
+});
+
+function hideSplash() {
+  const s = document.getElementById('loading-screen');
+  if (s && s.style.display !== 'none') {
+    s.style.display = 'none';
+    // Afficher la bonne vue
+    if (_SESSION.role) {
+      document.getElementById('app-screen').style.display   = 'block';
+    } else {
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+  }
+}
+
+/* ════════════════════════════════════════════
+   UTILITAIRES
+════════════════════════════════════════════ */
+function gnf(n)    { return Number(n||0).toLocaleString('fr-GN') + ' GNF'; }
+function nowStr()  { return new Date().toLocaleString('fr-GN'); }
+function today()   { return new Date().toISOString().slice(0,10); }
+function docNum(p) { return p + '-' + today().replace(/-/g,'') + '-' + String(Math.floor(Math.random()*10000)).padStart(4,'0'); }
+
+function toast(msg, type='ok', dur=3500) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = ({ ok:'✅ ', error:'❌ ', info:'ℹ️ ' }[type] || '') + msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), dur);
+}
+
+/* ════════════════════════════════════════════
+   AUTHENTIFICATION
+════════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('auth-pin') === document.activeElement) handleAuth();
+});
+
+function handleAuth() {
+  const email = document.getElementById('auth-email').value.toLowerCase().trim();
+  const pin   = document.getElementById('auth-pin').value.trim();
+  document.getElementById('auth-err').style.display = 'none';
+
+  /* Super admin */
+  if (email === 'mamadouneguetkeita@gmail.com' && pin === 'admin123') {
+    return login('SUPER', email, null, null);
+  }
+
+  /* Admin ou PdV */
+  let found = null;
+  Object.entries(_ALL_DATA.companies || {}).forEach(([cid, c]) => {
+    if (c.admin_email === email && c.admin_pin === pin) found = { role:'ADMIN', cid };
+    Object.entries(c.pdvs || {}).forEach(([pid, p]) => {
+      if (p.email === email && p.pin === pin) found = { role:'PDV', cid, pid };
+    });
+  });
+
+  if (found) login(found.role, email, found.cid, found.pid);
+  else document.getElementById('auth-err').style.display = 'block';
+}
+
+function login(role, email, cid, pid) {
+  _SESSION = { role, email, companyId:cid, pdvId:pid };
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display   = 'block';
+  document.getElementById('view-super').style.display   = role==='SUPER' ? 'block':'none';
+  document.getElementById('view-admin').style.display   = role==='ADMIN' ? 'block':'none';
+  document.getElementById('view-pdv').style.display     = role==='PDV'   ? 'block':'none';
+
+  const badges = { SUPER:'🛡️ Super Admin', ADMIN:'⚙️ Administrateur', PDV:'🏪 Point de Vente' };
+  const colors = { SUPER:'rgba(155,89,182,.3)', ADMIN:'rgba(47,128,237,.3)', PDV:'rgba(39,174,96,.3)' };
+  const rb = document.getElementById('header-role-badge');
+  rb.textContent   = badges[role] || role;
+  rb.style.background   = colors[role] || 'rgba(255,255,255,.1)';
+  rb.style.color        = '#e4e6f4';
+}
+
+function doLogout() {
+  _SESSION = {}; _CART_ADMIN = []; _CART_PDV = [];
+  document.getElementById('app-screen').style.display   = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('auth-pin').value = '';
+  document.getElementById('display-comp-name').textContent = '';
+}
+
+/* ════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════ */
+function switchTab(id, triggerBtn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).style.display = 'block';
+  if (triggerBtn) triggerBtn.classList.add('active');
+  else {
+    const b = [...document.querySelectorAll('.tab-btn')].find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(id));
+    if (b) b.classList.add('active');
+  }
+}
+
+function showPDVSection(sec) {
+  document.getElementById('pdv-sale-section').style.display    = sec==='sale'    ? 'block':'none';
+  document.getElementById('pdv-history-section').style.display = sec==='history' ? 'block':'none';
+  document.getElementById('btn-back-pdv').style.display        = sec==='history' ? 'inline-flex':'none';
+  if (sec === 'history') renderPDVHistory();
+}
+
+/* ════════════════════════════════════════════
+   MISE À JOUR DE L'INTERFACE
+════════════════════════════════════════════ */
+function updateUI() {
+  const comp = _ALL_DATA.companies ? _ALL_DATA.companies[_SESSION.companyId] : null;
+  if (comp) document.getElementById('display-comp-name').textContent = '| ' + comp.name;
+
+  /* ── SUPER ── */
+  if (_SESSION.role === 'SUPER') {
+    const tbody = document.querySelector('#table-saas-clients tbody');
+    const entries = Object.entries(_ALL_DATA.companies || {});
+    tbody.innerHTML = entries.length
+      ? entries.map(([id,c]) => `
+          <tr>
+            <td><strong>${c.name}</strong></td>
+            <td style="font-size:12px">${c.admin_email}</td>
+            <td><span class="st-badge st-${c.status==='actif'?'actif':'bloque'}">${c.status||'actif'}</span></td>
+            <td style="display:flex;gap:4px">
+              <button class="btn btn-small btn-${c.status==='actif'?'red':'green'}"
+                onclick="toggleCompanyStatus('${id}','${c.status||'actif'}')">
+                ${c.status==='actif'?'🔒':'🔓'}
+              </button>
+              <button class="btn btn-small btn-red"
+                onclick="if(confirm('Supprimer définitivement ?')) db.ref('companies/${id}').remove()">🗑️</button>
+            </td>
+          </tr>`).join('')
+      : '<tr><td colspan="4" style="text-align:center;color:#333;padding:20px">Aucun client enregistré</td></tr>';
+  }
+
+  /* ── ADMIN ── */
+  if (_SESSION.role === 'ADMIN' && comp) {
+    const prods = Object.entries(comp.products || {});
+
+    /* Stock central */
+    document.querySelector('#table-central-stock tbody').innerHTML = prods.length
+      ? prods.map(([id,p]) => `
+          <tr>
+            <td><strong>${p.name}</strong></td>
+            <td style="font-family:monospace;font-size:12px">${gnf(p.price)}</td>
+            <td style="font-weight:700;color:${p.qty<5?'var(--red)':p.qty<20?'var(--gold)':'var(--green)'}">${p.qty}</td>
+            <td style="font-family:monospace;font-size:12px">${gnf(p.price*p.qty)}</td>
+          </tr>`).join('')
+      : '<tr><td colspan="4" style="text-align:center;color:#333;padding:20px">Aucun produit</td></tr>';
+
+    /* Selects */
+    const prodOpt = prods.map(([id,p]) =>
+      `<option value="${id}">${p.name} — ${gnf(p.price)} (Stock: ${p.qty})</option>`).join('');
+    ['trans-product','admin-sale-p'].forEach(s => {
+      const el = document.getElementById(s); if (el) el.innerHTML = prodOpt || '<option value="">Aucun produit</option>';
+    });
+
+    const pdvOpt = Object.entries(comp.pdvs||{})
+      .map(([id,a]) => `<option value="${id}">${a.name}</option>`).join('');
+    document.getElementById('trans-dest').innerHTML = pdvOpt || '<option value="">Aucune agence</option>';
+
+    /* Table agences */
+    document.querySelector('#table-control-pdv tbody').innerHTML =
+      Object.entries(comp.pdvs||{}).map(([id,a]) => {
+        const stk = Object.values(a.stock||{}).reduce((s,q)=>s+q,0);
+        return `<tr>
+          <td><strong>${a.name}</strong></td>
+          <td style="font-size:11px;color:#666">${a.email}</td>
+          <td><span class="st-badge st-${stk>0?'actif':'bloque'}">${stk} unités</span></td>
+          <td><span class="st-badge st-${a.status==='actif'?'actif':'bloque'}">${a.status||'actif'}</span></td>
+          <td style="display:flex;gap:4px;flex-wrap:wrap">
+            <button class="btn btn-small btn-blue"   onclick="changePDVPin('${id}')">🔑 PIN</button>
+            <button class="btn btn-small btn-${a.status==='actif'?'red':'green'}"
+              onclick="togglePDVStatus('${id}','${a.status||'actif'}')">
+              ${a.status==='actif'?'Bloquer':'Activer'}
+            </button>
+            <button class="btn btn-small btn-red"
+              onclick="if(confirm('Supprimer cette agence ?')) db.ref('companies/${_SESSION.companyId}/pdvs/${id}').remove()">🗑️</button>
+          </td>
+        </tr>`;
+      }).join('') || '<tr><td colspan="5" style="text-align:center;color:#333;padding:20px">Aucune agence</td></tr>';
+
+    /* Logs transferts */
+    const tlogs = Object.entries(comp.transfer_logs||{}).reverse().slice(0,30);
+    document.querySelector('#table-logs-transfert tbody').innerHTML = tlogs.length
+      ? tlogs.map(([id,l]) => `
+          <tr>
+            <td style="font-size:11px;font-family:monospace">${l.date}</td>
+            <td>${l.product}</td>
+            <td>${l.to}</td>
+            <td style="font-weight:700;color:var(--blue)">${l.qty}</td>
+            <td><button class="btn btn-small btn-dark" onclick='reprinterBon(${JSON.stringify(l)})'>🖨️</button></td>
+          </tr>`).join('')
+      : '<tr><td colspan="5" style="text-align:center;color:#333;padding:16px">Aucun transfert</td></tr>';
+
+    /* Logs ventes */
+    const vlogs = Object.entries(comp.sale_logs||{}).reverse().slice(0,30);
+    document.querySelector('#table-logs-ventes tbody').innerHTML = vlogs.length
+      ? vlogs.map(([id,v]) => `
+          <tr>
+            <td style="font-size:11px;font-family:monospace">${v.date}</td>
+            <td>${v.agency||'Siège'}</td>
+            <td>${v.client}</td>
+            <td style="font-weight:700;color:var(--green)">${gnf(v.total)}</td>
+            <td><button class="btn btn-small btn-dark" onclick='reprinterVente(${JSON.stringify(v)})'>🖨️</button></td>
+          </tr>`).join('')
+      : '<tr><td colspan="5" style="text-align:center;color:#333;padding:16px">Aucune vente</td></tr>';
+
+    updateTransferInfo();
+  }
+
+  /* ── PDV ── */
+  if (_SESSION.role === 'PDV' && comp) {
+    const ag = comp.pdvs?.[_SESSION.pdvId];
+    if (!ag) return;
+    document.getElementById('pdv-title').textContent    = '🏪 ' + ag.name;
+    document.getElementById('pdv-subtitle').textContent = 'Responsable : ' + ag.email;
+    const stock = ag.stock || {};
+    const pdvProds = Object.entries(comp.products||{})
+      .map(([id,p]) => ({ id, ...p, pdvQty: stock[id]||0 }));
+
+    document.getElementById('pdv-sale-p').innerHTML = pdvProds.length
+      ? pdvProds.map(p => `<option value="${p.id}">${p.name} — ${gnf(p.price)} (Stock: ${p.pdvQty})</option>`).join('')
+      : '<option value="">Aucun produit disponible</option>';
+
+    document.getElementById('pdv-product-grid').innerHTML = pdvProds.filter(p=>p.pdvQty>0).map(p => `
+      <div class="prod-tile" onclick="quickAddPDV('${p.id}')">
+        <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:4px;line-height:1.3">${p.name}</div>
+        <div style="font-size:11px;color:var(--gold)">${gnf(p.price)}</div>
+        <div style="font-size:10px;color:${p.pdvQty<5?'var(--red)':'var(--green)'};margin-top:3px">${p.pdvQty} dispo</div>
+      </div>`).join('') || '<div style="color:#333;font-size:12px;grid-column:1/-1;text-align:center;padding:20px">Aucun stock — Attendez un transfert de l\'administrateur.</div>';
+  }
+}
+
+/* ════════════════════════════════════════════
+   1) TRANSFERT DIRECT — IMMÉDIAT
+════════════════════════════════════════════ */
+function updateTransferInfo() {
+  const pid  = document.getElementById('trans-product')?.value;
+  const aid  = document.getElementById('trans-dest')?.value;
+  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+  const infoEl = document.getElementById('trans-stock-info');
+  const destEl = document.getElementById('trans-dest-info');
+  if (!comp || !infoEl || !destEl) return;
+
+  if (pid && comp.products?.[pid])
+    infoEl.textContent = `Stock central : ${comp.products[pid].qty} unité(s) disponible(s)`;
+  else infoEl.textContent = '';
+
+  if (aid && pid && comp.pdvs?.[aid]) {
+    const cur = comp.pdvs[aid].stock?.[pid] || 0;
+    destEl.textContent = `Stock actuel de l'agence : ${cur} unité(s)`;
+  } else destEl.textContent = '';
+}
+
+function executeTransfer() {
+  const pid  = document.getElementById('trans-product').value;
+  const aid  = document.getElementById('trans-dest').value;
+  const qty  = parseInt(document.getElementById('trans-qty').value);
+  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+
+  if (!pid || !aid) return toast('Sélectionnez un produit et une agence.', 'error');
+  if (!qty || qty <= 0) return toast('Quantité invalide.', 'error');
+  if (!comp?.products?.[pid]) return toast('Produit introuvable.', 'error');
+  if (qty > comp.products[pid].qty) return toast(`Stock insuffisant. Disponible : ${comp.products[pid].qty}`, 'error');
+
+  const prod  = comp.products[pid];
+  const agence = comp.pdvs[aid];
+  const currStock = agence.stock?.[pid] || 0;
+  const num = docNum('TR');
+  const now = nowStr();
+
+  /* Transaction atomique Firebase */
+  const updates = {};
+  updates[`companies/${_SESSION.companyId}/products/${pid}/qty`]            = prod.qty - qty;
+  updates[`companies/${_SESSION.companyId}/pdvs/${aid}/stock/${pid}`]       = currStock + qty;
+  updates[`companies/${_SESSION.companyId}/transfer_logs/TR_${Date.now()}`] = {
+    num, date:now, product:prod.name, productId:pid,
+    to:agence.name, agenceId:aid, qty,
+    compName:comp.name, by:_SESSION.email
+  };
+
+  db.ref('/').update(updates).then(() => {
+    toast(`🚀 ${qty} × "${prod.name}" envoyé(s) à ${agence.name} — disponible immédiatement !`);
+    document.getElementById('trans-qty').value = '';
+
+    /* Aperçu du bon */
+    const bonData = { num, date:now, product:prod.name, qty, price:prod.price, agence:agence.name, compName:comp.name, by:_SESSION.email };
+    renderTransferPreview(bonData);
+  }).catch(e => toast('Erreur Firebase : ' + e.message, 'error'));
+}
+
+function renderTransferPreview(d) {
+  document.getElementById('last-transfer-preview').innerHTML = `
+    <div style="background:#fff;color:#111;border-radius:8px;padding:16px;font-family:'Courier New',monospace;font-size:12px">
+      <div style="text-align:center;margin-bottom:10px">
+        <strong style="font-size:14px;text-transform:uppercase">${d.compName}</strong><br>
+        <span style="color:#888;font-size:10px">BON DE TRANSFERT</span>
+      </div>
+      <hr style="border:1px dashed #ccc;margin:8px 0">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>N°</span><strong>${d.num}</strong></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Date</span><span>${d.date}</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Vers</span><strong>${d.agence}</strong></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Par</span><span>${d.by}</span></div>
+      <hr style="border:1px dashed #ccc;margin:8px 0">
+      <div><strong>${d.product}</strong></div>
+      <div style="color:#555">${d.qty} unité(s) × ${gnf(d.price)} = <strong>${gnf(d.qty*d.price)}</strong></div>
+      <hr style="border:1px dashed #ccc;margin:8px 0">
+      <div style="font-size:10px;color:#888;text-align:center">Stock disponible immédiatement à ${d.agence}</div>
+    </div>
+    <button class="btn btn-blue" style="margin-top:10px;font-size:12px"
+      onclick='openPrintOverlay({type:"transfert",data:${JSON.stringify(d)}})'>
+      🖨️ Imprimer ce Bon de Transfert
+    </button>`;
+}
+
+/* ════════════════════════════════════════════
+   PANIER & VENTES
+════════════════════════════════════════════ */
+function addToCart(mode) {
+  const pfx  = mode === 'ADMIN' ? 'admin-' : 'pdv-';
+  const pid  = document.getElementById(pfx + 'sale-p').value;
+  const qty  = parseInt(document.getElementById(pfx + 'sale-qty').value) || 1;
+  if (!pid) return toast('Sélectionnez un produit.', 'error');
+
+  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+  if (!comp) return;
+  const p = comp.products?.[pid];
+  if (!p) return toast('Produit introuvable.', 'error');
+
+  /* Vérification stock */
+  if (mode === 'PDV') {
+    const dsp = comp.pdvs?.[_SESSION.pdvId]?.stock?.[pid] || 0;
+    if (qty > dsp) return toast(`Stock PdV insuffisant — Disponible : ${dsp}`, 'error');
+  } else {
+    if (qty > p.qty) return toast(`Stock central insuffisant — Disponible : ${p.qty}`, 'error');
+  }
+
+  const cart  = mode === 'ADMIN' ? _CART_ADMIN : _CART_PDV;
+  const exist = cart.find(i => i.pid === pid);
+  if (exist) exist.qty += qty;
+  else cart.push({ pid, name:p.name, qty, price:Number(p.price), total:0 });
+  cart.forEach(i => i.total = i.price * i.qty);
+  renderCart(mode);
+  document.getElementById(pfx + 'sale-qty').value = 1;
+}
+
+function quickAddPDV(pid) {
+  document.getElementById('pdv-sale-p').value = pid;
+  addToCart('PDV');
+}
+
+function renderCart(mode) {
+  const cart   = mode === 'ADMIN' ? _CART_ADMIN : _CART_PDV;
+  const pfx    = mode === 'ADMIN' ? 'admin-'    : 'pdv-';
+  const listEl = document.getElementById(pfx + 'cart-list');
+  const totEl  = document.getElementById(pfx + 'cart-total');
+  let total = 0;
+
+  if (!cart.length) {
+    listEl.innerHTML = '<div style="color:#333;font-size:12px;padding:6px 0">Panier vide</div>';
+    totEl.textContent = '0';
+    return;
+  }
+  listEl.innerHTML = cart.map(i => {
+    total += i.total;
+    return `<div class="cart-item">
+      <span style="font-size:12px;flex:1">${i.name} <span style="color:#555">×${i.qty}</span></span>
+      <span style="font-family:monospace;font-size:12px;color:var(--gold)">${gnf(i.total)}</span>
+      <button onclick="removeFromCart('${mode}','${i.pid}')"
+        style="background:none;border:none;color:var(--red);cursor:pointer;font-size:15px;padding:0 2px">✕</button>
+    </div>`;
+  }).join('');
+  totEl.textContent = total.toLocaleString('fr-GN');
+}
+
+function removeFromCart(mode, pid) {
+  if (mode === 'ADMIN') _CART_ADMIN = _CART_ADMIN.filter(i=>i.pid!==pid);
+  else                  _CART_PDV   = _CART_PDV.filter(i=>i.pid!==pid);
+  renderCart(mode);
+}
+
+function clearCart(mode) {
+  if (mode === 'ADMIN') _CART_ADMIN = [];
+  else                  _CART_PDV   = [];
+  renderCart(mode);
+}
+
+function finalizeSale(mode) {
+  const nameId = mode==='ADMIN' ? 'client-name-admin' : 'client-name-pdv';
+  const telId  = mode==='ADMIN' ? 'client-tel-admin'  : 'client-tel-pdv';
+  const addrId = 'client-addr-pdv';
+
+  const clientName = document.getElementById(nameId)?.value.trim() || '';
+  const clientTel  = document.getElementById(telId)?.value.trim()  || '';
+  const clientAddr = document.getElementById(addrId)?.value.trim() || '';
+
+  const cart = mode === 'ADMIN' ? _CART_ADMIN : _CART_PDV;
+  if (!clientName || !clientTel) return toast('Nom et téléphone du client requis.', 'error');
+  if (!cart.length) return toast('Le panier est vide.', 'error');
+
+  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+  if (!comp) return toast('Données introuvables.', 'error');
+
+  const num  = docNum('VE');
+  const now  = nowStr();
+  let gTotal = 0;
+  const updates = {};
+
+  cart.forEach(i => {
+    gTotal += i.total;
+    if (mode === 'ADMIN') {
+      updates[`companies/${_SESSION.companyId}/products/${i.pid}/qty`] =
+        Math.max(0, (comp.products?.[i.pid]?.qty || 0) - i.qty);
+    } else {
+      updates[`companies/${_SESSION.companyId}/pdvs/${_SESSION.pdvId}/stock/${i.pid}`] =
+        Math.max(0, (comp.pdvs?.[_SESSION.pdvId]?.stock?.[i.pid] || 0) - i.qty);
+    }
+  });
+
+  const agName = mode==='PDV' ? comp.pdvs?.[_SESSION.pdvId]?.name : 'Siège';
+  updates[`companies/${_SESSION.companyId}/sale_logs/VE_${Date.now()}`] = {
+    num, date:now, client:clientName, tel:clientTel, addr:clientAddr,
+    total:gTotal, items:cart.map(i=>({...i})),
+    agency:agName, by:_SESSION.email, compName:comp.name
+  };
+
+  db.ref('/').update(updates).then(() => {
+    toast(`Vente de ${gnf(gTotal)} enregistrée avec succès !`);
+    openPrintOverlay({
+      type: 'vente',
+      data: { num, date:now, compName:comp.name, agency:agName, by:_SESSION.email,
+              client:clientName, tel:clientTel, addr:clientAddr,
+              items:cart.map(i=>({...i})), total:gTotal }
+    });
+    clearCart(mode);
+    [nameId, telId, addrId].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  }).catch(e => toast('Erreur Firebase : ' + e.message, 'error'));
+}
+
+/* ════════════════════════════════════════════
+   HISTORIQUE PdV
+════════════════════════════════════════════ */
+function renderPDVHistory() {
+  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+  if (!comp) return;
+  const myName = comp.pdvs?.[_SESSION.pdvId]?.name;
+  const logs = Object.entries(comp.sale_logs||{})
+    .filter(([,v]) => v.agency === myName)
+    .reverse().slice(0,60);
+
+  document.querySelector('#table-pdv-history tbody').innerHTML = logs.length
+    ? logs.map(([id,v]) => `<tr>
+        <td style="font-size:11px;font-family:monospace">${v.date}</td>
+        <td><span style="background:rgba(242,201,76,.15);color:#f2c94c;padding:2px 7px;border-radius:4px;font-size:11px;font-family:monospace">${v.num||'—'}</span></td>
+        <td>${v.client}</td>
+        <td style="font-size:11px;color:#666">${v.tel||'—'}</td>
+        <td style="font-weight:700;color:var(--green)">${gnf(v.total)}</td>
+        <td><button class="btn btn-small btn-dark" onclick='reprinterVente(${JSON.stringify(v)})'>🖨️ Reçu</button></td>
+      </tr>`).join('')
+    : '<tr><td colspan="6" style="text-align:center;color:#333;padding:24px">Aucune vente enregistrée.</td></tr>';
+}
+
+/* ════════════════════════════════════════════
+   RÉIMPRESSIONS
+════════════════════════════════════════════ */
+function reprinterBon(log) {
+  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+  const prod = comp ? Object.values(comp.products||{}).find(p=>p.name===log.product) : null;
+  openPrintOverlay({ type:'transfert', data:{
+    num:log.num||docNum('TR'), date:log.date, product:log.product,
+    qty:log.qty, price:prod?.price||0, agence:log.to,
+    compName:comp?.name||'', by:log.by||'Admin'
+  }});
+}
+function reprinterVente(v) {
+  openPrintOverlay({ type:'vente', data:{
+    num:v.num||docNum('VE'), date:v.date, compName:v.compName||'',
+    agency:v.agency||'Siège', by:v.by||'',
+    client:v.client, tel:v.tel||'', addr:v.addr||'',
+    items:v.items||[], total:v.total
+  }});
+}
+
+/* ════════════════════════════════════════════
+   3) IMPRESSION MULTI-FORMAT
+════════════════════════════════════════════ */
+function openPrintOverlay(payload) {
+  _PENDING_DOC = payload;
+  _CUR_DOC_TYPE = payload.type;
+  ['vente','transfert'].forEach(t => {
+    const b = document.getElementById('dtype-'+t);
+    if (b) b.classList.toggle('active', t===payload.type);
+  });
+  renderAllFormats(payload);
+  document.getElementById('print-overlay').classList.add('open');
+}
+function closePrintOverlay() { document.getElementById('print-overlay').classList.remove('open'); }
+
+function switchFormat(fmt, btn) {
+  _CUR_FORMAT = fmt;
+  ['ticket','a5','a4'].forEach(f => {
+    document.getElementById('preview-'+f).classList.toggle('show', f===fmt);
+  });
+  document.querySelectorAll('.fmt-btn[onclick*="switchFormat"]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function switchDocType(type, btn) {
+  _CUR_DOC_TYPE = type;
+  document.querySelectorAll('.fmt-btn[onclick*="switchDocType"]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (_PENDING_DOC) { _PENDING_DOC.type = type; renderAllFormats(_PENDING_DOC); }
+}
+
+function renderAllFormats(payload) {
+  const d     = payload.data;
+  const isT   = payload.type === 'transfert';
+  const label = isT ? 'BON DE TRANSFERT' : 'REÇU DE VENTE';
+  const items = isT ? [{name:d.product, qty:d.qty, price:d.price, total:d.qty*d.price}] : (d.items||[]);
+  const total = items.reduce((s,i) => s + (i.total || i.qty*i.price), 0);
+
+  /* ── TICKET ── */
+  document.getElementById('t-comp').textContent     = d.compName||'';
+  document.getElementById('t-pdv-line').textContent = isT ? `→ ${d.agence}` : (d.agency||'Siège');
+  document.getElementById('t-date').textContent     = d.date;
+  document.getElementById('t-num').textContent      = d.num;
+  document.getElementById('t-client-block').innerHTML = isT
+    ? `<div class="r-row"><span>Destinataire</span><strong>${d.agence}</strong></div>
+       <div class="r-row"><span>Par</span><span>${d.by}</span></div>`
+    : `<div class="r-row"><span>Client</span><strong>${d.client}</strong></div>
+       <div class="r-row"><span>Tél.</span><span>${d.tel}</span></div>
+       ${d.addr?`<div class="r-row"><span>Adresse</span><span>${d.addr}</span></div>`:''}`;
+  document.getElementById('t-items').innerHTML = items.map(i =>
+    `<div style="margin-bottom:7px">
+       <div style="font-weight:700">${i.name}</div>
+       <div class="r-row"><span>${i.qty} × ${gnf(i.price)}</span><strong>${gnf(i.total||i.qty*i.price)}</strong></div>
+     </div>`).join('');
+  document.getElementById('t-total').textContent = gnf(total);
+  document.getElementById('t-ref').textContent   = d.num;
+
+  /* ── A5 ── */
+  document.getElementById('a5-comp').textContent     = d.compName||'';
+  document.getElementById('a5-pdv-line').textContent = isT ? `Transfert → ${d.agence}` : (d.agency||'Siège');
+  document.getElementById('a5-type-badge').textContent = label;
+  document.getElementById('a5-date').textContent     = d.date;
+  document.getElementById('a5-num').textContent      = 'Réf : ' + d.num;
+  document.getElementById('a5-client-block').innerHTML = isT
+    ? `<div style="background:#f9f9f9;padding:9px 12px;border-radius:6px;border:1px solid #e0e0e0;font-size:12px">
+         <strong>Destinataire :</strong> ${d.agence} &nbsp;|&nbsp; <strong>Expédié par :</strong> ${d.by}
+       </div>`
+    : `<div style="background:#f9f9f9;padding:9px 12px;border-radius:6px;border:1px solid #e0e0e0;font-size:12px">
+         <strong>Client :</strong> ${d.client} &nbsp;|&nbsp; <strong>Tél :</strong> ${d.tel}
+         ${d.addr?`&nbsp;|&nbsp; <strong>Adresse :</strong> ${d.addr}`:''}
+       </div>`;
+  document.getElementById('a5-items').innerHTML = items.map(i =>
+    `<tr><td>${i.name}</td><td>${i.qty}</td><td>${gnf(i.price)}</td><td><strong>${gnf(i.total||i.qty*i.price)}</strong></td></tr>`
+  ).join('');
+  document.getElementById('a5-total').textContent = gnf(total);
+
+  /* ── A4 ── */
+  document.getElementById('a4-comp').textContent     = d.compName||'';
+  document.getElementById('a4-pdv-line').textContent = isT ? `Bon de transfert — Agence : ${d.agence}` : `Point de vente : ${d.agency||'Siège'}`;
+  document.getElementById('a4-type-badge').textContent = label;
+  document.getElementById('a4-date').textContent     = d.date;
+  document.getElementById('a4-num').textContent      = 'N° : ' + d.num;
+  document.getElementById('a4-items').innerHTML = items.map((i,n) =>
+    `<tr><td>${n+1}</td><td>${i.name}</td><td>${i.qty}</td><td style="font-family:monospace">${gnf(i.price)}</td><td style="font-family:monospace;font-weight:700">${gnf(i.total||i.qty*i.price)}</td></tr>`
+  ).join('');
+  document.getElementById('a4-total').textContent = gnf(total);
+  document.getElementById('a4-client-block').innerHTML = isT
+    ? `<div class="r-client-box">
+         <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Informations du Transfert</div>
+         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+           <div><strong>Agence Destinataire :</strong> ${d.agence}</div>
+           <div><strong>Expédié par :</strong> ${d.by}</div>
+           <div><strong>Date :</strong> ${d.date}</div>
+         </div>
+       </div>`
+    : `<div class="r-client-box">
+         <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Informations du Client</div>
+         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+           <div><strong>Nom :</strong> ${d.client}</div>
+           <div><strong>Téléphone :</strong> ${d.tel}</div>
+           ${d.addr?`<div style="grid-column:1/-1"><strong>Adresse :</strong> ${d.addr}</div>`:''}
+         </div>
+       </div>`;
+
+  /* Activer le format actuel */
+  const fmtBtns = document.querySelectorAll('.fmt-btn[onclick*="switchFormat"]');
+  fmtBtns.forEach(b => {
+    const isCur = b.getAttribute('onclick').includes(_CUR_FORMAT);
+    b.classList.toggle('active', isCur);
+    document.getElementById('preview-' + (b.getAttribute('onclick').match(/switchFormat\('(\w+)'/)?.[1]||''))?.classList.toggle('show', isCur);
+  });
+  document.getElementById('preview-'+_CUR_FORMAT)?.classList.add('show');
+}
+
+function doPrint() {
+  const zone = document.getElementById('active-print-zone');
+  const src  = document.getElementById('preview-' + _CUR_FORMAT);
+  if (!src) return;
+  zone.innerHTML = '<div style="background:#fff;padding:16px">' + src.outerHTML + '</div>';
+  zone.style.display = 'block';
+  setTimeout(() => {
+    window.print();
+    zone.style.display = 'none';
+    zone.innerHTML = '';
+  }, 100);
+}
+
+/* ════════════════════════════════════════════
+   CRUD FIREBASE
+════════════════════════════════════════════ */
+function createProduct() {
+  const name  = document.getElementById('p-name').value.trim();
+  const price = parseFloat(document.getElementById('p-price').value);
+  const qty   = parseInt(document.getElementById('p-qty').value);
+  if (!name || isNaN(price) || isNaN(qty) || qty<0 ) return toast('Remplissez tous les champs correctement.', 'error');
+  db.ref(`companies/${_SESSION.companyId}/products/PROD_${Date.now()}`)
+    .set({ name, price, qty }).then(() => {
+      toast(`"${name}" ajouté au stock central.`);
+      ['p-name','p-price','p-qty'].forEach(id => { document.getElementById(id).value=''; });
+    });
+}
+
+function createPDV() {
+  const name  = document.getElementById('pdv-name').value.trim();
+  const email = document.getElementById('pdv-email').value.trim();
+  const pin   = document.getElementById('pdv-pin').value.trim();
+  if (!name || !email || !pin) return toast('Remplissez tous les champs.', 'error');
+  if (pin.length < 4) return toast('Le PIN doit avoir au moins 4 caractères.', 'error');
+  db.ref(`companies/${_SESSION.companyId}/pdvs/PDV_${Date.now()}`)
+    .set({ name, email, pin, status:'actif', stock:{} }).then(() => {
+      toast(`Agence "${name}" créée avec succès.`);
+      ['pdv-name','pdv-email','pdv-pin'].forEach(id => { document.getElementById(id).value=''; });
+    });
+}
+
+function createClientCompany() {
+  const name  = document.getElementById('new-comp-name').value.trim();
+  const email = document.getElementById('new-comp-email').value.trim();
+  const pin   = document.getElementById('new-comp-pin').value.trim();
+  if (!name || !email || !pin) return toast('Remplissez tous les champs.', 'error');
+  db.ref(`companies/COMP_${Date.now()}`)
+    .set({ name, admin_email:email, admin_pin:pin, status:'actif' }).then(() => {
+      toast(`Licence "${name}" enregistrée.`);
+      ['new-comp-name','new-comp-email','new-comp-pin'].forEach(id => { document.getElementById(id).value=''; });
+    });
+}
+
+function toggleCompanyStatus(cid, current) {
+  const ns = current==='actif' ? 'bloqué' : 'actif';
+  db.ref(`companies/${cid}/status`).set(ns).then(() => toast(`Statut mis à jour : ${ns}`));
+}
+
+function togglePDVStatus(pid, current) {
+  const ns = current==='actif' ? 'bloqué' : 'actif';
+  db.ref(`companies/${_SESSION.companyId}/pdvs/${pid}/status`).set(ns).then(() => toast(`Statut mis à jour : ${ns}`));
+}
+
+function changePDVPin(pid) {
+  const p = prompt('Nouveau code PIN pour cette agence (min 4 caractères) :');
+  if (!p) return;
+  if (p.length < 4) return toast('Le PIN doit avoir au moins 4 caractères.', 'error');
+  db.ref(`companies/${_SESSION.companyId}/pdvs/${pid}/pin`).set(p).then(() => toast('PIN mis à jour avec succès.'));
+}
+</script>
+</body>
+</html>

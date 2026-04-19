@@ -335,48 +335,70 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
 
       <!-- ── DASHBOARD SUPER ── -->
       <div id="stab-dash">
-        <!-- KPIs -->
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:16px; margin-bottom:22px" id="super-kpi-grid">
-          <div class="card" style="border-top:3px solid var(--purple); text-align:center; padding:18px">
-            <div style="font-size:28px; font-weight:900; color:var(--purple)" id="kpi-companies">—</div>
-            <div style="font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#555; margin-top:4px">Licences actives</div>
+
+        <!-- Paramètre global coût/vente -->
+        <div style="background:rgba(242,201,76,.06);border:1px solid rgba(242,201,76,.25);border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px">
+            <div style="font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.8px">⚙️ Coût par transaction enregistrée</div>
+            <div style="font-size:11px;color:#666;margin-top:3px">Facturé pour <strong>chaque vente</strong> enregistrée sur la plateforme. Ce tarif est cumulé sur le mois et ajouté automatiquement à la facture.</div>
           </div>
-          <div class="card" style="border-top:3px solid var(--green); text-align:center; padding:18px">
-            <div style="font-size:28px; font-weight:900; color:var(--green)" id="kpi-pdv">—</div>
-            <div style="font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#555; margin-top:4px">Points de vente</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input id="global-tx-fee" type="number" min="0" style="width:120px;margin:0;font-size:16px;font-weight:800;color:var(--gold);text-align:center" placeholder="200">
+            <span style="font-size:12px;color:#666;white-space:nowrap">GNF / vente</span>
+            <button class="btn btn-small" onclick="saveGlobalTxFee()" style="white-space:nowrap">💾 Enregistrer</button>
           </div>
-          <div class="card" style="border-top:3px solid var(--gold); text-align:center; padding:18px">
-            <div style="font-size:22px; font-weight:900; color:var(--gold)" id="kpi-ca">—</div>
-            <div style="font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#555; margin-top:4px">CA réseau (mois)</div>
-          </div>
-          <div class="card" style="border-top:3px solid var(--blue); text-align:center; padding:18px">
-            <div style="font-size:22px; font-weight:900; color:var(--blue)" id="kpi-invoices">—</div>
-            <div style="font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#555; margin-top:4px">Factures envoyées</div>
-          </div>
-          <div class="card" style="border-top:3px solid #e74c3c; text-align:center; padding:18px">
-            <div style="font-size:22px; font-weight:900; color:#e74c3c" id="kpi-revenue">—</div>
-            <div style="font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#555; margin-top:4px">Revenus facturés</div>
+          <div style="font-size:11px;color:#555;min-width:160px">
+            Commission = <strong style="color:var(--blue)">Nb ventes × tarif</strong><br>
+            Tarif actuel : <strong id="global-tx-fee-display" style="color:var(--gold)">chargement…</strong>
           </div>
         </div>
 
-        <!-- Tableau par client -->
+        <!-- KPIs -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px">
+          <div class="card" style="border-top:3px solid var(--purple);text-align:center;padding:16px">
+            <div style="font-size:26px;font-weight:900;color:var(--purple)" id="kpi-companies">—</div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#555;margin-top:4px">Licences actives</div>
+          </div>
+          <div class="card" style="border-top:3px solid var(--green);text-align:center;padding:16px">
+            <div style="font-size:26px;font-weight:900;color:var(--green)" id="kpi-pdv">—</div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#555;margin-top:4px">Points de vente</div>
+          </div>
+          <div class="card" style="border-top:3px solid var(--gold);text-align:center;padding:16px">
+            <div style="font-size:20px;font-weight:900;color:var(--gold)" id="kpi-ca">—</div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#555;margin-top:4px">CA réseau (mois)</div>
+          </div>
+          <div class="card" style="border-top:3px solid var(--blue);text-align:center;padding:16px">
+            <div style="font-size:26px;font-weight:900;color:var(--blue)" id="kpi-tx-mois">—</div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#555;margin-top:4px">Ventes ce mois</div>
+          </div>
+          <div class="card" style="border-top:3px solid #e67e22;text-align:center;padding:16px">
+            <div style="font-size:20px;font-weight:900;color:#e67e22" id="kpi-comm-mois">—</div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#555;margin-top:4px">Commissions (mois)</div>
+          </div>
+          <div class="card" style="border-top:3px solid var(--red);text-align:center;padding:16px">
+            <div style="font-size:20px;font-weight:900;color:var(--red)" id="kpi-revenue">—</div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#555;margin-top:4px">Revenus facturés</div>
+          </div>
+        </div>
+
+        <!-- Tableau activité par client -->
         <div class="card">
           <h3>📈 Activité par Client — Mois en cours</h3>
           <div style="overflow-x:auto">
             <table id="table-super-activity">
-              <thead><tr><th>Société</th><th>PdV</th><th>Ventes (mois)</th><th>CA (mois)</th><th>Statut</th><th>Dernière facture</th><th>Actions rapides</th></tr></thead>
-              <tbody><tr><td colspan="7" style="text-align:center; color:#333; padding:24px">Chargement…</td></tr></tbody>
+              <thead><tr><th>Société</th><th>PdV</th><th>Ventes (mois)</th><th>CA (mois)</th><th>Commission accumulée</th><th>Statut</th><th>Dernière facture</th><th>Action</th></tr></thead>
+              <tbody><tr><td colspan="8" style="text-align:center;color:#333;padding:24px">Chargement…</td></tr></tbody>
             </table>
           </div>
         </div>
 
-        <!-- Dernières factures envoyées -->
+        <!-- Dernières factures -->
         <div class="card" style="margin-top:16px">
           <h3>📨 Dernières Factures Envoyées</h3>
           <div style="overflow-x:auto">
             <table id="table-super-last-invoices">
-              <thead><tr><th>Société</th><th>Mois</th><th>Abonnement</th><th>Commission</th><th>Total</th><th>Date envoi</th></tr></thead>
-              <tbody><tr><td colspan="6" style="text-align:center; color:#333; padding:20px">Aucune facture</td></tr></tbody>
+              <thead><tr><th>Société</th><th>Mois</th><th>Abonnement</th><th>Ventes</th><th>Commission</th><th>Total</th><th>Date envoi</th></tr></thead>
+              <tbody><tr><td colspan="7" style="text-align:center;color:#333;padding:20px">Aucune facture</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -397,8 +419,7 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
             <input id="new-comp-wa" placeholder="Ex: 224622000000" type="tel">
             <label class="field-label">Abonnement mensuel (GNF)</label>
             <input id="new-comp-fee" type="number" placeholder="Ex: 500000">
-            <label class="field-label">Taux commission ventes (%)</label>
-            <input id="new-comp-rate" type="number" placeholder="Ex: 2" step="0.1">
+            <div class="info-box" style="margin-top:10px;font-size:11px">ℹ️ La commission par transaction est un <strong>paramètre global</strong> défini dans le tableau de bord. Elle s'applique automatiquement à tous les clients.</div>
             <button class="btn btn-blue" style="margin-top:12px" onclick="createClientCompany()">Enregistrer la Licence</button>
           </div>
           <div class="card">
@@ -440,21 +461,35 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
             <label class="field-label">Montant abonnement mensuel (GNF)</label>
             <input id="fact-abo" type="number" placeholder="Montant fixe de la licence" oninput="calcFactTotal()">
 
-            <label class="field-label">Taux commission sur ventes (%)</label>
-            <input id="fact-rate" type="number" value="0" step="0.1" placeholder="0" oninput="calcFactTotal()">
+            <!-- Récapitulatif commission basée sur nb transactions -->
+            <div style="background:rgba(47,128,237,.06);border:1px solid rgba(47,128,237,.2);border-radius:8px;padding:11px 14px;margin:10px 0;font-size:12px">
+              <div style="font-weight:700;color:var(--blue);margin-bottom:6px;font-size:11px;text-transform:uppercase;letter-spacing:.5px">📊 Commission calculée automatiquement</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                <span style="color:#666">Ventes enregistrées ce mois</span>
+                <strong id="fact-nb-tx" style="color:var(--text)">0 vente(s)</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                <span style="color:#666">Tarif par transaction</span>
+                <strong id="fact-tx-fee-display" style="color:var(--blue);font-family:monospace">200 GNF</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(47,128,237,.2);padding-top:6px;margin-top:4px">
+                <span style="color:#666;font-size:11px">Total commission (<span id="fact-nb-tx-mini">0</span> × <span id="fact-fee-mini">200</span>)</span>
+                <strong id="fact-line-comm" style="color:var(--blue);font-family:monospace">0 GNF</strong>
+              </div>
+            </div>
 
-            <div style="background:#0d0d20; border-radius:8px; padding:12px 14px; margin:12px 0; border:1px solid var(--border)">
-              <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px">
+            <div style="background:#0d0d20;border-radius:8px;padding:12px 14px;margin:8px 0;border:1px solid var(--border)">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px">
                 <span style="color:#666">Abonnement mensuel</span>
-                <span id="fact-line-abo" style="font-family:monospace; font-weight:700">0 GNF</span>
+                <span id="fact-line-abo" style="font-family:monospace;font-weight:700">0 GNF</span>
               </div>
-              <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px">
-                <span style="color:#666">Commission ventes (<span id="fact-rate-display">0</span>%)</span>
-                <span id="fact-line-comm" style="font-family:monospace; font-weight:700; color:var(--blue)">0 GNF</span>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px">
+                <span style="color:#666">Commission transactions</span>
+                <span style="font-family:monospace;font-weight:700;color:var(--blue)" id="fact-line-comm2">0 GNF</span>
               </div>
-              <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:8px; margin-top:6px">
-                <span style="font-weight:800; text-transform:uppercase; letter-spacing:.5px; font-size:13px">Total Facture</span>
-                <span id="fact-total-display" style="font-size:18px; font-weight:900; color:var(--gold); font-family:monospace">0 GNF</span>
+              <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:8px;margin-top:6px">
+                <span style="font-weight:800;text-transform:uppercase;letter-spacing:.5px;font-size:13px">Total Facture</span>
+                <span id="fact-total-display" style="font-size:18px;font-weight:900;color:var(--gold);font-family:monospace">0 GNF</span>
               </div>
             </div>
 
@@ -848,80 +883,94 @@ function updateUI() {
 
   /* ── SUPER ── */
   if (_SESSION.role === 'SUPER') {
-    const entries = Object.entries(_ALL_DATA.companies || {});
-    const curMonth = today().slice(0,7); // YYYY-MM
+    const entries  = Object.entries(_ALL_DATA.companies || {});
+    const curMonth = today().slice(0,7);
+    const txFee    = Number(_ALL_DATA.settings?.transaction_fee ?? 200);
+
+    /* ── Afficher le tarif global ── */
+    const feeDisp = document.getElementById('global-tx-fee-display');
+    const feeInp  = document.getElementById('global-tx-fee');
+    if (feeDisp) feeDisp.textContent = txFee.toLocaleString('fr-GN') + ' GNF/vente';
+    if (feeInp && !feeInp.dataset.touched) feeInp.value = txFee;
 
     /* ── KPIs ── */
     const activeComps = entries.filter(([,c])=>c.status!=='bloqué');
-    let totalPdv=0, totalCaMois=0, totalInvoices=0, totalRevenuFacture=0;
-    entries.forEach(([cid,c])=>{
+    let totalPdv=0, totalCaMois=0, totalTxMois=0, totalRevenu=0;
+    entries.forEach(([,c])=>{
       totalPdv += Object.keys(c.pdvs||{}).length;
       const sales = Object.values(c.sale_logs||{});
-      totalCaMois += sales.filter(v=>v.date?.slice(0,7)===curMonth).reduce((s,v)=>s+v.total,0);
-      const invs = Object.values(c.invoices||{});
-      totalInvoices += invs.length;
-      totalRevenuFacture += invs.reduce((s,inv)=>s+(inv.total||0),0);
+      const moisSales = sales.filter(v=>v.date?.slice(0,7)===curMonth);
+      totalCaMois  += moisSales.reduce((s,v)=>s+v.total,0);
+      totalTxMois  += moisSales.length;
+      totalRevenu  += Object.values(c.invoices||{}).reduce((s,inv)=>s+(inv.total||0),0);
     });
+    const totalCommMois = totalTxMois * txFee;
     document.getElementById('kpi-companies').textContent = activeComps.length;
     document.getElementById('kpi-pdv').textContent       = totalPdv;
     document.getElementById('kpi-ca').textContent        = gnf(totalCaMois);
-    document.getElementById('kpi-invoices').textContent  = totalInvoices;
-    document.getElementById('kpi-revenue').textContent   = gnf(totalRevenuFacture);
+    document.getElementById('kpi-tx-mois').textContent   = totalTxMois;
+    document.getElementById('kpi-comm-mois').textContent = gnf(totalCommMois);
+    document.getElementById('kpi-revenue').textContent   = gnf(totalRevenu);
 
     /* ── Activité par client ── */
     document.querySelector('#table-super-activity tbody').innerHTML = entries.length
       ? entries.map(([cid,c])=>{
-          const sales = Object.values(c.sale_logs||{});
-          const moisSales = sales.filter(v=>v.date?.slice(0,7)===curMonth);
-          const caMois = moisSales.reduce((s,v)=>s+v.total,0);
-          const nbPdv = Object.keys(c.pdvs||{}).length;
-          const invs  = Object.values(c.invoices||{});
-          const lastInv = invs.length ? invs.sort((a,b)=>b.sentAt?.localeCompare(a.sentAt))[0] : null;
-          return `<tr>
-            <td><strong>${c.name}</strong><div style="font-size:10px; color:#555">${c.admin_email}</div></td>
-            <td style="text-align:center"><span class="st-badge st-${nbPdv>0?'actif':'bloque'}">${nbPdv}</span></td>
-            <td style="text-align:center">${moisSales.length}</td>
-            <td style="font-family:monospace; font-weight:700; color:var(--gold)">${gnf(caMois)}</td>
-            <td><span class="st-badge st-${c.status==='actif'?'actif':'bloque'}">${c.status||'actif'}</span></td>
-            <td style="font-size:11px; color:#555">${lastInv ? lastInv.sentAt?.slice(0,10) : '—'}</td>
-            <td style="display:flex; gap:4px; flex-wrap:wrap">
-              <button class="btn btn-small" style="background:var(--green); color:#fff" onclick="quickFact('${cid}')">💳 Facturer</button>
-              <button class="btn btn-small btn-${c.status==='actif'?'red':'green'}" onclick="toggleCompanyStatus('${cid}','${c.status||'actif'}')">
-                ${c.status==='actif'?'🔒':'🔓'}
+          const sales      = Object.values(c.sale_logs||{});
+          const moisSales  = sales.filter(v=>v.date?.slice(0,7)===curMonth);
+          const nbTx       = moisSales.length;
+          const caMois     = moisSales.reduce((s,v)=>s+v.total,0);
+          const comm       = nbTx * txFee;
+          const nbPdv      = Object.keys(c.pdvs||{}).length;
+          const invs       = Object.values(c.invoices||{});
+          const lastInv    = invs.length ? invs.sort((a,b)=>(b.sentAt||'').localeCompare(a.sentAt||''))[0] : null;
+          return \`<tr>
+            <td><strong>\${c.name}</strong><div style="font-size:10px;color:#555">\${c.admin_email}</div></td>
+            <td style="text-align:center"><span class="st-badge st-\${nbPdv>0?'actif':'bloque'}">\${nbPdv}</span></td>
+            <td style="text-align:center;font-weight:700;color:var(--blue)">\${nbTx}</td>
+            <td style="font-family:monospace;font-weight:700;color:var(--gold)">\${gnf(caMois)}</td>
+            <td>
+              <div style="font-family:monospace;font-weight:800;color:#e67e22">\${gnf(comm)}</div>
+              <div style="font-size:10px;color:#555">\${nbTx} × \${txFee.toLocaleString('fr-GN')} GNF</div>
+            </td>
+            <td><span class="st-badge st-\${c.status==='actif'?'actif':'bloque'}">\${c.status||'actif'}</span></td>
+            <td style="font-size:11px;color:#555">\${lastInv ? lastInv.sentAt?.slice(0,10) : '—'}</td>
+            <td style="display:flex;gap:4px;flex-wrap:wrap">
+              <button class="btn btn-small" style="background:var(--green);color:#fff" onclick="quickFact('\${cid}')">💳 Facturer</button>
+              <button class="btn btn-small btn-\${c.status==='actif'?'red':'green'}" onclick="toggleCompanyStatus('\${cid}','\${c.status||'actif'}')">
+                \${c.status==='actif'?'🔒':'🔓'}
               </button>
             </td>
-          </tr>`;
+          </tr>\`;
         }).join('')
-      : '<tr><td colspan="7" style="text-align:center; color:#333; padding:24px">Aucun client enregistré</td></tr>';
+      : '<tr><td colspan="8" style="text-align:center;color:#333;padding:24px">Aucun client enregistré</td></tr>';
 
     /* ── Dernières factures ── */
     const allInvs = [];
-    entries.forEach(([cid,c])=>{
-      Object.values(c.invoices||{}).forEach(inv=>{
-        allInvs.push({...inv, compName:c.name});
-      });
+    entries.forEach(([,c])=>{
+      Object.values(c.invoices||{}).forEach(inv=>allInvs.push({...inv, compName:c.name}));
     });
-    allInvs.sort((a,b)=>(b.sentAt||'').localeCompare(a.sentAt||'')).slice(0,10);
+    allInvs.sort((a,b)=>(b.sentAt||'').localeCompare(a.sentAt||''));
     document.querySelector('#table-super-last-invoices tbody').innerHTML = allInvs.length
       ? allInvs.slice(0,8).map(inv=>`<tr>
           <td><strong>${inv.compName}</strong></td>
           <td>${inv.month||'—'}</td>
           <td style="font-family:monospace">${gnf(inv.abo||0)}</td>
-          <td style="font-family:monospace; color:var(--blue)">${gnf(inv.commission||0)}</td>
-          <td style="font-weight:800; color:var(--gold); font-family:monospace">${gnf(inv.total||0)}</td>
-          <td style="font-size:11px; color:#555">${inv.sentAt?.slice(0,16)||'—'}</td>
+          <td style="text-align:center;color:var(--blue)">${inv.nb_tx||'—'}</td>
+          <td style="font-family:monospace;color:#e67e22">${gnf(inv.commission||0)}</td>
+          <td style="font-weight:800;color:var(--gold);font-family:monospace">${gnf(inv.total||0)}</td>
+          <td style="font-size:11px;color:#555">${inv.sentAt?.slice(0,16)||'—'}</td>
         </tr>`).join('')
-      : '<tr><td colspan="6" style="text-align:center; color:#333; padding:20px">Aucune facture</td></tr>';
+      : '<tr><td colspan="7" style="text-align:center;color:#333;padding:20px">Aucune facture</td></tr>';
 
     /* ── Table licences ── */
     document.querySelector('#table-saas-clients tbody').innerHTML = entries.length
       ? entries.map(([id,c]) => `<tr>
           <td><strong>${c.name}</strong></td>
           <td style="font-size:12px">${c.admin_email}</td>
-          <td style="font-family:monospace; font-size:12px">${c.whatsapp||'<span style="color:#444">—</span>'}</td>
-          <td style="font-family:monospace; font-size:12px">${gnf(c.monthly_fee||0)}</td>
+          <td style="font-family:monospace;font-size:12px">${c.whatsapp||'<span style="color:#444">—</span>'}</td>
+          <td style="font-family:monospace;font-size:12px">${gnf(c.monthly_fee||0)}</td>
           <td><span class="st-badge st-${c.status==='actif'?'actif':'bloque'}">${c.status||'actif'}</span></td>
-          <td style="display:flex; gap:4px; flex-wrap:wrap">
+          <td style="display:flex;gap:4px;flex-wrap:wrap">
             <button class="btn btn-small btn-${c.status==='actif'?'red':'green'}" onclick="toggleCompanyStatus('${id}','${c.status||'actif'}')">
               ${c.status==='actif'?'🔒 Bloquer':'🔓 Activer'}
             </button>
@@ -929,20 +978,18 @@ function updateUI() {
             <button class="btn btn-small btn-red" onclick="if(confirm('Supprimer définitivement ?')) db.ref('companies/${id}').remove()">🗑️</button>
           </td>
         </tr>`).join('')
-      : '<tr><td colspan="6" style="text-align:center; color:#333; padding:20px">Aucun client</td></tr>';
+      : '<tr><td colspan="6" style="text-align:center;color:#333;padding:20px">Aucun client</td></tr>';
 
     /* ── Facturation: remplir les selects ── */
-    const factSel = document.getElementById('fact-client');
+    const factSel  = document.getElementById('fact-client');
     const factHist = document.getElementById('fact-hist-filter');
     if (factSel && factSel.children.length <= 1) {
       entries.forEach(([id,c])=>{
         const o = `<option value="${id}">${c.name}</option>`;
-        factSel.innerHTML += o;
+        factSel.innerHTML  += o;
         if (factHist) factHist.innerHTML += o;
       });
     }
-
-    /* Initialiser le mois courant */
     const mInput = document.getElementById('fact-month');
     if (mInput && !mInput.value) mInput.value = curMonth;
 
@@ -1470,12 +1517,11 @@ function createClientCompany() {
   const pin   = document.getElementById('new-comp-pin').value.trim();
   const wa    = document.getElementById('new-comp-wa')?.value.trim() || '';
   const fee   = parseFloat(document.getElementById('new-comp-fee')?.value) || 0;
-  const rate  = parseFloat(document.getElementById('new-comp-rate')?.value) || 0;
   if (!name || !email || !pin) return toast('Remplissez tous les champs obligatoires.', 'error');
   db.ref(`companies/COMP_${Date.now()}`)
-    .set({ name, admin_email:email, admin_pin:pin, status:'actif', whatsapp:wa, monthly_fee:fee, commission_rate:rate }).then(() => {
+    .set({ name, admin_email:email, admin_pin:pin, status:'actif', whatsapp:wa, monthly_fee:fee }).then(() => {
       toast(`Licence "${name}" enregistrée.`);
-      ['new-comp-name','new-comp-email','new-comp-pin','new-comp-wa','new-comp-fee','new-comp-rate'].forEach(id => {
+      ['new-comp-name','new-comp-email','new-comp-pin','new-comp-wa','new-comp-fee'].forEach(id => {
         const el = document.getElementById(id); if(el) el.value='';
       });
     });
@@ -1511,12 +1557,29 @@ function switchSuperTab(id, btn) {
 /* ══════════════════════════════════════════════
    FACTURATION — HELPERS
 ══════════════════════════════════════════════ */
-function getCompCaMois(cid, month) {
-  const comp = _ALL_DATA.companies?.[cid];
-  if(!comp) return 0;
-  return Object.values(comp.sale_logs||{})
-    .filter(v=>v.date?.slice(0,7)===month)
-    .reduce((s,v)=>s+v.total,0);
+/* ── Tarif global (lu depuis Firebase) ── */
+function getTxFee() {
+  return Number(_ALL_DATA.settings?.transaction_fee ?? 200);
+}
+
+function saveGlobalTxFee() {
+  const val = parseInt(document.getElementById('global-tx-fee').value);
+  if(isNaN(val) || val < 0) return toast('Montant invalide.', 'error');
+  document.getElementById('global-tx-fee').dataset.touched = '1';
+  db.ref('settings/transaction_fee').set(val).then(()=>{
+    toast('Tarif par transaction mis à jour : ' + val.toLocaleString('fr-GN') + ' GNF/vente');
+  });
+}
+
+function getCompTxMois(cid, month) {
+  /* Retourne {nbTx, ca, comm} pour le mois donné */
+  const comp  = _ALL_DATA.companies?.[cid];
+  if(!comp) return { nbTx:0, ca:0, comm:0 };
+  const sales = Object.values(comp.sale_logs||{}).filter(v=>v.date?.slice(0,7)===month);
+  const nbTx  = sales.length;
+  const ca    = sales.reduce((s,v)=>s+v.total,0);
+  const comm  = nbTx * getTxFee();
+  return { nbTx, ca, comm };
 }
 
 function onFactClientChange() {
@@ -1525,38 +1588,48 @@ function onFactClientChange() {
   const info = document.getElementById('fact-client-info');
   if(!comp || !cid) { info.style.display='none'; return; }
   const month = document.getElementById('fact-month').value || today().slice(0,7);
-  const ca    = getCompCaMois(cid, month);
+  const { nbTx, ca } = getCompTxMois(cid, month);
   document.getElementById('fact-wa-display').textContent = comp.whatsapp || 'Non renseigné';
-  document.getElementById('fact-ca-display').textContent = gnf(ca);
-  info.style.display='block';
-  /* Pré-remplir avec les valeurs de la licence */
-  if(comp.monthly_fee) document.getElementById('fact-abo').value   = comp.monthly_fee;
-  if(comp.commission_rate) document.getElementById('fact-rate').value = comp.commission_rate;
+  document.getElementById('fact-ca-display').textContent = gnf(ca) + ' · ' + nbTx + ' vente(s)';
+  info.style.display = 'block';
+  if(comp.monthly_fee) document.getElementById('fact-abo').value = comp.monthly_fee;
   calcFactTotal();
 }
 
 function calcFactTotal() {
   const cid   = document.getElementById('fact-client').value;
   const month = document.getElementById('fact-month').value || today().slice(0,7);
-  const abo   = parseFloat(document.getElementById('fact-abo').value)  || 0;
-  const rate  = parseFloat(document.getElementById('fact-rate').value) || 0;
-  const ca    = getCompCaMois(cid, month);
-  const comm  = Math.round(ca * rate / 100);
+  const abo   = parseFloat(document.getElementById('fact-abo').value) || 0;
+  const txFee = getTxFee();
+  const { nbTx, ca, comm } = getCompTxMois(cid, month);
   const total = abo + comm;
+
+  /* Récap commission */
+  const el_nb    = document.getElementById('fact-nb-tx');
+  const el_fee   = document.getElementById('fact-tx-fee-display');
+  const el_comm  = document.getElementById('fact-line-comm');
+  const el_comm2 = document.getElementById('fact-line-comm2');
+  const el_nb_m  = document.getElementById('fact-nb-tx-mini');
+  const el_fee_m = document.getElementById('fact-fee-mini');
+  if(el_nb)    el_nb.textContent    = nbTx + ' vente(s)';
+  if(el_fee)   el_fee.textContent   = txFee.toLocaleString('fr-GN') + ' GNF';
+  if(el_comm)  el_comm.textContent  = gnf(comm);
+  if(el_comm2) el_comm2.textContent = gnf(comm);
+  if(el_nb_m)  el_nb_m.textContent  = nbTx;
+  if(el_fee_m) el_fee_m.textContent = txFee.toLocaleString('fr-GN');
   document.getElementById('fact-line-abo').textContent      = gnf(abo);
-  document.getElementById('fact-line-comm').textContent     = gnf(comm);
   document.getElementById('fact-total-display').textContent = gnf(total);
-  document.getElementById('fact-rate-display').textContent  = rate;
-  return { abo, comm, total, ca, rate };
+  return { abo, comm, total, nbTx, txFee, ca };
 }
 
 /* ── Prévisualisation facture ── */
-function buildInvoiceHTML(cid, month, abo, comm, total, note, forPrint) {
+function buildInvoiceHTML(cid, month, abo, comm, total, note, nbTx, forPrint) {
   const comp = _ALL_DATA.companies?.[cid];
   if(!comp) return '';
   const [yr,mo] = (month||today().slice(0,7)).split('-');
-  const mois = new Date(yr, parseInt(mo)-1).toLocaleString('fr-GN', {month:'long', year:'numeric'});
-  const now  = new Date().toLocaleString('fr-GN');
+  const mois    = new Date(yr, parseInt(mo)-1).toLocaleString('fr-GN', {month:'long', year:'numeric'});
+  const now     = new Date().toLocaleString('fr-GN');
+  const txFee   = getTxFee();
 
   return `
     <div style="background:#fff; color:#111; border-radius:8px; padding:${forPrint?'0':'20px'}; font-family:'Segoe UI',sans-serif; font-size:13px">
@@ -1584,14 +1657,19 @@ function buildInvoiceHTML(cid, month, abo, comm, total, note, forPrint) {
       <table style="width:100%; border-collapse:collapse; margin-bottom:12px">
         <thead><tr style="background:#f5f5f5">
           <th style="text-align:left; padding:9px 12px; font-size:11px; text-transform:uppercase; color:#555; border:1px solid #e0e0e0">Description</th>
+          <th style="text-align:center; padding:9px 12px; font-size:11px; text-transform:uppercase; color:#555; border:1px solid #e0e0e0">Qté</th>
           <th style="text-align:right; padding:9px 12px; font-size:11px; text-transform:uppercase; color:#555; border:1px solid #e0e0e0; white-space:nowrap">Montant (GNF)</th>
         </tr></thead>
         <tbody>
           <tr><td style="padding:10px 12px; border:1px solid #efefef">📋 Abonnement mensuel — ${mois}</td>
+              <td style="padding:10px 12px; border:1px solid #efefef; text-align:center">1</td>
               <td style="padding:10px 12px; border:1px solid #efefef; text-align:right; font-family:monospace; font-weight:700">${abo.toLocaleString('fr-GN')}</td></tr>
-          <tr><td style="padding:10px 12px; border:1px solid #efefef; color:#555">📈 Commission sur chiffre d'affaires (${document.getElementById('fact-rate')?.value||0}%)</td>
+          <tr><td style="padding:10px 12px; border:1px solid #efefef; color:#555">
+                🔢 Commission transactions — ${nbTx} vente(s) × ${txFee.toLocaleString('fr-GN')} GNF/vente
+              </td>
+              <td style="padding:10px 12px; border:1px solid #efefef; text-align:center; color:#2f80ed; font-weight:700">${nbTx}</td>
               <td style="padding:10px 12px; border:1px solid #efefef; text-align:right; font-family:monospace; font-weight:700; color:#2f80ed">${comm.toLocaleString('fr-GN')}</td></tr>
-          ${note?`<tr><td style="padding:10px 12px; border:1px solid #efefef; color:#888; font-style:italic" colspan="2">📝 ${note}</td></tr>`:''}
+          ${note?`<tr><td style="padding:10px 12px; border:1px solid #efefef; color:#888; font-style:italic" colspan="3">📝 ${note}</td></tr>`:''}
         </tbody>
       </table>
       <!-- Total -->
@@ -1611,18 +1689,18 @@ function previewInvoice() {
   if(!cid) return toast('Sélectionnez un client.', 'error');
   const month = document.getElementById('fact-month').value;
   if(!month) return toast('Choisissez un mois.', 'error');
-  const { abo, comm, total } = calcFactTotal();
+  const { abo, comm, total, nbTx } = calcFactTotal();
   const note = document.getElementById('fact-note').value.trim();
-  document.getElementById('invoice-preview-box').innerHTML = buildInvoiceHTML(cid, month, abo, comm, total, note, false);
+  document.getElementById('invoice-preview-box').innerHTML = buildInvoiceHTML(cid, month, abo, comm, total, note, nbTx, false);
   document.getElementById('invoice-preview-actions').style.display = 'block';
 }
 
 function printInvoice() {
   const cid   = document.getElementById('fact-client').value;
   const month = document.getElementById('fact-month').value;
-  const { abo, comm, total } = calcFactTotal();
+  const { abo, comm, total, nbTx } = calcFactTotal();
   const note  = document.getElementById('fact-note').value.trim();
-  const html  = buildInvoiceHTML(cid, month, abo, comm, total, note, true);
+  const html  = buildInvoiceHTML(cid, month, abo, comm, total, note, nbTx, true);
   const zone  = document.getElementById('active-print-zone');
   zone.innerHTML = '<div style="background:#fff; padding:20px">' + html + '</div>';
   zone.style.display = 'block';
@@ -1639,7 +1717,7 @@ function sendInvoiceWhatsApp() {
   const month = document.getElementById('fact-month').value;
   if(!month)   return toast('Choisissez un mois de facturation.', 'error');
 
-  const { abo, comm, total } = calcFactTotal();
+  const { abo, comm, total, nbTx, txFee } = calcFactTotal();
   const note  = document.getElementById('fact-note').value.trim();
   const [yr,mo] = month.split('-');
   const moisLabel = new Date(yr, parseInt(mo)-1).toLocaleString('fr-GN',{month:'long',year:'numeric'});
@@ -1652,7 +1730,8 @@ function sendInvoiceWhatsApp() {
     `📅 *Période :* ${moisLabel}`,
     `━━━━━━━━━━━━━━━━━━━━`,
     `📋 Abonnement mensuel :  *${abo.toLocaleString('fr-GN')} GNF*`,
-    `📈 Commission ventes (${document.getElementById('fact-rate')?.value||0}%) :  *${comm.toLocaleString('fr-GN')} GNF*`,
+    `🔢 Transactions : *${nbTx} vente(s)* × ${txFee.toLocaleString('fr-GN')} GNF`,
+    `   → Commission :  *${comm.toLocaleString('fr-GN')} GNF*`,
     note ? `📝 Note : ${note}` : null,
     `━━━━━━━━━━━━━━━━━━━━`,
     `💰 *TOTAL À RÉGLER : ${total.toLocaleString('fr-GN')} GNF*`,
@@ -1667,7 +1746,7 @@ function sendInvoiceWhatsApp() {
   /* Enregistrer dans Firebase */
   const invId = 'INV_' + Date.now();
   db.ref(`companies/${cid}/invoices/${invId}`).set({
-    month, abo, commission:comm, total, note,
+    month, abo, commission:comm, nb_tx:nbTx, tx_fee:txFee, total, note,
     sentAt: nowStr(), sentBy: _SESSION.email
   }).then(()=>{
     toast(`Facture envoyée à ${comp.name} !`);
@@ -1709,11 +1788,15 @@ function renderFactureHistory() {
         <td><strong>${inv.compName}</strong></td>
         <td>${inv.month||'—'}</td>
         <td style="font-family:monospace">${gnf(inv.abo||0)}</td>
-        <td style="font-family:monospace; color:var(--blue)">${gnf(inv.commission||0)}</td>
-        <td style="font-weight:800; color:var(--gold); font-family:monospace">${gnf(inv.total||0)}</td>
-        <td style="font-size:11px; color:#555">${inv.sentAt||'—'}</td>
+        <td style="text-align:center;color:var(--blue);font-weight:700">${inv.nb_tx||'—'}</td>
         <td>
-          <button class="btn btn-small" style="background:var(--green); color:#fff"
+          <div style="font-family:monospace;color:#e67e22">${gnf(inv.commission||0)}</div>
+          ${inv.nb_tx&&inv.tx_fee?`<div style="font-size:10px;color:#555">${inv.nb_tx}×${Number(inv.tx_fee).toLocaleString('fr-GN')}</div>`:''}
+        </td>
+        <td style="font-weight:800;color:var(--gold);font-family:monospace">${gnf(inv.total||0)}</td>
+        <td style="font-size:11px;color:#555">${inv.sentAt||'—'}</td>
+        <td>
+          <button class="btn btn-small" style="background:var(--green);color:#fff"
             onclick="resendInvoiceWA('${inv.cid}','${inv.month}',${inv.abo||0},${inv.commission||0},${inv.total||0},'${inv.note||''}')">
             📲 Renvoyer
           </button>
@@ -1728,6 +1811,9 @@ function resendInvoiceWA(cid, month, abo, comm, total, note) {
   const [yr,mo] = (month||today().slice(0,7)).split('-');
   const moisLabel = new Date(yr, parseInt(mo)-1).toLocaleString('fr-GN',{month:'long',year:'numeric'});
   const rate = total > abo ? (((total-abo)/getCompCaMois(cid,month))*100).toFixed(1) : 0;
+  const savedNbTx = _ALL_DATA.companies?.[cid]?.invoices
+    ? Object.values(_ALL_DATA.companies[cid].invoices).find(i=>i.sentAt===undefined||true)?.nb_tx : null;
+  const savedFee  = getTxFee();
   const msg = [
     `*📦 STOCKNET GN — FACTURE MENSUELLE (RAPPEL)*`,
     `━━━━━━━━━━━━━━━━━━━━`,
@@ -1735,7 +1821,7 @@ function resendInvoiceWA(cid, month, abo, comm, total, note) {
     `📅 *Période :* ${moisLabel}`,
     `━━━━━━━━━━━━━━━━━━━━`,
     `📋 Abonnement mensuel :  *${abo.toLocaleString('fr-GN')} GNF*`,
-    `📈 Commission ventes :  *${comm.toLocaleString('fr-GN')} GNF*`,
+    `🔢 Commission transactions :  *${comm.toLocaleString('fr-GN')} GNF*`,
     note ? `📝 Note : ${note}` : null,
     `━━━━━━━━━━━━━━━━━━━━`,
     `💰 *TOTAL À RÉGLER : ${total.toLocaleString('fr-GN')} GNF*`,

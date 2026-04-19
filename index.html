@@ -386,7 +386,7 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
           <h3>📈 Activité par Client — Mois en cours</h3>
           <div style="overflow-x:auto">
             <table id="table-super-activity">
-              <thead><tr><th>Société</th><th>PdV</th><th>Ventes (mois)</th><th>CA (mois)</th><th>Commission accumulée</th><th>Statut</th><th>Dernière facture</th><th>Action</th></tr></thead>
+              <thead><tr><th>Société</th><th>PdV</th><th>Ventes (mois) — détail par agence</th><th>CA (mois)</th><th>Commission accumulée</th><th>Statut</th><th>Dern. facture</th><th>Actions</th></tr></thead>
               <tbody><tr><td colspan="8" style="text-align:center;color:#333;padding:24px">Chargement…</td></tr></tbody>
             </table>
           </div>
@@ -923,24 +923,48 @@ function updateUI() {
           const nbPdv      = Object.keys(c.pdvs||{}).length;
           const invs       = Object.values(c.invoices||{});
           const lastInv    = invs.length ? invs.sort((a,b)=>(b.sentAt||'').localeCompare(a.sentAt||''))[0] : null;
-          return \`<tr>
-            <td><strong>\${c.name}</strong><div style="font-size:10px;color:#555">\${c.admin_email}</div></td>
-            <td style="text-align:center"><span class="st-badge st-\${nbPdv>0?'actif':'bloque'}">\${nbPdv}</span></td>
-            <td style="text-align:center;font-weight:700;color:var(--blue)">\${nbTx}</td>
-            <td style="font-family:monospace;font-weight:700;color:var(--gold)">\${gnf(caMois)}</td>
-            <td>
-              <div style="font-family:monospace;font-weight:800;color:#e67e22">\${gnf(comm)}</div>
-              <div style="font-size:10px;color:#555">\${nbTx} × \${txFee.toLocaleString('fr-GN')} GNF</div>
-            </td>
-            <td><span class="st-badge st-\${c.status==='actif'?'actif':'bloque'}">\${c.status||'actif'}</span></td>
-            <td style="font-size:11px;color:#555">\${lastInv ? lastInv.sentAt?.slice(0,10) : '—'}</td>
-            <td style="display:flex;gap:4px;flex-wrap:wrap">
-              <button class="btn btn-small" style="background:var(--green);color:#fff" onclick="quickFact('\${cid}')">💳 Facturer</button>
-              <button class="btn btn-small btn-\${c.status==='actif'?'red':'green'}" onclick="toggleCompanyStatus('\${cid}','\${c.status||'actif'}')">
-                \${c.status==='actif'?'🔒':'🔓'}
-              </button>
-            </td>
-          </tr>\`;
+          /* Détail ventes par PdV */
+          const pdvEntries = Object.entries(c.pdvs||{});
+          let pdvRows = pdvEntries.map(([pid,pv])=>{
+            const pvSales = moisSales.filter(v=>v.pdvId===pid||(v.pdvId==null&&v.agency===pv.name));
+            const pvNb = pvSales.length;
+            const pvComm = pvNb * txFee;
+            return '<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:11px;border-bottom:1px solid rgba(255,255,255,.04)">'
+              + '<span style="color:#888">'+pv.name+'</span>'
+              + '<span style="color:var(--blue);font-weight:700">'+pvNb+' vte</span>'
+              + '<span style="color:#e67e22;font-family:monospace">+'+pvComm.toLocaleString('fr-GN')+' GNF</span>'
+              + '</div>';
+          }).join('');
+          /* Ventes siège (agency=Siège ou sans pdvId) */
+          const siegeSales = moisSales.filter(v=>v.pdvId===null||v.pdvId===undefined||v.agency==='Siège'||!v.agency);
+          const siegeNb = siegeSales.length;
+          if(siegeNb>0){
+            pdvRows += '<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:11px">'
+              + '<span style="color:#888">Siège</span>'
+              + '<span style="color:var(--blue);font-weight:700">'+siegeNb+' vte</span>'
+              + '<span style="color:#e67e22;font-family:monospace">+'+(siegeNb*txFee).toLocaleString('fr-GN')+' GNF</span>'
+              + '</div>';
+          }
+
+          let rowHtml = '<tr>';
+          rowHtml += '<td><strong>'+c.name+'</strong><div style="font-size:10px;color:#555">'+c.admin_email+'</div></td>';
+          rowHtml += '<td style="text-align:center"><span class="st-badge st-'+(nbPdv>0?'actif':'bloque')+'">'+nbPdv+'</span></td>';
+          rowHtml += '<td>';
+          rowHtml += '<div style="font-weight:800;color:var(--blue);font-size:15px">'+nbTx+'</div>';
+          if(pdvRows) rowHtml += '<div style="margin-top:6px;background:rgba(0,0,0,.3);border-radius:6px;padding:6px 8px">'+pdvRows+'</div>';
+          rowHtml += '</td>';
+          rowHtml += '<td style="font-family:monospace;font-weight:700;color:var(--gold)">'+gnf(caMois)+'</td>';
+          rowHtml += '<td>';
+          rowHtml += '<div style="font-family:monospace;font-weight:800;color:#e67e22">'+gnf(comm)+'</div>';
+          rowHtml += '<div style="font-size:10px;color:#555">'+nbTx+' × '+txFee.toLocaleString('fr-GN')+' GNF</div>';
+          rowHtml += '</td>';
+          rowHtml += '<td><span class="st-badge st-'+(c.status==='actif'?'actif':'bloque')+'">'+(c.status||'actif')+'</span></td>';
+          rowHtml += '<td style="font-size:11px;color:#555">'+(lastInv ? lastInv.sentAt?.slice(0,10) : '—')+'</td>';
+          rowHtml += '<td style="display:flex;gap:4px;flex-wrap:wrap">';
+          rowHtml += '<button class="btn btn-small" style="background:var(--green);color:#fff" onclick="quickFact(\'' + cid + '\')">💳 Facturer</button>';
+          rowHtml += '<button class="btn btn-small btn-'+(c.status==='actif'?'red':'green')+'" onclick="toggleCompanyStatus(\'' + cid + '\',\''+(c.status||'actif')+'\')">'+( c.status==='actif'?'🔒':'🔓')+'</button>';
+          rowHtml += '</td></tr>';
+          return rowHtml;
         }).join('')
       : '<tr><td colspan="8" style="text-align:center;color:#333;padding:24px">Aucun client enregistré</td></tr>';
 
@@ -1309,7 +1333,7 @@ function finalizeSale(mode) {
   updates[`companies/${_SESSION.companyId}/sale_logs/VE_${Date.now()}`] = {
     num, date:now, client:clientName, tel:clientTel, addr:clientAddr,
     total:gTotal, items:cart.map(i=>({...i})),
-    agency:agName, by:_SESSION.email, compName:comp.name
+    agency:agName, pdvId:(mode==='PDV'?_SESSION.pdvId:null), by:_SESSION.email, compName:comp.name
   };
 
   db.ref('/').update(updates).then(() => {

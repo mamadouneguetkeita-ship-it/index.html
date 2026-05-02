@@ -5,169 +5,194 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="StockNet GN — Gestion de stock multi-agences, transferts temps réel, impressions multi-formats.">
   <meta name="theme-color" content="#f2c94c">
-  <title>StockNet GN — Master 2026</title>
+  <meta property="og:title" content="StockNet GN — Gestion de Stock Réseau">
+  <meta property="og:type" content="website">
+  <title>StockNet GN — Gestion de Stock Réseau</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23f2c94c'/><text y='.9em' font-size='75' x='12'>📦</text></svg>">
-  
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-  <style>
-    /* ═══════════════════════════ VARIABLES & RESET ═══════════════════════════ */
-    :root {
-      --gold:#f2c94c; --bg:#05050a; --card:#0f0f1e; --text:#e4e6f4;
-      --border:rgba(255,255,255,0.1); --red:#eb5757; --green:#27ae60; --blue:#2f80ed; --purple:#9b59b6;
-    }
-    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
-    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:60px; -webkit-font-smoothing:antialiased; }
-    ::-webkit-scrollbar { width:5px; height:5px; }
-    ::-webkit-scrollbar-track { background:var(--bg); }
-    ::-webkit-scrollbar-thumb { background:#2a2a40; border-radius:10px; }
-    ::-webkit-scrollbar-thumb:hover { background:var(--gold); }
+<style>
+/* ═══════════════════════════ VARIABLES & RESET ═══════════════════════════ */
+:root {
+  --gold:#f2c94c; --bg:#05050a; --card:#0f0f1e; --text:#e4e6f4;
+  --border:rgba(255,255,255,0.1); --red:#eb5757; --green:#27ae60; --blue:#2f80ed; --purple:#9b59b6;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:60px; -webkit-font-smoothing:antialiased; }
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:#2a2a40; border-radius:10px; }
+::-webkit-scrollbar-thumb:hover { background:var(--gold); }
 
-    /* ═══════════════════════════ LAYOUT ═══════════════════════════ */
-    header { background:#0b0b1d; padding:14px 28px; border-bottom:2px solid var(--gold); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:1000; }
-    .logo { font-size:19px; font-weight:900; color:var(--gold); letter-spacing:1px; display:flex; align-items:center; gap:8px; }
-    .container { max-width:1200px; margin:22px auto; padding:0 20px; }
-    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 10px 30px rgba(0,0,0,.4); }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; }
+/* ═══════════════════════════ LAYOUT ═══════════════════════════ */
+header { background:#0b0b1d; padding:14px 28px; border-bottom:2px solid var(--gold); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:1000; }
+.logo { font-size:19px; font-weight:900; color:var(--gold); letter-spacing:1px; display:flex; align-items:center; gap:8px; }
+.container { max-width:1200px; margin:22px auto; padding:0 20px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 10px 30px rgba(0,0,0,.4); }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; }
 
-    /* ═══════════════════════════ ONGLETS ═══════════════════════════ */
-    .tabs { display:flex; gap:8px; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px; overflow-x:auto; }
-    .tab-btn { background:none; border:1px solid var(--border); color:#888; padding:9px 18px; border-radius:6px; cursor:pointer; white-space:nowrap; font-size:13px; transition:all .2s; }
-    .tab-btn:hover:not(.active) { border-color:var(--gold); color:var(--gold); }
-    .tab-btn.active { background:var(--gold); color:#000; font-weight:700; border-color:var(--gold); }
+/* ═══════════════════════════ ONGLETS ═══════════════════════════ */
+.tabs { display:flex; gap:8px; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px; overflow-x:auto; }
+.tab-btn { background:none; border:1px solid var(--border); color:#888; padding:9px 18px; border-radius:6px; cursor:pointer; white-space:nowrap; font-size:13px; transition:all .2s; }
+.tab-btn:hover:not(.active) { border-color:var(--gold); color:var(--gold); }
+.tab-btn.active { background:var(--gold); color:#000; font-weight:700; border-color:var(--gold); }
 
-    /* ═══════════════════════════ TITRES ═══════════════════════════ */
-    h3 { color:var(--gold); text-transform:uppercase; font-size:11px; letter-spacing:1.2px; margin:0 0 16px; border-left:3px solid var(--gold); padding-left:10px; }
+/* ═══════════════════════════ TITRES ═══════════════════════════ */
+h3 { color:var(--gold); text-transform:uppercase; font-size:11px; letter-spacing:1.2px; margin:0 0 16px; border-left:3px solid var(--gold); padding-left:10px; }
 
-    /* ═══════════════════════════ FORMULAIRES ═══════════════════════════ */
-    input, select { width:100%; padding:11px 13px; margin:7px 0; background:#080816; border:1px solid var(--border); color:#fff; border-radius:8px; font-size:13px; transition:border-color .2s; }
-    input:focus, select:focus { outline:none; border-color:var(--gold); }
-    input::placeholder { color:#444; }
-    select option { background:#0f0f1e; }
-    .field-label { display:block; font-size:10px; color:#666; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px; margin-top:8px; }
+/* ═══════════════════════════ FORMULAIRES ═══════════════════════════ */
+input, select { width:100%; padding:11px 13px; margin:7px 0; background:#080816; border:1px solid var(--border); color:#fff; border-radius:8px; font-size:13px; transition:border-color .2s; }
+input:focus, select:focus { outline:none; border-color:var(--gold); }
+input::placeholder { color:#444; }
+select option { background:#0f0f1e; }
+.field-label { display:block; font-size:10px; color:#666; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px; margin-top:8px; }
 
-    /* ═══════════════════════════ BOUTONS ═══════════════════════════ */
-    .btn { background:var(--gold); color:#000; border:none; padding:11px 16px; border-radius:8px; cursor:pointer; font-weight:800; font-size:13px; width:100%; text-transform:uppercase; letter-spacing:.5px; transition:all .2s; }
-    .btn:hover { opacity:.88; transform:translateY(-1px); }
-    .btn:active { transform:translateY(0); }
-    .btn-blue   { background:var(--blue);   color:#fff; }
-    .btn-green  { background:var(--green);  color:#fff; }
-    .btn-red    { background:var(--red);    color:#fff; }
-    .btn-dark   { background:#1a1a2e; color:#aaa; border:1px solid var(--border); }
-    .btn-dark:hover { border-color:var(--gold); color:var(--gold); }
-    .btn-back { display:inline-flex; align-items:center; gap:6px; background:#111128; color:#888; border:1px solid var(--border); padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; width:auto; margin-bottom:18px; transition:all .2s; text-transform:none; letter-spacing:0; }
-    .btn-back:hover { border-color:var(--gold); color:var(--gold); }
-    .btn-small  { padding:5px 11px; font-size:11px; width:auto; margin:2px; border-radius:5px; }
-    .btn-icon   { padding:10px 14px; font-size:13px; width:auto; }
-    .btn-inline { width:auto; padding:9px 18px; }
+/* ═══════════════════════════ BOUTONS ═══════════════════════════ */
+.btn { background:var(--gold); color:#000; border:none; padding:11px 16px; border-radius:8px; cursor:pointer; font-weight:800; font-size:13px; width:100%; text-transform:uppercase; letter-spacing:.5px; transition:all .2s; }
+.btn:hover { opacity:.88; transform:translateY(-1px); }
+.btn:active { transform:translateY(0); }
+.btn-blue   { background:var(--blue);   color:#fff; }
+.btn-green  { background:var(--green);  color:#fff; }
+.btn-red    { background:var(--red);    color:#fff; }
+.btn-dark   { background:#1a1a2e; color:#aaa; border:1px solid var(--border); }
+.btn-dark:hover { border-color:var(--gold); color:var(--gold); }
+.btn-back { display:inline-flex; align-items:center; gap:6px; background:#111128; color:#888; border:1px solid var(--border); padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; width:auto; margin-bottom:18px; transition:all .2s; text-transform:none; letter-spacing:0; }
+.btn-back:hover { border-color:var(--gold); color:var(--gold); }
+.btn-small  { padding:5px 11px; font-size:11px; width:auto; margin:2px; border-radius:5px; }
+.btn-icon   { padding:10px 14px; font-size:13px; width:auto; }
+.btn-inline { width:auto; padding:9px 18px; }
 
-    /* ═══════════════════════════ TABLEAUX ═══════════════════════════ */
-    table { width:100%; border-collapse:collapse; font-size:13px; }
-    thead th { text-align:left; padding:11px 12px; color:#5a5a7a; border-bottom:1px solid var(--border); font-size:10px; text-transform:uppercase; letter-spacing:.8px; white-space:nowrap; }
-    tbody td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.025); vertical-align:middle; }
-    tbody tr:hover { background:rgba(255,255,255,.02); }
-    .st-badge { padding:3px 8px; border-radius:12px; font-size:10px; font-weight:700; white-space:nowrap; }
-    .st-actif  { background:rgba(39,174,96,.2);  color:#2ecc71; }
-    .st-bloque { background:rgba(235,87,87,.2);  color:#eb5757; }
-    .st-warn   { background:rgba(242,201,76,.2); color:#f2c94c; }
+/* ═══════════════════════════ TABLEAUX ═══════════════════════════ */
+table { width:100%; border-collapse:collapse; font-size:13px; }
+thead th { text-align:left; padding:11px 12px; color:#5a5a7a; border-bottom:1px solid var(--border); font-size:10px; text-transform:uppercase; letter-spacing:.8px; white-space:nowrap; }
+tbody td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.025); vertical-align:middle; }
+tbody tr:hover { background:rgba(255,255,255,.02); }
+.st-badge { padding:3px 8px; border-radius:12px; font-size:10px; font-weight:700; white-space:nowrap; }
+.st-actif  { background:rgba(39,174,96,.2);  color:#2ecc71; }
+.st-bloque { background:rgba(235,87,87,.2);  color:#eb5757; }
+.st-warn   { background:rgba(242,201,76,.2); color:#f2c94c; }
 
-    /* ═══════════════════════════ BOÎTES INFO ═══════════════════════════ */
-    .info-box { background:rgba(47,128,237,.08); border:1px solid rgba(47,128,237,.25); border-radius:8px; padding:11px 14px; font-size:12px; color:#7ec8e3; margin-bottom:12px; line-height:1.5; }
-    .warn-box { background:rgba(242,201,76,.08); border:1px solid rgba(242,201,76,.25); border-radius:8px; padding:11px 14px; font-size:12px; color:#f2c94c; margin-bottom:12px; }
-    .empty-state { text-align:center; padding:40px 20px; color:#333; }
-    .empty-state .ei { font-size:42px; margin-bottom:12px; opacity:.5; }
+/* ═══════════════════════════ BOÎTES INFO ═══════════════════════════ */
+.info-box { background:rgba(47,128,237,.08); border:1px solid rgba(47,128,237,.25); border-radius:8px; padding:11px 14px; font-size:12px; color:#7ec8e3; margin-bottom:12px; line-height:1.5; }
+.warn-box { background:rgba(242,201,76,.08); border:1px solid rgba(242,201,76,.25); border-radius:8px; padding:11px 14px; font-size:12px; color:#f2c94c; margin-bottom:12px; }
+.success-box { background:rgba(39,174,96,.08); border:1px solid rgba(39,174,96,.25); border-radius:8px; padding:11px 14px; font-size:12px; color:#2ecc71; margin-bottom:12px; }
+.empty-state { text-align:center; padding:40px 20px; color:#333; }
+.empty-state .ei { font-size:42px; margin-bottom:12px; opacity:.5; }
 
-    /* ═══════════════════════════ TOASTS ═══════════════════════════ */
-    #toast-container { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
-    .toast { background:#12122a; border:1px solid var(--gold); color:var(--text); padding:13px 18px; border-radius:10px; font-size:13px; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,.5); animation:tIn .3s ease; max-width:340px; line-height:1.4; }
-    .toast.ok    { border-color:var(--green); }
-    .toast.error { border-color:var(--red); }
-    @keyframes tIn { from { transform:translateX(40px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+/* ═══════════════════════════ TOASTS ═══════════════════════════ */
+#toast-container { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+.toast { background:#12122a; border:1px solid var(--gold); color:var(--text); padding:13px 18px; border-radius:10px; font-size:13px; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,.5); animation:tIn .3s ease; max-width:340px; line-height:1.4; }
+.toast.ok    { border-color:var(--green); }
+.toast.error { border-color:var(--red); }
+.toast.info  { border-color:var(--blue); }
+@keyframes tIn { from { transform:translateX(40px); opacity:0; } to { transform:translateX(0); opacity:1; } }
 
-    /* ═══════════════════════════ PANIER ═══════════════════════════ */
-    .cart-item { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.05); gap:8px; }
+/* ═══════════════════════════ PANIER ═══════════════════════════ */
+.cart-item { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.05); gap:8px; }
+.cart-item:last-child { border-bottom:none; }
 
-    /* ═══════════════════════════ TUILES PRODUITS ═══════════════════════════ */
-    .prod-tile { background:#080816; border:1px solid var(--border); border-radius:8px; padding:10px; cursor:pointer; text-align:center; transition:all .18s; user-select:none; }
-    .prod-tile:hover { border-color:var(--gold); background:rgba(242,201,76,.06); transform:translateY(-1px); }
+/* ═══════════════════════════ TUILES PRODUITS ═══════════════════════════ */
+.prod-tile { background:#080816; border:1px solid var(--border); border-radius:8px; padding:10px; cursor:pointer; text-align:center; transition:all .18s; user-select:none; }
+.prod-tile:hover { border-color:var(--gold); background:rgba(242,201,76,.06); transform:translateY(-1px); }
+.prod-tile.selected { border-color:var(--gold); background:rgba(242,201,76,.1); }
+.prod-tile.out { opacity:.35; pointer-events:none; }
 
-    /* ═══════════════════════════ OVERLAY D'IMPRESSION ═══════════════════════════ */
-    #print-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:4000; align-items:flex-start; justify-content:center; padding:20px; overflow-y:auto; }
-    #print-overlay.open { display:flex; }
-    .print-modal { background:#0d0d20; border:1px solid var(--gold); border-radius:16px; padding:26px; width:100%; max-width:860px; margin:auto; }
-    .fmt-tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
-    .fmt-btn { padding:8px 16px; border-radius:7px; border:1px solid var(--border); background:none; color:#888; cursor:pointer; font-size:12px; font-weight:700; transition:all .2s; }
-    .fmt-btn.active { background:var(--gold); color:#000; border-color:var(--gold); font-weight:700; }
-    .print-preview-wrap { background:#f0f0f0; border-radius:8px; padding:16px; overflow-x:auto; }
+/* ═══════════════════════════ CHARGEMENT ═══════════════════════════ */
+#loading-screen { position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:9999; flex-direction:column; gap:14px; }
+.loader { width:40px; height:40px; border:3px solid rgba(242,201,76,.2); border-top-color:var(--gold); border-radius:50%; animation:spin .7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
 
-    /* Formats de reçus */
-    #preview-ticket { display:none; width:302px; margin:0 auto; background:#fff; color:#111; font-family:'Courier New',monospace; font-size:12px; padding:14px; border-radius:4px; }
-    #preview-a5     { display:none; width:560px; margin:0 auto; background:#fff; color:#111; font-family:'Segoe UI',sans-serif; font-size:13px; padding:28px; border-radius:4px; }
-    #preview-a4     { display:none; width:794px; margin:0 auto; background:#fff; color:#111; font-family:'Segoe UI',sans-serif; font-size:13px; padding:40px; border-radius:4px; }
-    #preview-ticket.show, #preview-a5.show, #preview-a4.show { display:block; }
+/* ═══════════════════════════ OVERLAY D'IMPRESSION ═══════════════════════════ */
+#print-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:4000; align-items:flex-start; justify-content:center; padding:20px; overflow-y:auto; }
+#print-overlay.open { display:flex; }
+.print-modal { background:#0d0d20; border:1px solid var(--gold); border-radius:16px; padding:26px; width:100%; max-width:860px; margin:auto; }
+.fmt-tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.fmt-btn { padding:8px 16px; border-radius:7px; border:1px solid var(--border); background:none; color:#888; cursor:pointer; font-size:12px; font-weight:700; transition:all .2s; }
+.fmt-btn.active { background:var(--gold); color:#000; border-color:var(--gold); }
+.fmt-btn:hover:not(.active) { border-color:var(--gold); color:var(--gold); }
+.print-preview-wrap { background:#f0f0f0; border-radius:8px; padding:16px; overflow-x:auto; }
 
-    .r-sep      { border:none; border-top:1px dashed #999; margin:8px 0; }
-    .r-row      { display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px; align-items:center; }
-    .r-total-line { display:flex; justify-content:space-between; border-top:2px solid #111; padding-top:8px; margin-top:8px; font-weight:900; font-size:15px; }
-    .r-footer-receipt { text-align:center; font-size:10px; color:#666; margin-top:10px; padding-top:8px; border-top:1px dashed #ccc; line-height:1.6; }
-    .r-table { width:100%; border-collapse:collapse; margin:14px 0; }
-    .r-table thead th { background:#f5f5f5; padding:9px 11px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:#555; border:1px solid #e0e0e0; }
-    .r-table tbody td { padding:9px 11px; border:1px solid #efefef; font-size:13px; }
-    .r-total-box { background:#111; color:#fff; padding:14px 18px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
-    .r-total-box .r-lbl { font-size:13px; font-weight:600; opacity:.8; }
-    .r-total-box .r-amt { font-size:22px; font-weight:900; color:#f2c94c; }
-    .r-client-box { background:#f9f9f9; border:1px solid #e0e0e0; border-radius:8px; padding:14px; margin-top:14px; font-size:13px; }
-    .r-footer-a4  { text-align:center; font-size:11px; color:#999; margin-top:24px; padding-top:12px; border-top:1px solid #e0e0e0; line-height:1.7; }
+/* Formats de reçus */
+#preview-ticket { display:none; width:302px; margin:0 auto; background:#fff; color:#111; font-family:'Courier New',monospace; font-size:12px; padding:14px; border-radius:4px; }
+#preview-a5     { display:none; width:560px; margin:0 auto; background:#fff; color:#111; font-family:'Segoe UI',sans-serif; font-size:13px; padding:28px; border-radius:4px; }
+#preview-a4     { display:none; width:794px; margin:0 auto; background:#fff; color:#111; font-family:'Segoe UI',sans-serif; font-size:13px; padding:40px; border-radius:4px; }
+#preview-ticket.show, #preview-a5.show, #preview-a4.show { display:block; }
 
-    /* Impression réelle */
-    @media print {
-      body, body * { visibility:hidden !important; }
-      #active-print-zone, #active-print-zone * { visibility:visible !important; }
-      #active-print-zone { position:fixed !important; top:0 !important; left:0 !important; width:100% !important; background:#fff !important; z-index:99999 !important; padding:0 !important; }
-    }
+.r-sep      { border:none; border-top:1px dashed #999; margin:8px 0; }
+.r-row      { display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px; align-items:center; }
+.r-row.bold { font-weight:700; font-size:13px; }
+.r-total-line { display:flex; justify-content:space-between; border-top:2px solid #111; padding-top:8px; margin-top:8px; font-weight:900; font-size:15px; }
+.r-footer-receipt { text-align:center; font-size:10px; color:#666; margin-top:10px; padding-top:8px; border-top:1px dashed #ccc; line-height:1.6; }
+.r-table { width:100%; border-collapse:collapse; margin:14px 0; }
+.r-table thead th { background:#f5f5f5; padding:9px 11px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:#555; border:1px solid #e0e0e0; }
+.r-table tbody td { padding:9px 11px; border:1px solid #efefef; font-size:13px; }
+.r-table tfoot td { padding:10px 11px; font-weight:700; background:#f9f9f9; border:1px solid #e0e0e0; }
+.r-total-box { background:#111; color:#fff; padding:14px 18px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+.r-total-box .r-lbl { font-size:13px; font-weight:600; opacity:.8; }
+.r-total-box .r-amt { font-size:22px; font-weight:900; color:#f2c94c; }
+.r-client-box { background:#f9f9f9; border:1px solid #e0e0e0; border-radius:8px; padding:14px; margin-top:14px; font-size:13px; }
+.r-footer-a4  { text-align:center; font-size:11px; color:#999; margin-top:24px; padding-top:12px; border-top:1px solid #e0e0e0; line-height:1.7; }
 
-    @media (max-width:768px) {
-      header { padding:12px 16px; }
-      .container { padding:0 12px; }
-      .grid { grid-template-columns:1fr; }
-    }
-  </style>
+/* Impression réelle */
+@media print {
+  body, body * { visibility:hidden !important; }
+  #active-print-zone, #active-print-zone * { visibility:visible !important; }
+  #active-print-zone { position:fixed !important; top:0 !important; left:0 !important; width:100% !important; background:#fff !important; z-index:99999 !important; padding:0 !important; }
+}
+
+/* Responsive */
+@media (max-width:768px) {
+  header { padding:12px 16px; }
+  .container { padding:0 12px; }
+  .grid { grid-template-columns:1fr; }
+  #preview-a4, #preview-a5 { width:100%; }
+  .tabs { gap:5px; }
+  .tab-btn { padding:8px 12px; font-size:12px; }
+}
+
+/* Super Admin extras */
+#stab-dash .card { border-top:none; }
+#fact-total-display { display:block; }
+.invoice-wa-btn { background:#25D366; color:#fff; border:none; border-radius:8px; padding:12px 16px; cursor:pointer; font-weight:800; font-size:14px; width:100%; letter-spacing:.3px; transition:all .2s; }
+.invoice-wa-btn:hover { opacity:.88; transform:translateY(-1px); }
+
+</style>
 </head>
 <body>
 
 <div id="active-print-zone" style="display:none"></div>
 
-<div id="loading-screen" style="position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:9999; flex-direction:column; gap:14px">
+<div id="loading-screen">
   <div style="font-size:48px">📦</div>
-  <div style="width:40px; height:40px; border:3px solid rgba(242,201,76,.2); border-top-color:var(--gold); border-radius:50%; animation:spin .7s linear infinite"></div>
+  <div class="loader"></div>
   <div style="color:#555; font-size:13px; margin-top:4px">Connexion à Firebase…</div>
 </div>
-
-<style>@keyframes spin { to { transform:rotate(360deg); } }</style>
 
 <div id="print-overlay">
   <div class="print-modal">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px">
       <div>
-        <div style="font-size:15px; font-weight:800; color:var(--gold); text-transform:uppercase">🖨️ Aperçu & Impression</div>
+        <div style="font-size:15px; font-weight:800; color:var(--gold); text-transform:uppercase; letter-spacing:1px">🖨️ Aperçu & Impression</div>
         <div style="font-size:11px; color:#555; margin-top:3px">Choisissez le format avant d'imprimer</div>
       </div>
       <button onclick="closePrintOverlay()" style="background:none; border:none; color:#555; font-size:28px; cursor:pointer; line-height:1">×</button>
     </div>
     <div class="fmt-tabs">
+      <span style="font-size:11px; color:#555; align-self:center; margin-right:4px">Format :</span>
       <button class="fmt-btn active" onclick="switchFormat('ticket',this)">🧾 Ticket 80mm</button>
-      <button class="fmt-btn"        onclick="switchFormat('a5',this)">📄 Format A5</button>
-      <button class="fmt-btn"        onclick="switchFormat('a4',this)">📋 Format A4</button>
+      <button class="fmt-btn"        onclick="switchFormat('a5',this)">📄 A5</button>
+      <button class="fmt-btn"        onclick="switchFormat('a4',this)">📋 A4</button>
     </div>
     <div class="fmt-tabs" style="margin-bottom:18px">
+      <span style="font-size:11px; color:#555; align-self:center; margin-right:4px">Document :</span>
       <button class="fmt-btn active" id="dtype-vente"      onclick="switchDocType('vente',this)">💰 Reçu de vente</button>
       <button class="fmt-btn"        id="dtype-transfert"  onclick="switchDocType('transfert',this)">🚚 Bon de transfert</button>
     </div>
     <div class="print-preview-wrap">
       <div id="preview-ticket">
         <div style="text-align:center; margin-bottom:10px">
-          <div style="font-size:16px; font-weight:900; text-transform:uppercase" id="t-comp"></div>
+          <div style="font-size:16px; font-weight:900; text-transform:uppercase; letter-spacing:2px" id="t-comp"></div>
           <div style="font-size:11px; margin-top:2px; color:#444" id="t-pdv-line"></div>
           <div style="font-size:10px; color:#777; margin-top:2px" id="t-date"></div>
         </div>
@@ -175,46 +200,47 @@
         <div class="r-row"><span>N° Doc.</span><strong id="t-num"></strong></div>
         <div id="t-client-block" style="margin:5px 0"></div>
         <hr class="r-sep">
-        <div style="font-size:10px; text-transform:uppercase; color:#777; margin-bottom:7px">Désignation · Qté · Montant</div>
+        <div style="font-size:10px; text-transform:uppercase; color:#777; margin-bottom:7px">Désignation · Qté · P.U. · Montant</div>
         <div id="t-items"></div>
         <div class="r-total-line"><span>TOTAL</span><strong id="t-total"></strong></div>
-        <div class="r-footer-receipt">Merci pour votre confiance !<br>StockNet GN — Conakry<br><span id="t-ref" style="font-size:9px"></span></div>
+        <div class="r-footer-receipt">Merci pour votre confiance !<br>StockNet GN — Conakry, Guinée<br><span id="t-ref" style="font-size:9px; color:#aaa"></span></div>
       </div>
       <div id="preview-a5">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; padding-bottom:14px; border-bottom:2px solid #111">
           <div>
-            <div style="font-size:19px; font-weight:900; text-transform:uppercase" id="a5-comp"></div>
+            <div style="font-size:19px; font-weight:900; text-transform:uppercase; letter-spacing:1px" id="a5-comp"></div>
             <div style="font-size:11px; color:#666; margin-top:3px" id="a5-pdv-line"></div>
           </div>
           <div style="text-align:right">
-            <div style="background:#111; color:#fff; padding:5px 12px; border-radius:5px; font-size:11px; font-weight:700" id="a5-type-badge"></div>
+            <div style="background:#111; color:#fff; padding:5px 12px; border-radius:5px; font-size:11px; font-weight:700; text-transform:uppercase" id="a5-type-badge"></div>
             <div style="font-size:11px; color:#666; margin-top:7px" id="a5-date"></div>
             <div style="font-size:12px; font-weight:700; margin-top:2px" id="a5-num"></div>
           </div>
         </div>
         <div id="a5-client-block" style="margin-bottom:14px"></div>
         <table class="r-table">
-          <thead><tr><th>Désignation</th><th>Qté</th><th>Prix Unit.</th><th>Montant</th></tr></thead>
+          <thead><tr><th>Désignation</th><th>Qté</th><th>Prix Unitaire</th><th>Montant</th></tr></thead>
           <tbody id="a5-items"></tbody>
           <tfoot><tr><td colspan="3" style="text-align:right; font-weight:700">TOTAL</td><td id="a5-total" style="font-weight:900; font-size:15px"></td></tr></tfoot>
         </table>
-        <div class="r-footer-a4">StockNet GN — Solution Intégrale de Gestion — Conakry, Guinée</div>
+        <div class="r-footer-a4">StockNet GN — Solution Intégrale de Gestion de Stock — Conakry, Guinée</div>
       </div>
       <div id="preview-a4">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:26px; padding-bottom:18px; border-bottom:3px solid #111">
           <div>
-            <div style="font-size:26px; font-weight:900; text-transform:uppercase" id="a4-comp"></div>
+            <div style="font-size:26px; font-weight:900; text-transform:uppercase; letter-spacing:2px" id="a4-comp"></div>
             <div style="font-size:12px; color:#666; margin-top:4px" id="a4-pdv-line"></div>
+            <div style="font-size:12px; color:#888; margin-top:2px">Conakry, République de Guinée</div>
           </div>
           <div style="text-align:right">
-            <div style="background:#111; color:#fff; padding:6px 16px; border-radius:6px; font-size:12px; font-weight:700; text-transform:uppercase" id="a4-type-badge"></div>
+            <div style="background:#111; color:#fff; padding:6px 16px; border-radius:6px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px" id="a4-type-badge"></div>
             <div style="font-size:12px; color:#555; margin-top:10px" id="a4-date"></div>
             <div style="font-size:13px; font-weight:800; margin-top:2px" id="a4-num"></div>
           </div>
         </div>
         <div id="a4-client-block" style="margin-bottom:16px"></div>
         <table class="r-table">
-          <thead><tr><th>#</th><th>Désignation</th><th>Quantité</th><th>Montant (GNF)</th></tr></thead>
+          <thead><tr><th>#</th><th>Désignation</th><th>Quantité</th><th>Prix Unitaire (GNF)</th><th>Montant (GNF)</th></tr></thead>
           <tbody id="a4-items"></tbody>
         </table>
         <div class="r-total-box"><span class="r-lbl">TOTAL À PAYER</span><span class="r-amt" id="a4-total"></span></div>
@@ -223,6 +249,7 @@
           <div style="border-top:1px solid #ccc; padding-top:8px; text-align:center; font-size:12px; color:#666">Signature Vendeur / Expéditeur</div>
           <div style="border-top:1px solid #ccc; padding-top:8px; text-align:center; font-size:12px; color:#666">Signature Client / Receveur</div>
         </div>
+        <div class="r-footer-a4">Document généré par StockNet GN — Solution Intégrale — Conakry, Guinée<br>Document électronique ayant valeur sans signature manuscrite additionnelle.</div>
       </div>
     </div>
     <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:18px; padding-top:14px; border-top:1px solid var(--border)">
@@ -236,20 +263,21 @@
   <div style="width:100%; max-width:380px">
     <div style="text-align:center; margin-bottom:28px">
       <div style="font-size:54px; margin-bottom:10px">📦</div>
-      <div style="font-size:22px; font-weight:900; color:var(--gold)">STOCKNET GN</div>
-      <div style="font-size:12px; color:#444; margin-top:5px">Gestion de Stock de Réseau</div>
+      <div style="font-size:22px; font-weight:900; color:var(--gold); letter-spacing:1px">STOCKNET GN</div>
+      <div style="font-size:12px; color:#444; margin-top:5px">Solution Intégrale de Gestion de Stock</div>
     </div>
     <div class="card" style="border-top:4px solid var(--gold)">
-      <h3>Accès Plateforme</h3>
+      <h3>Connexion Sécurisée</h3>
       <label class="field-label">Email / Identifiant</label>
-      <input id="auth-email" type="email" placeholder="votre@email.com">
+      <input id="auth-email" type="email" placeholder="votre@email.com" autocomplete="email">
       <label class="field-label">Code PIN</label>
-      <input id="auth-pin" type="password" placeholder="••••••">
-      <button class="btn" style="margin-top:12px" onclick="handleAuth()">🔐 Connexion</button>
-      <div id="auth-err" style="display:none; color:var(--red); font-size:12px; text-align:center; margin-top:10px; padding:8px; background:rgba(235,87,87,.1)">
-        Identifiants incorrects.
+      <input id="auth-pin" type="password" placeholder="••••••" autocomplete="current-password">
+      <button class="btn" style="margin-top:12px" onclick="handleAuth()">🔐 Se Connecter</button>
+      <div id="auth-err" style="display:none; color:var(--red); font-size:12px; text-align:center; margin-top:10px; padding:8px; background:rgba(235,87,87,.1); border-radius:6px">
+        ❌ Accès non autorisé. Vérifiez vos identifiants.
       </div>
     </div>
+    <div style="text-align:center; font-size:11px; color:#2a2a3a; margin-top:14px">Hébergé sur GitHub Pages · Données Firebase</div>
   </div>
 </div>
 
@@ -264,13 +292,14 @@
   <div class="container">
 
     <div id="view-super" style="display:none">
-      <div style="display:flex; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px">
         <div>
           <div style="font-size:22px; font-weight:800">🛡️ Super Administration</div>
-          <div style="font-size:13px; color:#555; margin-top:3px">Contrôle global · Licences · Factures</div>
+          <div style="font-size:13px; color:#555; margin-top:3px">Tableau de bord global · Licences · Facturation</div>
         </div>
+        <span id="super-live-badge" style="font-size:10px; padding:4px 12px; border-radius:20px; background:rgba(39,174,96,.15); color:#27ae60; font-weight:700; letter-spacing:.5px">● DONNÉES EN TEMPS RÉEL</span>
       </div>
-      
+
       <div class="tabs">
         <button class="tab-btn active" onclick="switchSuperTab('stab-dash',this)">📊 Tableau de Bord</button>
         <button class="tab-btn"        onclick="switchSuperTab('stab-lic',this)">📋 Licences</button>
@@ -278,31 +307,59 @@
       </div>
 
       <div id="stab-dash">
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:22px">
-          <div class="card" style="border-top:3px solid var(--purple); text-align:center">
-            <div style="font-size:26px; font-weight:900; color:var(--purple)" id="kpi-companies">—</div>
-            <div style="font-size:10px; text-transform:uppercase; color:#555; margin-top:4px">Licences actives</div>
+        <div style="background:rgba(242,201,76,.06);border:1px solid rgba(242,201,76,.25);border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px">
+            <div style="font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.8px">⚙️ Coût par transaction enregistrée</div>
+            <div style="font-size:11px;color:#666;margin-top:3px">Facturé pour <strong>chaque vente</strong> enregistrée sur la plateforme. Ce tarif est cumulé sur le mois et ajouté automatiquement à la facture.</div>
           </div>
-          <div class="card" style="border-top:3px solid var(--green); text-align:center">
-            <div style="font-size:26px; font-weight:900; color:var(--green)" id="kpi-pdv">—</div>
-            <div style="font-size:10px; text-transform:uppercase; color:#555; margin-top:4px">Points de vente</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input id="global-tx-fee" type="number" min="0" style="width:120px;margin:0;font-size:16px;font-weight:800;color:var(--gold);text-align:center" placeholder="200" data-touched="false" oninput="this.dataset.touched='true'">
+            <span style="font-size:12px;color:#666;white-space:nowrap">GNF / vente</span>
+            <button class="btn btn-small" onclick="saveGlobalTxFee()" style="white-space:nowrap">💾 Enregistrer</button>
           </div>
-          <div class="card" style="border-top:3px solid var(--gold); text-align:center">
-            <div style="font-size:20px; font-weight:900; color:var(--gold)" id="kpi-ca">—</div>
-            <div style="font-size:10px; text-transform:uppercase; color:#555; margin-top:4px">CA global (mois)</div>
+          <div style="font-size:11px;color:#555;min-width:160px">
+            Commission = <strong style="color:var(--blue)">Nb ventes × tarif</strong><br>
+            Tarif actuel : <strong id="global-tx-fee-display" style="color:var(--gold)">chargement…</strong>
           </div>
-          <div class="card" style="border-top:3px solid var(--blue); text-align:center">
-            <div style="font-size:24px; font-weight:900; color:var(--blue)" id="kpi-tx-mois">—</div>
-            <div style="font-size:10px; text-transform:uppercase; color:#555; margin-top:4px">Ventes ce mois</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px">
+          <div class="card" style="padding:16px;margin:0;border-left:3px solid var(--gold)">
+            <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.5px">Licences Actives</div>
+            <div style="font-size:26px;font-weight:900;color:var(--gold);margin-top:3px" id="s-kpi-active">0</div>
+          </div>
+          <div class="card" style="padding:16px;margin:0;border-left:3px solid var(--blue)">
+            <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.5px">Total Ventes Mois</div>
+            <div style="font-size:26px;font-weight:900;color:var(--blue);margin-top:3px" id="s-kpi-tx">0</div>
+          </div>
+          <div class="card" style="padding:16px;margin:0;border-left:3px solid var(--green)">
+            <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.5px">CA Global Mois</div>
+            <div style="font-size:26px;font-weight:900;color:var(--green);margin-top:3px;font-family:monospace" id="s-kpi-ca">0 GNF</div>
+          </div>
+          <div class="card" style="padding:16px;margin:0;border-left:3px solid var(--purple)">
+            <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.5px">Commissions Mois</div>
+            <div style="font-size:26px;font-weight:900;color:var(--purple);margin-top:3px;font-family:monospace" id="s-kpi-comm">0 GNF</div>
           </div>
         </div>
 
         <div class="card">
-          <h3>📈 Statistiques des Entreprises (Mois en cours)</h3>
+          <h3>🏢 Statut & Activités des Entreprises</h3>
           <div style="overflow-x:auto">
-            <table id="table-super-activity">
-              <thead><tr><th>Société</th><th>Agences</th><th>Ventes (Mois)</th><th>CA (Mois)</th><th>Commission (200 GNF/vte)</th><th>État</th><th>Actions</th></tr></thead>
-              <tbody></tbody>
+            <table id="table-super-dash">
+              <thead>
+                <tr>
+                  <th>Société / Admin</th>
+                  <th>Points de Vente</th>
+                  <th>Chiffre d'Affaires Mois</th>
+                  <th>Commission due</th>
+                  <th>Statut</th>
+                  <th>Dernière Facture</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="7" style="text-align:center; color:#333; padding:20px">Chargement des licences…</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
@@ -311,84 +368,168 @@
       <div id="stab-lic" style="display:none">
         <div class="grid">
           <div class="card">
-            <h3>🛡️ Enregistrer une Entreprise Client</h3>
-            <label class="field-label">Nom de la société</label><input id="new-comp-name" placeholder="Ex: ETS Diallo">
-            <label class="field-label">Email administrateur</label><input id="new-comp-email" type="email" placeholder="admin@ets.com">
-            <label class="field-label">PIN administrateur</label><input id="new-comp-pin" placeholder="PIN maître">
-            <label class="field-label">WhatsApp (format international)</label><input id="new-comp-wa" placeholder="Ex: 224622000000">
-            <label class="field-label">Abonnement Mensuel fixe (GNF)</label><input id="new-comp-fee" type="number" placeholder="Ex: 500000">
-            <button class="btn btn-blue" style="margin-top:12px" onclick="createClientCompany()">➕ Créer la Licence</button>
+            <h3>🆕 Enregistrer une Nouvelle Entreprise</h3>
+            <label class="field-label">Nom de l'entreprise</label>
+            <input id="new-comp-name" type="text" placeholder="Ex: Boutique Alpha">
+            
+            <label class="field-label">Adresse WhatsApp Administrateur</label>
+            <input id="new-comp-wa" type="text" placeholder="Ex: 224622000000">
+
+            <label class="field-label">Email de l'administrateur</label>
+            <input id="new-comp-email" type="email" placeholder="Ex: admin@alpha.com">
+
+            <label class="field-label">Code PIN d'accès (min 4 chiffres)</label>
+            <input id="new-comp-pin" type="password" placeholder="••••••">
+
+            <label class="field-label">Abonnement Mensuel de base (GNF)</label>
+            <input id="new-comp-fee" type="number" placeholder="500000" value="500000">
+
+            <button class="btn btn-green" style="margin-top:12px" onclick="createClientCompany()">💾 Activer la licence</button>
           </div>
-          <div class="card" style="grid-column: span 2">
-            <h3>📋 Portefeuille Clients</h3>
-            <div style="overflow-x:auto">
-              <table id="table-saas-clients">
-                <thead><tr><th>Société</th><th>Admin</th><th>Abonnement</th><th>WhatsApp</th><th>État</th><th>Actions</th></tr></thead>
-                <tbody></tbody>
-              </table>
+          <div class="card">
+            <h3>📑 Information sur l'activation</h3>
+            <div class="info-box" style="font-size:13px">
+              <strong>Frais récurrents mensuels :</strong><br>
+              Chaque entreprise paiera un montant mensuel fixe + une commission liée à son activité réelle sur la plateforme.
+              <br><br>
+              <strong>Activation immédiate :</strong><br>
+              Dès la création, l'administrateur peut se connecter et commencer à créer ses points de vente et stocks.
             </div>
           </div>
         </div>
       </div>
 
       <div id="stab-fact" style="display:none">
+        <div class="info-box">
+          ℹ️ Générez des factures professionnelles détaillées reprenant la redevance fixe + les frais à la transaction, puis envoyez-la directement sur WhatsApp de l'administrateur.
+        </div>
         <div class="grid">
           <div class="card">
             <h3>💳 Émettre une Facture</h3>
-            <label class="field-label">Client / Société</label>
-            <select id="fact-client" onchange="onFactClientChange()"><option value="">— Sélectionner —</option></select>
-            <label class="field-label">Mois de facturation</label><input id="fact-month" type="month" onchange="onFactClientChange()">
-            <label class="field-label">Montant de l'abonnement (Fixe)</label><input id="fact-abo" type="number" oninput="calcFactTotal()">
+            <label class="field-label">Administrateur / Société</label>
+            <select id="fact-client" onchange="onFactClientChange()">
+              <option value="">— Sélectionner un administrateur —</option>
+            </select>
             
-            <div class="info-box" style="margin:10px 0">
-              <div style="display:flex; justify-content:space-between"><span>Transactions enregistrées :</span><strong id="fact-nb-tx">0 vte</strong></div>
-              <div style="display:flex; justify-content:space-between; margin-top:4px"><span>Commission accumulée (200 GNF/vte) :</span><strong id="fact-line-comm">0 GNF</strong></div>
-            </div>
-
-            <div style="background:#0a0a18; padding:12px; border:1px solid var(--border); border-radius:8px; margin-bottom:12px">
-              <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:800">
-                <span>TOTAL :</span><span id="fact-total-display" style="color:var(--gold)">0 GNF</span>
+            <div id="fact-client-info" style="display:none; margin:8px 0; padding:10px 14px; background:rgba(47,128,237,.07); border:1px solid rgba(47,128,237,.2); border-radius:8px; font-size:12px">
+              <div style="display:flex; gap:16px; flex-wrap:wrap">
+                <span>📱 WhatsApp : <strong id="fact-wa-display">—</strong></span>
+                <span>📅 CA ce mois : <strong id="fact-ca-display" style="color:var(--gold)">—</strong></span>
               </div>
             </div>
-            <button class="btn btn-green" onclick="sendInvoiceWhatsApp()">📲 Notifier via WhatsApp</button>
+
+            <label class="field-label">Mois de facturation</label>
+            <input id="fact-month" type="month" onchange="onFactClientChange()">
+
+            <label class="field-label">Montant abonnement mensuel (GNF)</label>
+            <input id="fact-abo" type="number" placeholder="Montant fixe de la licence" oninput="calcFactTotal()">
+
+            <div style="background:rgba(47,128,237,.06); border:1px solid rgba(47,128,237,.2); border-radius:8px; padding:11px 14px; margin:10px 0; font-size:12px">
+              <div style="font-weight:700; color:var(--blue); margin-bottom:6px; font-size:11px; text-transform:uppercase; letter-spacing:.5px">📊 Commission sur ventes (Auto)</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+                <span>Volume de ventes :</span>
+                <strong id="fact-nb-tx" style="color:#fff">0 vente(s)</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+                <span>Frais par transaction :</span>
+                <strong id="fact-fee-mini" style="color:#fff">200 GNF</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed rgba(255,255,255,0.1); padding-top:4px; margin-top:4px">
+                <span>Total Commission :</span>
+                <strong id="fact-comm-total" style="color:var(--gold)">0 GNF</strong>
+              </div>
+            </div>
+
+            <label class="field-label">Note / Message additionnel</label>
+            <input id="fact-note" type="text" placeholder="Ex: Rappel de paiement">
+
+            <div style="background:#101026; border:1px solid var(--border); border-radius:8px; padding:14px; margin:14px 0; text-align:center">
+              <div style="font-size:11px; color:#666; text-transform:uppercase; letter-spacing:1px">Total à facturer</div>
+              <div style="font-size:24px; font-weight:900; color:var(--gold); margin:4px 0" id="fact-total-display">0 GNF</div>
+              <div style="font-size:10px; color:#444">Abonnement + Commission transactions (200 GNF / vente)</div>
+            </div>
+
+            <button class="btn btn-blue" onclick="previewInvoice()">👁️ Prévisualiser la facture</button>
           </div>
-          <div class="card">
-            <h3>📂 Historique des Factures Émises</h3>
-            <div style="overflow-x:auto">
-              <table id="table-fact-history">
-                <thead><tr><th>Client</th><th>Mois</th><th>Abonnement</th><th>Commission</th><th>Total</th><th>Actions</th></tr></thead>
-                <tbody></tbody>
-              </table>
+
+          <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; border-color:rgba(242,201,76,.15)">
+            <div style="flex:1">
+              <h3>📝 Aperçu Facture</h3>
+              <div id="invoice-preview-box" style="background:#101022; border:1px solid var(--border); border-radius:8px; padding:16px; min-height:280px; font-size:13px; color:#aaa; display:flex; align-items:center; justify-content:center; text-align:center">
+                Aucune prévisualisation disponible.<br>Configurez le formulaire et cliquez sur prévisualiser.
+              </div>
+            </div>
+            <div id="invoice-preview-actions" style="display:none; margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:10px">
+              <button class="invoice-wa-btn" onclick="sendInvoiceWA()">🟢 Envoyer via WhatsApp</button>
+              <button class="btn btn-dark" onclick="printInvoice()">🖨️ Imprimer la facture</button>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div id="view-admin" style="display:none">
+        <div class="card" style="margin-top:20px">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px">
+            <h3>📑 Historique des Factures Émises</h3>
+            <select id="fact-hist-filter" onchange="renderFactureHistory()" style="width:220px; margin:0">
+              <option value="">— Filtrer par entreprise —</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto">
+            <table id="table-facture-history">
+              <thead>
+                <tr>
+                  <th>Mois</th>
+                  <th>Société / WhatsApp</th>
+                  <th>Date émission</th>
+                  <th>Abonnement</th>
+                  <th>Commissions</th>
+                  <th>Total émis</th>
+                  <th>Note</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="8" style="text-align:center; color:#333; padding:20px">Aucune facture enregistrée</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div><div id="view-admin" style="display:none">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:10px">
+        <div>
+          <div style="font-size:22px; font-weight:800" id="admin-title">🏢 Administration Centrale</div>
+          <div style="font-size:13px; color:#555; margin-top:3px" id="admin-subtitle"></div>
+        </div>
+        <div style="display:flex; gap:10px">
+          <button class="btn btn-dark btn-inline" onclick="openProductBatchModal()">📂 Importation Produits</button>
+        </div>
+      </div>
+
       <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('tab-stock',this)">📦 Stocks</button>
-        <button class="tab-btn"        onclick="switchTab('tab-transfert',this)">🚚 Transferts</button>
-        <button class="tab-btn"        onclick="switchTab('tab-ag',this)">🏢 Agences</button>
-        <button class="tab-btn"        onclick="switchTab('tab-caiss',this)">💰 Vente Siège</button>
-        <button class="tab-btn"        onclick="switchTab('tab-logs',this)">📋 Historique</button>
+        <button class="tab-btn active" onclick="switchTab('tab-stock',this)">📦 Stocks & Entrées</button>
+        <button class="tab-btn"        onclick="switchTab('tab-transfert',this)">🚚 Transferts Agences</button>
+        <button class="tab-btn"        onclick="switchTab('tab-agence',this)">🏪 Gestion Agences</button>
+        <button class="tab-btn"        onclick="switchTab('tab-ventes-logs',this)">📊 Historique Ventes</button>
       </div>
 
       <div id="tab-stock" class="tab-content">
         <div class="grid">
           <div class="card">
-            <h3>📥 Réception au Stock Central</h3>
-            <label class="field-label">Désignation du produit</label><input id="p-name" placeholder="Ex: Sac de ciment">
-            <label class="field-label">Prix unitaire (GNF)</label><input id="p-price" type="number" placeholder="Ex: 65000">
-            <label class="field-label">Quantité reçue</label><input id="p-qty" type="number" placeholder="Ex: 500">
+            <h3>📥 Entrée au Stock Central</h3>
+            <label class="field-label">Désignation du produit</label>
+            <input id="p-name" type="text" placeholder="Ex: Sac de Riz 50kg">
+            <label class="field-label">Prix de vente unitaire (GNF)</label>
+            <input id="p-price" type="number" placeholder="0">
+            <label class="field-label">Quantité reçue</label>
+            <input id="p-qty" type="number" placeholder="0">
             <button class="btn" style="margin-top:10px" onclick="createProduct()">✅ Entrer au Stock Central</button>
           </div>
           <div class="card">
             <h3>📊 État du Stock Central</h3>
             <div style="max-height:340px; overflow-y:auto">
               <table id="table-central-stock">
-                <thead><tr><th>Désignation</th><th>Prix de Vente</th><th>En Stock</th><th>Total</th></tr></thead>
-                <tbody></tbody>
+                <thead><tr><th>Produit</th><th>Prix Unit.</th><th>Quantité</th><th>Valeur</th></tr></thead>
+                <tbody><tr><td colspan="4" style="text-align:center; color:#333; padding:20px">Chargement…</td></tr></tbody>
               </table>
             </div>
           </div>
@@ -398,512 +539,1267 @@
       <div id="tab-transfert" class="tab-content" style="display:none">
         <div class="grid">
           <div class="card">
-            <h3>🚚 Expédier vers une agence</h3>
-            <div class="info-box">ℹ️ Envoi immédiat : Le stock transféré est <strong>crédité directement</strong> à l'agence ciblée.</div>
-            <label class="field-label">Produit</label><select id="trans-product" onchange="updateTransferInfo()"></select>
-            <div id="trans-stock-info" style="font-size:11px; color:var(--gold); font-family:monospace; margin:-3px 0 8px"></div>
-            <label class="field-label">Agence de destination</label><select id="trans-dest"></select>
-            <label class="field-label">Quantité</label><input id="trans-qty" type="number">
-            <button class="btn btn-blue" style="margin-top:10px" onclick="executeTransfer()">🚀 Envoyer maintenant</button>
+            <h3>🚀 Transfert Direct vers Agence</h3>
+            <div class="info-box">ℹ️ Le stock est <strong>immédiatement disponible</strong> au point de vente dès validation. Aucune étape de réception manuelle.</div>
+            <label class="field-label">Produit à transférer</label>
+            <select id="trans-product" onchange="updateTransferInfo()"></select>
+            <div id="trans-stock-info" style="font-size:11px; color:var(--gold); font-family:monospace; margin:-3px 0 8px; min-height:16px"></div>
+
+            <label class="field-label">Agence destinataire</label>
+            <select id="trans-dest" onchange="updateTransferInfo()"></select>
+            <div id="trans-dest-info" style="font-size:11px; color:var(--blue); font-family:monospace; margin:-3px 0 8px; min-height:16px"></div>
+
+            <label class="field-label">Quantité</label>
+            <input id="trans-qty" type="number" placeholder="0">
+            <button class="btn btn-blue" style="margin-top:10px" onclick="executeTransfer()">⚡ Confirmer le Transfert</button>
           </div>
           <div class="card">
-            <h3>📑 Dernier Bon de Transfert</h3>
-            <div id="last-transfer-preview" class="empty-state"><div class="ei">📤</div><p>Aucun envoi effectué.</p></div>
+            <h3>📑 Historique des 30 derniers transferts</h3>
+            <div style="max-height:380px; overflow-y:auto">
+              <table id="table-logs-transfert">
+                <thead><tr><th>Date</th><th>Produit</th><th>Vers</th><th>Qté</th><th>Action</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
 
-      <div id="tab-ag" class="tab-content" style="display:none">
+      <div id="tab-agence" class="tab-content" style="display:none">
         <div class="grid">
           <div class="card">
-            <h3>➕ Ajouter une Agence</h3>
-            <input id="pdv-name" placeholder="Nom de l'agence">
-            <input id="pdv-email" type="email" placeholder="Email du responsable">
-            <input id="pdv-pin" placeholder="PIN d'accès">
-            <button class="btn btn-blue" style="margin-top:10px" onclick="createPDV()">Créer l'agence</button>
+            <h3>🏪 Créer une Agence / Point de Vente</h3>
+            <label class="field-label">Nom de l'agence</label>
+            <input id="pdv-name" type="text" placeholder="Ex: Agence Madina">
+            <label class="field-label">Email de l'agent</label>
+            <input id="pdv-email" type="email" placeholder="Ex: madina@alpha.com">
+            <label class="field-label">Code PIN (min 4 chiffres)</label>
+            <input id="pdv-pin" type="password" placeholder="••••">
+            <button class="btn btn-green" style="margin-top:10px" onclick="createPDV()">➕ Enregistrer l'Agence</button>
           </div>
           <div class="card">
-            <h3>🏢 Liste des Agences</h3>
-            <table id="table-control-pdv">
-              <thead><tr><th>Nom</th><th>Email</th><th>Stock</th><th>État</th><th>Actions</th></tr></thead>
-              <tbody></tbody>
-            </table>
+            <h3>🏘️ Liste des Points de Vente Activés</h3>
+            <div style="max-height:350px; overflow-y:auto">
+              <table id="table-pdvs">
+                <thead><tr><th>Nom</th><th>Email</th><th>Stock</th><th>Statut</th><th>Actions</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
 
-      <div id="tab-caiss" class="tab-content" style="display:none">
-        <div class="card" style="max-width:620px; margin:0 auto">
-          <h3>💰 Vente au Siège</h3>
-          <div class="grid" style="grid-template-columns:1fr 1fr; gap:10px">
-            <input id="client-name-admin" placeholder="Client">
-            <input id="client-tel-admin" placeholder="Téléphone">
-          </div>
-          <div style="display:flex; gap:8px; align-items:flex-end">
-            <select id="admin-sale-p" style="flex:1"></select>
-            <input id="admin-sale-qty" type="number" value="1" style="width:70px">
-            <button class="btn btn-blue btn-icon" onclick="addToCart('ADMIN')">+</button>
-          </div>
-          <div id="admin-cart-list" style="margin:14px 0"></div>
-          <div style="text-align:right; font-size:18px; font-weight:800; margin-bottom:14px">Total: <span id="admin-cart-total">0</span> GNF</div>
-          <button class="btn btn-green" onclick="finalizeSale('ADMIN')">🖨️ Valider & Imprimer</button>
-        </div>
-      </div>
-
-      <div id="tab-logs" class="tab-content" style="display:none">
-        <div class="grid">
+      <div id="tab-ventes-logs" class="tab-content" style="display:none">
+        <div class="grid" style="grid-template-columns:300px 1fr">
           <div class="card">
-            <h3>📤 Transferts effectués</h3>
-            <table id="table-logs-transfert">
-              <thead><tr><th>Date</th><th>Produit</th><th>Vers</th><th>Qté</th><th>Actions</th></tr></thead>
-              <tbody></tbody>
-            </table>
+            <h3>🛍️ Vente Directe (Siège)</h3>
+            <div class="info-box">ℹ️ Vendez directement depuis le Stock Central.</div>
+            <label class="field-label">Sélectionner un produit</label>
+            <select id="admin-sale-p"></select>
+            <label class="field-label">Quantité</label>
+            <input id="admin-sale-qty" type="number" value="1" min="1">
+            <button class="btn btn-blue" onclick="addToCart('ADMIN')">🛒 Ajouter au Panier</button>
+            <hr style="border:none; border-top:1px solid var(--border); margin:14px 0">
+            <div id="admin-cart-list" style="margin-bottom:10px"></div>
+            <div style="display:flex; justify-content:space-between; font-weight:800; font-size:14px; color:var(--gold); margin-bottom:12px">
+              <span>Total Panier :</span>
+              <span id="admin-cart-total">0 GNF</span>
+            </div>
+            <label class="field-label">Nom du client</label>
+            <input id="admin-client-name" type="text" placeholder="Client Comptant">
+            <label class="field-label">N° Téléphone</label>
+            <input id="admin-client-tel" type="text" placeholder="Ex: 622 00 00 00">
+            <label class="field-label">Adresse de livraison</label>
+            <input id="admin-client-addr" type="text" placeholder="Conakry, Guinée">
+            <button class="btn btn-green" style="margin-top:8px" onclick="checkoutSale('ADMIN')">💰 Valider la Vente</button>
           </div>
           <div class="card">
-            <h3>💳 Ventes du Réseau</h3>
-            <table id="table-logs-ventes">
-              <thead><tr><th>Date</th><th>Agence</th><th>Client</th><th>Montant</th><th>Actions</th></tr></thead>
-              <tbody></tbody>
-            </table>
+            <h3>💳 Historique des Ventes</h3>
+            <div style="max-height:420px; overflow-y:auto">
+              <table id="table-logs-ventes">
+                <thead><tr><th>Date/Heure</th><th>Agence</th><th>Client</th><th>Total</th><th>Action</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <div id="view-pdv" style="display:none">
-      <div style="display:flex; justify-content:space-between; margin-bottom:18px">
-        <div><h2 id="pdv-title" style="color:var(--gold)">Caisse</h2><div id="pdv-subtitle"></div></div>
-        <button class="btn btn-dark btn-inline" onclick="showPDVSection('history')">📋 Historique</button>
+    </div><div id="view-pdv" style="display:none">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:10px">
+        <div>
+          <div style="font-size:20px; font-weight:800; color:var(--gold)" id="pdv-title">Caisse</div>
+          <div style="font-size:13px; color:#555; margin-top:2px" id="pdv-subtitle"></div>
+        </div>
+        <div style="display:flex; gap:8px">
+          <button class="btn-back" id="btn-back-pdv" style="display:none; margin-bottom:0" onclick="showPDVSection('sale')">← Caisse</button>
+          <button class="btn btn-dark btn-inline" style="padding:9px 16px; font-size:12px" onclick="showPDVSection('history')">📋 Historique</button>
+        </div>
       </div>
 
       <div id="pdv-sale-section">
-        <div class="grid">
+        <div style="display:grid; grid-template-columns:1fr 340px; gap:20px; align-items:start">
           <div class="card">
-            <h3>🛒 Catalogue & Stock Agence</h3>
-            <div id="pdv-no-stock-msg" class="warn-box" style="display:none">⚠️ Aucun produit n'est disponible. L'administrateur doit vous transférer du stock.</div>
-            <div id="pdv-has-stock" style="display:none">
-              <div style="display:flex; gap:8px">
-                <select id="pdv-sale-p" style="flex:1"></select>
-                <input id="pdv-sale-qty" type="number" value="1" style="width:70px">
-                <button class="btn btn-blue btn-icon" onclick="addToCart('PDV')">+</button>
-              </div>
-              <div id="pdv-product-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; margin-top:12px"></div>
+            <h3>🛍️ Catalogue Disponible</h3>
+            <div id="pdv-no-prod" class="empty-state" style="display:none">
+              <div class="ei">📭</div>
+              <div>Aucun produit disponible en stock.</div>
+              <div style="font-size:12px; color:#444; margin-top:4px">Dès qu'un transfert vous sera fait, il s'affichera ici.</div>
             </div>
+            <div id="pdv-prods" class="grid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px"></div>
           </div>
-          <div class="card">
-            <h3>🧾 Facturation Client</h3>
-            <input id="client-name-pdv" placeholder="Nom complet">
-            <input id="client-tel-pdv" placeholder="Téléphone">
-            <input id="client-addr-pdv" placeholder="Adresse (Optionnel)">
-            <div id="pdv-cart-list" style="margin-top:14px"></div>
-            <div style="text-align:right; font-size:18px; font-weight:800; margin:14px 0">Total : <span id="pdv-cart-total" style="color:var(--gold)">0</span> GNF</div>
-            <div style="display:flex; gap:8px; margin-bottom:12px">
-              <button class="fmt-btn active" onclick="setPrintMode('ticket',this)">Ticket (80mm)</button>
-              <button class="fmt-btn" onclick="setPrintMode('a5',this)">Format A5</button>
-              <button class="fmt-btn" onclick="setPrintMode('a4',this)">Format A4</button>
+
+          <div class="card" style="position:sticky; top:85px; border-color:rgba(242,201,76,.15)">
+            <h3>🛒 Panier de vente</h3>
+            <div id="pdv-cart-list" style="margin-bottom:14px; min-height:40px"></div>
+            <div style="display:flex; justify-content:space-between; font-weight:800; font-size:15px; color:var(--gold); margin-bottom:16px; background:#080816; padding:10px; border-radius:8px">
+              <span>À Payer :</span>
+              <span id="pdv-cart-total">0 GNF</span>
             </div>
-            <button class="btn btn-green" onclick="finalizeSale('PDV')">Valider & Imprimer</button>
+            <label class="field-label">Sélection manuelle produit</label>
+            <select id="pdv-sale-p" style="margin-top:2px"></select>
+            <label class="field-label">Quantité</label>
+            <input id="pdv-sale-qty" type="number" value="1" min="1" style="margin-top:2px">
+            <button class="btn btn-blue" onclick="addToCart('PDV')" style="margin-bottom:14px">➕ Ajouter</button>
+
+            <label class="field-label">Nom du client</label>
+            <input id="pdv-client-name" type="text" placeholder="Client Comptant">
+            <label class="field-label">N° Téléphone</label>
+            <input id="pdv-client-tel" type="text" placeholder="Ex: 622 00 00 00">
+            <button class="btn btn-green" style="margin-top:10px" onclick="checkoutSale('PDV')">💰 Enregistrer la Vente</button>
           </div>
         </div>
       </div>
 
       <div id="pdv-history-section" style="display:none">
-        <button class="btn-back" onclick="showPDVSection('sale')">← Caisse</button>
         <div class="card">
-          <h3>📋 Historique des ventes de l'agence</h3>
-          <table id="table-pdv-history">
-            <thead><tr><th>Date</th><th>N°</th><th>Client</th><th>Montant</th><th>Actions</th></tr></thead>
-            <tbody></tbody>
-          </table>
+          <h3>📑 Ventes récentes de votre point de vente</h3>
+          <div style="overflow-x:auto">
+            <table id="table-pdv-history">
+              <thead><tr><th>Date/Heure</th><th>N° Facture</th><th>Client</th><th>Téléphone</th><th>Total</th><th>Action</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
+    </div></div></div><div id="toast-container"></div>
 
+<div id="batch-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:3000; align-items:center; justify-content:center; padding:20px">
+  <div class="card" style="width:100%; max-width:580px; background:#0f0f1e">
+    <h3>📂 Importation multiple de produits</h3>
+    <div class="info-box">Saisissez vos lignes au format CSV ou texte simple :<br><strong>Désignation ; Prix de vente ; Quantité</strong></div>
+    <textarea id="batch-csv" style="width:100%; height:180px; background:#080816; color:#fff; border:1px solid var(--border); border-radius:8px; padding:12px; font-family:monospace; font-size:12px" placeholder="Exemple :&#10;Sac de Riz 50kg ; 350000 ; 10&#10;Huile bidon 20L ; 280000 ; 15"></textarea>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px">
+      <button class="btn btn-dark btn-inline" onclick="closeProductBatchModal()">Annuler</button>
+      <button class="btn btn-green btn-inline" onclick="executeBatchImport()">🚀 Lancer l'importation</button>
+    </div>
   </div>
 </div>
 
-<div id="toast-container"></div>
-
 <script>
-/* ── CONFIGURATION FIREBASE ── */
+/* ══════════════════════════════════════════════ VARIABLES GLOBALES ══════════════════════════════════════════════ */
+let _ALL_DATA = {};
+let _SESSION = { email:'', companyId:'', pdvId:'', role:'' };
+let _CART_ADMIN = [];
+let _CART_PDV   = [];
+let _SELECTED_FMT = 'ticket';
+let _SELECTED_DOC_TYPE = 'vente';
+let _PRINT_DATA = null;
+
+// Remplacer par votre configuration Firebase réelle
 const firebaseConfig = {
-  apiKey: "AIzaSyDxtMeYoigD5pLHJFaE3hFYZsWxgINmnXA",
-  databaseURL: "https://planning-with-ai-e9826-default-rtdb.firebaseio.com/",
-  projectId: "planning-with-ai-e9826"
+  databaseURL: "https://stocknetgn-default-rtdb.firebaseio.com"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let _SESSION = {}, _ALL_DATA = {}, _CART_ADMIN = [], _CART_PDV = [];
-let _PRINT_MODE = 'ticket', _CURRENT_FORMAT = 'ticket', _CURRENT_DOC_TYPE = 'vente', _PENDING_DOC = null;
-
+/* ══════════════════════════════════════════════ INITIALISATION ══════════════════════════════════════════════ */
 db.ref('/').on('value', snap => {
   _ALL_DATA = snap.val() || {};
   document.getElementById('loading-screen').style.display = 'none';
-  if (!_SESSION.role) document.getElementById('login-screen').style.display = 'flex';
+
+  /* Si aucune session active -> vers login */
+  if (!_SESSION.role) {
+    const cached = localStorage.getItem('_STOCKNET_SESS_v3');
+    if (cached) {
+      try {
+        _SESSION = JSON.parse(cached);
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app-screen').style.display = 'block';
+        
+        const rB = document.getElementById('header-role-badge');
+        if (rB) {
+          rB.textContent = _SESSION.role==='SUPER' ? '🛡️ SUPER ADMIN' : (_SESSION.role==='ADMIN'?'🏢 ADMIN':'🏪 AGENT CAISSE');
+          rB.style.background = _SESSION.role==='SUPER' ? 'rgba(242,201,76,.15)' : (_SESSION.role==='ADMIN'?'rgba(47,128,237,.15)':'rgba(39,174,96,.15)');
+          rB.style.color = _SESSION.role==='SUPER' ? 'var(--gold)' : (_SESSION.role==='ADMIN'?'var(--blue)':'var(--green)');
+        }
+
+        ['view-super','view-admin','view-pdv'].forEach(v=>document.getElementById(v).style.display='none');
+        if (_SESSION.role === 'SUPER') document.getElementById('view-super').style.display='block';
+        if (_SESSION.role === 'ADMIN') document.getElementById('view-admin').style.display='block';
+        if (_SESSION.role === 'PDV')   document.getElementById('view-pdv').style.display='block';
+      } catch(e) {
+        /* Session corrompue */
+        document.getElementById('login-screen').style.display = 'flex';
+      }
+    } else {
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+  }
+  /* Mise à jour en temps réel si déjà connecté */
   if (_SESSION.role) updateUI();
+}, err => {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  toast('Erreur Firebase : ' + err.message, 'error', 8000);
 });
 
+/* ══════════════════ UTILITAIRES ══════════════════ */
 function gnf(n) { return Number(n||0).toLocaleString('fr-GN') + ' GNF'; }
 function nowStr() { return new Date().toLocaleString('fr-GN'); }
 function today() { return new Date().toISOString().slice(0,10); }
 function docNum(p) { return p + '-' + today().replace(/-/g,'') + '-' + String(Math.floor(Math.random()*10000)).padStart(4,'0'); }
-
-function toast(msg, type='ok') {
-  const c = document.getElementById('toast-container');
-  const d = document.createElement('div');
-  d.className = 'toast ' + (type==='error'?'error':'');
-  d.textContent = msg;
-  c.appendChild(d);
-  setTimeout(() => d.remove(), 3500);
+function toast(msg, type='ok', dur=3500) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = ({ok:'✅ ', error:'❌ ', info:'ℹ️ '}[type]||'') + msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), dur);
 }
+
+/* ══════════════════════════════════════════════ AUTHENTIFICATION ══════════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.activeElement === document.getElementById('auth-pin')) handleAuth();
+});
 
 function handleAuth() {
-  const e = document.getElementById('auth-email').value.toLowerCase().trim();
-  const p = document.getElementById('auth-pin').value.trim();
+  const email = document.getElementById('auth-email').value.toLowerCase().trim();
+  const pin   = document.getElementById('auth-pin').value.trim();
   document.getElementById('auth-err').style.display = 'none';
 
-  if (e === "mamadouneguetkeita@gmail.com" && p === "admin123") return login("SUPER", e);
+  if (!email || !pin) return;
 
-  let found = null;
-  Object.entries(_ALL_DATA.companies || {}).forEach(([cid, comp]) => {
-    if (comp.admin_email === e && comp.admin_pin === p) found = { role: "ADMIN", cid };
-    Object.entries(comp.pdvs || {}).forEach(([pid, a]) => {
-      if (a.email === e && a.pin === p && a.status === 'actif') found = { role: "PDV", cid, pid };
-    });
-  });
+  // 1. Super Admin Hardcoded
+  if (email === 'admin@stocknetgn.com' && pin === '999999') {
+    return launchSession({ email, role:'SUPER', companyId:'SUPER', pdvId:'SUPER' });
+  }
 
-  if (found) login(found.role, e, found.cid, found.pid);
-  else document.getElementById('auth-err').style.display = 'block';
+  // 2. Recherche parmi les entreprises
+  const entries = Object.entries(_ALL_DATA.companies || {});
+  for (const [cid, c] of entries) {
+    if (c.admin_email?.toLowerCase() === email && c.admin_pin === pin) {
+      if (c.status === 'bloqué') return toast('Ce compte est actuellement bloqué.', 'error');
+      return launchSession({ email, role:'ADMIN', companyId:cid, pdvId:'ADMIN' });
+    }
+    // Agences
+    const pdvs = Object.entries(c.pdvs || {});
+    for (const [pid, p] of pdvs) {
+      if (p.email?.toLowerCase() === email && p.pin === pin) {
+        if (c.status === 'bloqué') return toast('Le compte de cette entreprise est bloqué.', 'error');
+        if (p.status === 'bloqué') return toast('Ce point de vente est bloqué.', 'error');
+        return launchSession({ email, role:'PDV', companyId:cid, pdvId:pid });
+      }
+    }
+  }
+  document.getElementById('auth-err').style.display = 'block';
 }
 
-function login(role, email, cid, pid) {
-  _SESSION = { role, email, companyId: cid, pdvId: pid };
+function launchSession(sess) {
+  _SESSION = sess;
+  localStorage.setItem('_STOCKNET_SESS_v3', JSON.stringify(sess));
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-screen').style.display = 'block';
-  document.getElementById('view-super').style.display = role==='SUPER'?'block':'none';
-  document.getElementById('view-admin').style.display = role==='ADMIN'?'block':'none';
-  document.getElementById('view-pdv').style.display = role==='PDV'?'block':'none';
   
-  const b = document.getElementById('header-role-badge');
-  b.textContent = role === 'SUPER' ? '🛡️ Super Admin' : role === 'ADMIN' ? '⚙️ Admin' : '🏪 PdV';
-  b.style.background = 'rgba(255,255,255,0.1)';
+  const rB = document.getElementById('header-role-badge');
+  if (rB) {
+    rB.textContent = sess.role==='SUPER' ? '🛡️ SUPER ADMIN' : (sess.role==='ADMIN'?'🏢 ADMIN':'🏪 AGENT CAISSE');
+    rB.style.background = sess.role==='SUPER' ? 'rgba(242,201,76,.15)' : (sess.role==='ADMIN'?'rgba(47,128,237,.15)':'rgba(39,174,96,.15)');
+    rB.style.color = sess.role==='SUPER' ? 'var(--gold)' : (sess.role==='ADMIN'?'var(--blue)':'var(--green)');
+  }
+
+  ['view-super','view-admin','view-pdv'].forEach(v=>document.getElementById(v).style.display='none');
+  if (sess.role === 'SUPER') document.getElementById('view-super').style.display='block';
+  if (sess.role === 'ADMIN') document.getElementById('view-admin').style.display='block';
+  if (sess.role === 'PDV')   document.getElementById('view-pdv').style.display='block';
+
+  // Charger le mois actuel par défaut
+  const inputMonth = document.getElementById('fact-month');
+  if (inputMonth) inputMonth.value = today().slice(0,7);
+
   updateUI();
+  toast('Connexion réussie.');
 }
 
 function doLogout() {
-  _SESSION = {}; _CART_ADMIN = []; _CART_PDV = [];
+  localStorage.removeItem('_STOCKNET_SESS_v3');
+  _SESSION = { email:'', companyId:'', pdvId:'', role:'' };
+  ['auth-email','auth-pin'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value='';
+  });
   document.getElementById('app-screen').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('auth-pin').value = '';
 }
 
-function switchSuperTab(id, btn) {
-  ['stab-dash','stab-lic','stab-fact'].forEach(t => document.getElementById(t).style.display = t===id?'block':'none');
-  document.querySelectorAll('#view-super .tab-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
+/* ══════════════════════════════════════════════ NAVIGATION ══════════════════════════════════════════════ */
 function switchTab(id, triggerBtn) {
   document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(id).style.display = 'block';
-  triggerBtn.classList.add('active');
+  if (triggerBtn) {
+    triggerBtn.classList.add('active');
+  } else {
+    const b = [...document.querySelectorAll('.tab-btn')].find(b => b.getAttribute('onclick')?.includes(id));
+    if (b) b.classList.add('active');
+  }
 }
 
 function showPDVSection(sec) {
-  document.getElementById('pdv-sale-section').style.display = sec==='sale'?'block':'none';
-  document.getElementById('pdv-history-section').style.display = sec==='history'?'block':'none';
+  document.getElementById('pdv-sale-section').style.display = sec==='sale' ? 'block':'none';
+  document.getElementById('pdv-history-section').style.display = sec==='history' ? 'block':'none';
+  document.getElementById('btn-back-pdv').style.display = sec==='history' ? 'inline-flex':'none';
   if (sec === 'history') renderPDVHistory();
 }
 
+/* ══════════════════════════════════════════════ MISE À JOUR DE L'INTERFACE ══════════════════════════════════════════════ */
 function updateUI() {
   const comp = _ALL_DATA.companies ? _ALL_DATA.companies[_SESSION.companyId] : null;
   if (comp) document.getElementById('display-comp-name').textContent = '| ' + comp.name;
 
+  /* ── SUPER ── */
   if (_SESSION.role === 'SUPER') {
     const entries = Object.entries(_ALL_DATA.companies || {});
-    const curMonth = today().slice(0,7);
-    
-    let activeLicences = 0, totalPdv = 0, totalCaMois = 0, totalTxMois = 0;
-    
-    document.querySelector('#table-super-activity tbody').innerHTML = entries.map(([id, c]) => {
-      if (c.status === 'actif') activeLicences++;
-      const np = Object.keys(c.pdvs || {}).length;
-      totalPdv += np;
+    const curMonth = document.getElementById('fact-month')?.value || today().slice(0,7);
+    const txFee = 200; // Frais fixes par vente de 200 GNF
 
-      const sales = Object.values(c.sale_logs || {});
-      const moisSales = sales.filter(v => v.date?.slice(0,7) === curMonth);
-      const nbSales = moisSales.length;
-      const ca = moisSales.reduce((s,v) => s + v.total,0);
+    /* ── Afficher le tarif global ── */
+    const feeDisp = document.getElementById('global-tx-fee-display');
+    const feeInp = document.getElementById('global-tx-fee');
+    if (feeDisp) feeDisp.textContent = txFee.toLocaleString('fr-GN') + ' GNF/vente';
+    if (feeInp && !feeInp.dataset.touched) feeInp.value = txFee;
 
-      totalCaMois += ca;
-      totalTxMois += nbSales;
+    /* ── KPIs ── */
+    let kActive = 0, kTx = 0, kCa = 0, kComm = 0;
+    entries.forEach(([,c]) => {
+      if (c.status !== 'bloqué') kActive++;
+      const logs = Object.values(c.sale_logs || {});
+      logs.forEach(l => {
+        if (l.date && l.date.startsWith(curMonth)) {
+          kTx++;
+          kCa += Number(l.total || 0);
+          kComm += txFee;
+        }
+      });
+    });
+    if(document.getElementById('s-kpi-active')) document.getElementById('s-kpi-active').textContent = kActive;
+    if(document.getElementById('s-kpi-tx'))     document.getElementById('s-kpi-tx').textContent     = kTx;
+    if(document.getElementById('s-kpi-ca'))     document.getElementById('s-kpi-ca').textContent     = gnf(kCa);
+    if(document.getElementById('s-kpi-comm'))   document.getElementById('s-kpi-comm').textContent   = gnf(kComm);
 
-      return `<tr>
-        <td><b>${c.name}</b></td>
-        <td>${np} Agence(s)</td>
-        <td>${nbSales} vente(s)</td>
-        <td><b>${gnf(ca)}</b></td>
-        <td style="color:#e67e22; font-weight:bold">${gnf(nbSales * 200)}</td>
-        <td><span class="st-badge st-${c.status==='actif'?'actif':'bloque'}">${c.status||'actif'}</span></td>
-        <td><button class="btn btn-small" onclick="quickFact('${id}')">💳 Facturer</button></td>
-      </tr>`;
-    }).join('');
-
-    document.getElementById('kpi-companies').textContent = activeLicences;
-    document.getElementById('kpi-pdv').textContent = totalPdv;
-    document.getElementById('kpi-ca').textContent = gnf(totalCaMois);
-    document.getElementById('kpi-tx-mois').textContent = totalTxMois;
-
-    document.querySelector('#table-saas-clients tbody').innerHTML = entries.map(([id, c]) => `
-      <tr>
-        <td><b>${c.name}</b></td>
-        <td>${c.admin_email}</td>
-        <td>${gnf(c.monthly_fee)}</td>
-        <td>${c.whatsapp || '-'}</td>
-        <td><span class="st-badge st-${c.status==='actif'?'actif':'bloque'}">${c.status||'actif'}</span></td>
-        <td>
-          <button class="btn btn-small btn-${c.status==='actif'?'red':'green'}" onclick="toggleCompanyStatus('${id}','${c.status||'actif'}')">Lock</button>
-        </td>
-      </tr>`).join('');
-
-    const factSel = document.getElementById('fact-client');
-    if (factSel && factSel.children.length <= 1) {
-      factSel.innerHTML = '<option value="">— Sélectionner —</option>' + entries.map(([id, c]) => `<option value="${id}">${c.name}</option>`).join('');
+    /* ── Remplir la liste déroulante des Administrateurs pour la facturation ── */
+    const selectClient = document.getElementById('fact-client');
+    if (selectClient) {
+      const currentVal = selectClient.value;
+      selectClient.innerHTML = '<option value="">— Sélectionner un administrateur —</option>';
+      entries.forEach(([cid, compObj]) => {
+        const opt = document.createElement('option');
+        opt.value = cid;
+        opt.textContent = `${compObj.name} (${compObj.admin_email || 'Pas d\'email'})`;
+        selectClient.appendChild(opt);
+      });
+      selectClient.value = currentVal;
     }
+
+    const selHist = document.getElementById('fact-hist-filter');
+    if (selHist) {
+      const cv = selHist.value;
+      selHist.innerHTML = '<option value="">— Filtrer par entreprise —</option>';
+      entries.forEach(([cid, c]) => {
+        const o = document.createElement('option'); o.value = cid; o.textContent = c.name; selHist.appendChild(o);
+      });
+      selHist.value = cv;
+    }
+
+    /* ── Tableau du Dashboard du Super Admin ── */
+    document.querySelector('#table-super-dash tbody').innerHTML = entries.length ? entries.map(([cid, c]) => {
+      const logs = Object.values(c.sale_logs || {});
+      let caMois = 0, nbTx = 0;
+      logs.forEach(l => {
+        if (l.date && l.date.startsWith(curMonth)) {
+          caMois += Number(l.total || 0);
+          nbTx++;
+        }
+      });
+      const comm = nbTx * txFee;
+
+      const pdvs = Object.values(c.pdvs || {});
+      const pdvRows = pdvs.map(p => {
+        let pCa = 0;
+        logs.filter(l=>l.agency===p.name && l.date?.startsWith(curMonth)).forEach(l=> pCa+=Number(l.total||0));
+        return `<div style="display:flex; justify-content:space-between; font-size:11px; margin-top:3px; color:#999"><span>🏪 ${p.name}</span><strong>${gnf(pCa)}</strong></div>`;
+      }).join('');
+
+      const invoices = Object.values(c.invoices||{});
+      const lastInv = invoices.length ? invoices[invoices.length-1] : null;
+
+      let rowHtml = '<tr>';
+      rowHtml += '<td>';
+      rowHtml += '<strong style="color:var(--gold); font-size:14px">'+c.name+'</strong>';
+      rowHtml += '<div style="font-size:11px; color:#555; margin-top:2px">📧 '+ (c.admin_email||'—') +'</div>';
+      rowHtml += '<div style="font-size:11px; color:#25D366; margin-top:1px" onclick="editCompWa(\''+cid+'\',\''+(c.whatsapp||'')+'\')" style="cursor:pointer">📱 WhatsApp : '+(c.whatsapp?'+'+c.whatsapp:'Ajouter')+'</div>';
+      rowHtml += '</td>';
+      rowHtml += '<td>';
+      rowHtml += '<div style="font-weight:800; color:var(--blue); font-size:15px">'+nbTx+'</div>';
+      if(pdvRows) rowHtml += '<div style="margin-top:6px; background:rgba(0,0,0,.3); border-radius:6px; padding:6px 8px">'+pdvRows+'</div>';
+      rowHtml += '</td>';
+      rowHtml += '<td style="font-family:monospace; font-weight:700; color:var(--gold)">'+gnf(caMois)+'</td>';
+      rowHtml += '<td>';
+      rowHtml += '<div style="font-family:monospace; font-weight:800; color:#e67e22">'+gnf(comm)+'</div>';
+      rowHtml += '<div style="font-size:10px; color:#555">'+nbTx+' × '+txFee.toLocaleString('fr-GN')+' GNF</div>';
+      rowHtml += '</td>';
+      rowHtml += '<td><span class="st-badge st-'+(c.status==='actif'?'actif':'bloque')+'">'+(c.status||'actif')+'</span></td>';
+      rowHtml += '<td style="font-size:11px; color:#555">'+(lastInv ? lastInv.sentAt?.slice(0,10) : '—')+'</td>';
+      rowHtml += '<td style="display:flex; gap:4px; flex-wrap:wrap">';
+      rowHtml += '<button class="btn btn-small" style="background:var(--green); color:#fff" onclick="quickFact(\'' + cid + '\')">💳 Facturer</button>';
+      rowHtml += '<button class="btn btn-small btn-'+(c.status==='actif'?'red':'green')+'" onclick="toggleCompanyStatus(\'' + cid + '\',\''+(c.status||'actif')+'\')">'+( c.status==='actif'?'🔒':'🔓')+'</button>';
+      rowHtml += '</td></tr>';
+      return rowHtml;
+    }).join('') : '<tr><td colspan="7" style="text-align:center; color:#333; padding:20px">Aucun client actif</td></tr>';
+
+    renderFactureHistory();
   }
 
+  /* ── ADMINISTRATEUR ── */
   if (_SESSION.role === 'ADMIN' && comp) {
+    if(document.getElementById('admin-subtitle')) document.getElementById('admin-subtitle').textContent = `Licence active — ${comp.admin_email}`;
+
+    /* Stock Central */
     const prods = Object.entries(comp.products || {});
-    document.querySelector('#table-central-stock tbody').innerHTML = prods.map(([id, p]) => `
-      <tr><td><b>${p.name}</b></td><td>${gnf(p.price)}</td><td>${p.qty}</td><td><b>${gnf(p.price*p.qty)}</b></td></tr>`).join('');
+    document.querySelector('#table-central-stock tbody').innerHTML = prods.length ? prods.map(([id, p]) => `<tr>
+      <td style="font-weight:700">${p.name}</td>
+      <td style="font-family:monospace; font-weight:700; color:var(--gold)">${gnf(p.price)}</td>
+      <td style="font-weight:800; color:${p.qty>0?'var(--green)':'var(--red)'}">${p.qty}</td>
+      <td style="font-family:monospace; color:#aaa">${gnf(p.qty * p.price)}</td>
+    </tr>`).join('') : '<tr><td colspan="4" style="text-align:center; color:#333; padding:20px">Aucun produit au stock central</td></tr>';
 
-    const pOpt = prods.map(([id, p]) => `<option value="${id}">${p.name} (Dispo: ${p.qty})</option>`).join('');
-    ['trans-product','admin-sale-p'].forEach(s => document.getElementById(s).innerHTML = pOpt);
+    /* Dropdown de Transfert */
+    const selProd = document.getElementById('trans-product');
+    const selDest = document.getElementById('trans-dest');
+    const selSaleP = document.getElementById('admin-sale-p');
+    if (selProd && selDest && selSaleP) {
+      const curP = selProd.value;
+      const curD = selDest.value;
+      const curS = selSaleP.value;
 
-    const ags = Object.entries(comp.pdvs || {});
-    document.getElementById('trans-dest').innerHTML = ags.map(([id, a]) => `<option value="${id}">${a.name}</option>`).join('');
+      selProd.innerHTML = '<option value="">— Sélectionner le produit —</option>';
+      selSaleP.innerHTML = '<option value="">— Sélectionner le produit —</option>';
+      prods.forEach(([id, p]) => {
+        const o = `<option value="${id}">${p.name} (${p.qty} dispo)</option>`;
+        selProd.innerHTML += o;
+        if(p.qty > 0) selSaleP.innerHTML += `<option value="${id}">${p.name} — ${gnf(p.price)}</option>`;
+      });
 
-    document.querySelector('#table-control-pdv tbody').innerHTML = ags.map(([id, a]) => `
-      <tr>
-        <td><b>${a.name}</b></td><td>${a.email}</td>
-        <td>${Object.values(a.stock||{}).reduce((s,q)=>s+q,0)} unités</td>
-        <td><span class="st-badge st-${a.status==='actif'?'actif':'bloque'}">${a.status}</span></td>
-        <td><button class="btn btn-small" onclick="togglePDVStatus('${id}','${a.status}')">Lock</button></td>
-      </tr>`).join('');
+      const pdvs = Object.entries(comp.pdvs || {});
+      selDest.innerHTML = '<option value="">— Sélectionner l\'agence —</option>';
+      pdvs.forEach(([id, p]) => {
+        if(p.status!=='bloqué') selDest.innerHTML += `<option value="${id}">${p.name}</option>`;
+      });
 
-    document.querySelector('#table-logs-transfert tbody').innerHTML = Object.entries(comp.transfer_logs||{}).reverse().slice(0, 10).map(([id, l]) => `
-      <tr><td>${l.date}</td><td>${l.product}</td><td>${l.to}</td><td>${l.qty}</td><td><button class="btn btn-small" onclick='reprinterBon(${JSON.stringify(l)})'>🖨️</button></td></tr>`).join('');
+      selProd.value = curP;
+      selDest.value = curD;
+      selSaleP.value = curS;
+    }
 
-    document.querySelector('#table-logs-ventes tbody').innerHTML = Object.entries(comp.sale_logs||{}).reverse().slice(0, 10).map(([id, v]) => `
-      <tr><td>${v.date}</td><td>${v.agency||'Siège'}</td><td>${v.client}</td><td><b>${gnf(v.total)}</b></td><td><button class="btn btn-small" onclick='reprinterVente(${JSON.stringify(v)})'>🖨️</button></td></tr>`).join('');
+    /* Agences */
+    const agences = Object.entries(comp.pdvs || {});
+    document.querySelector('#table-pdvs tbody').innerHTML = agences.length ? agences.map(([id, a]) => {
+      let stk = 0;
+      Object.values(a.stock || {}).forEach(v => stk += Number(v || 0));
+      return `<tr>
+        <td><strong>${a.name}</strong><br><span style="font-size:11px; color:#555">📧 ${a.email}</span></td>
+        <td><span class="st-badge st-${stk>0?'actif':'bloque'}">${stk} unités</span></td>
+        <td><span class="st-badge st-${a.status==='actif'?'actif':'bloque'}">${a.status||'actif'}</span></td>
+        <td style="display:flex; gap:4px; flex-wrap:wrap">
+          <button class="btn btn-small btn-blue" onclick="changePDVPin('${id}')">🔑 PIN</button>
+          <button class="btn btn-small btn-${a.status==='actif'?'red':'green'}" onclick="togglePDVStatus('${id}','${a.status||'actif'}')">
+            ${a.status==='actif'?'Bloquer':'Activer'}
+          </button>
+          <button class="btn btn-small btn-red" onclick="if(confirm('Supprimer ?')) db.ref('companies/${_SESSION.companyId}/pdvs/${id}').remove()">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="5" style="text-align:center; color:#333; padding:20px">Aucune agence créée</td></tr>';
+
+    /* Logs transferts */
+    const tlogs = Object.entries(comp.transfer_logs||{}).reverse().slice(0,30);
+    document.querySelector('#table-logs-transfert tbody').innerHTML = tlogs.length ? tlogs.map(([,l]) => `<tr>
+      <td style="font-size:11px; font-family:monospace">${l.date}</td>
+      <td>${l.product}</td>
+      <td>${l.to}</td>
+      <td style="font-weight:700; color:var(--blue)">${l.qty}</td>
+      <td><button class="btn btn-small btn-dark" onclick='reprinterBon(${JSON.stringify(l)})'>🖨️ Reçu</button></td>
+    </tr>`).join('') : '<tr><td colspan="5" style="text-align:center; color:#333; padding:15px">Aucun transfert récent</td></tr>';
+
+    /* Logs ventes */
+    const vlogs = Object.entries(comp.sale_logs||{}).reverse().slice(0,60);
+    document.querySelector('#table-logs-ventes tbody').innerHTML = vlogs.length ? vlogs.map(([,l]) => `<tr>
+      <td style="font-size:11px; font-family:monospace">${l.date}</td>
+      <td>${l.agency||'Siège'}</td>
+      <td><strong>${l.client}</strong></td>
+      <td style="font-weight:800; color:var(--green)">${gnf(l.total)}</td>
+      <td><button class="btn btn-small btn-dark" onclick='reprinterVente(${JSON.stringify(l)})'>🖨️ Reçu</button></td>
+    </tr>`).join('') : '<tr><td colspan="5" style="text-align:center; color:#333; padding:20px">Aucune vente enregistrée</td></tr>';
   }
 
+  /* ── POINT DE VENTE ── */
   if (_SESSION.role === 'PDV' && comp) {
-    const ag = comp.pdvs?.[_SESSION.pdvId];
-    if (ag) {
-      const pList = Object.entries(comp.products || {}).map(([id, p]) => ({ id, ...p, pdvQty: ag.stock?.[id] || 0 })).filter(p => p.pdvQty > 0);
-      document.getElementById('pdv-no-stock-msg').style.display = pList.length === 0 ? 'block' : 'none';
-      document.getElementById('pdv-has-stock').style.display = pList.length === 0 ? 'none' : 'block';
+    const pInfo = comp.pdvs?.[_SESSION.pdvId];
+    if (pInfo) {
+      if(document.getElementById('pdv-title')) document.getElementById('pdv-title').textContent = `🏪 Caisse : ${pInfo.name}`;
+      if(document.getElementById('pdv-subtitle')) document.getElementById('pdv-subtitle').textContent = `Agent : ${_SESSION.email}`;
+    }
 
-      document.getElementById('pdv-sale-p').innerHTML = pList.map(p => `<option value="${p.id}">${p.name} (${p.pdvQty} dispo)</option>`).join('');
-      document.getElementById('pdv-product-grid').innerHTML = pList.map(p => `<div class="prod-tile" onclick="quickAddPDV('${p.id}')"><b>${p.name}</b><br><span style="color:var(--gold)">${gnf(p.price)}</span></div>`).join('');
+    const available = [];
+    const selP = document.getElementById('pdv-sale-p');
+    if (selP) {
+      const cv = selP.value;
+      selP.innerHTML = '<option value="">— Sélectionner le produit —</option>';
+      
+      Object.entries(comp.products || {}).forEach(([pid, p]) => {
+        const stk = pInfo?.stock?.[pid] || 0;
+        if (stk > 0) {
+          available.push({ pid, name:p.name, price:p.price, qty:stk });
+          selP.innerHTML += `<option value="${pid}">${p.name} — ${gnf(p.price)} (${stk} dispo)</option>`;
+        }
+      });
+      selP.value = cv;
+    }
+
+    /* Tuiles Catalogue */
+    const container = document.getElementById('pdv-prods');
+    if (available.length) {
+      document.getElementById('pdv-no-prod').style.display = 'none';
+      container.innerHTML = available.map(i => `<div class="prod-tile" onclick="quickAddPDV('${i.pid}')">
+        <div style="font-size:13px; font-weight:800; color:#fff; min-height:36px; line-height:1.2; display:flex; align-items:center; justify-content:center">${i.name}</div>
+        <div style="font-size:11px; font-weight:600; color:var(--gold); margin:4px 0">${gnf(i.price)}</div>
+        <div style="font-size:10px; color:#555">Disponible : <strong style="color:var(--green)">${i.qty}</strong></div>
+      </div>`).join('');
+    } else {
+      document.getElementById('pdv-no-prod').style.display = 'block';
+      container.innerHTML = '';
     }
   }
 }
 
+/* ══════════════════════════════════════════════ ACTIONS SUPER ADMIN ══════════════════════════════════════════════ */
+function saveGlobalTxFee() {
+  const fee = parseInt(document.getElementById('global-tx-fee').value);
+  if (isNaN(fee) || fee < 0) return toast('Tarif invalide.', 'error');
+  db.ref('settings/transaction_fee').set(fee).then(() => {
+    document.getElementById('global-tx-fee').dataset.touched = 'false';
+    toast('Frais à la transaction enregistrés.');
+  });
+}
+
+function createClientCompany() {
+  const name  = document.getElementById('new-comp-name').value.trim();
+  const email = document.getElementById('new-comp-email').value.trim();
+  const pin   = document.getElementById('new-comp-pin').value.trim();
+  const wa    = document.getElementById('new-comp-wa').value.trim().replace(/\D/g,'');
+  const fee   = parseInt(document.getElementById('new-comp-fee').value || 0);
+
+  if (!name || !email || !pin) return toast('Remplissez tous les champs obligatoires.', 'error');
+  
+  db.ref(`companies/COMP_${Date.now()}`)
+    .set({ name, admin_email:email, admin_pin:pin, status:'actif', whatsapp:wa, monthly_fee:fee }).then(() => {
+      toast(`Licence "${name}" enregistrée.`);
+      ['new-comp-name','new-comp-email','new-comp-pin','new-comp-wa','new-comp-fee'].forEach(id => {
+        const el = document.getElementById(id); if(el) el.value='';
+      });
+    });
+}
+
+function toggleCompanyStatus(cid, current) {
+  db.ref(`companies/${cid}/status`).set(current==='actif'?'bloqué':'actif')
+    .then(() => toast('Statut mis à jour.'));
+}
+
+function quickFact(cid) {
+  switchSuperTab('stab-fact', [...document.querySelectorAll('.tab-btn')].find(b => b.textContent.includes('Facturation')));
+  document.getElementById('fact-client').value = cid;
+  onFactClientChange();
+}
+
+function editCompWa(cid, cur) {
+  const wa = prompt(`Numéro WhatsApp pour cette société (format international, ex: 224622000000) :`, cur);
+  if(wa === null) return;
+  db.ref(`companies/${cid}/whatsapp`).set(wa.replace(/\D/g,''))
+    .then(()=>toast('Numéro WhatsApp mis à jour.'));
+}
+
+function getTxFee() {
+  return Number(_ALL_DATA.settings?.transaction_fee ?? 200);
+}
+
 function onFactClientChange() {
-  const cid = document.getElementById('fact-client').value, comp = _ALL_DATA.companies?.[cid];
-  if (!comp) return;
-  document.getElementById('fact-abo').value = comp.monthly_fee || 0;
+  const cid = document.getElementById('fact-client').value;
+  const month = document.getElementById('fact-month').value || today().slice(0,7);
+  if (!cid || !_ALL_DATA.companies?.[cid]) {
+    document.getElementById('fact-client-info').style.display = 'none';
+    return;
+  }
+  const comp = _ALL_DATA.companies[cid];
+  document.getElementById('fact-client-info').style.display = 'block';
+  document.getElementById('fact-wa-display').textContent = comp.whatsapp ? '+' + comp.whatsapp : 'Non renseigné';
+  
+  if (comp.monthly_fee) {
+    document.getElementById('fact-abo').value = comp.monthly_fee;
+  }
+
+  let ca = 0;
+  const logs = Object.values(comp.sale_logs || {});
+  logs.forEach(l => {
+    if (l.date && l.date.startsWith(month)) {
+      ca += Number(l.total || 0);
+    }
+  });
+
+  document.getElementById('fact-ca-display').textContent = gnf(ca);
   calcFactTotal();
 }
 
 function calcFactTotal() {
-  const cid = document.getElementById('fact-client').value, comp = _ALL_DATA.companies?.[cid];
-  if (!comp) return;
-  const month = document.getElementById('fact-month').value || today().slice(0,7);
-  const abo = parseFloat(document.getElementById('fact-abo').value) || 0;
+  const cid = document.getElementById('fact-client')?.value;
+  const month = document.getElementById('fact-month')?.value || today().slice(0,7);
+  const abo = parseInt(document.getElementById('fact-abo')?.value || 0);
 
-  const sales = Object.values(comp.sale_logs || {}).filter(v => v.date?.slice(0,7) === month);
-  const nbSales = sales.length;
-  const comm = nbSales * 200;
+  let nbTx = 0, ca = 0;
+  const txFee = getTxFee();
 
-  document.getElementById('fact-nb-tx').textContent = nbSales + ' vte(s)';
-  document.getElementById('fact-line-comm').textContent = gnf(comm);
-  document.getElementById('fact-total-display').textContent = gnf(abo + comm);
-}
+  if (cid && _ALL_DATA.companies?.[cid]) {
+    const comp = _ALL_DATA.companies[cid];
+    const logs = Object.values(comp.sale_logs || {});
+    logs.forEach(l => {
+      if (l.date && l.date.startsWith(month)) {
+        nbTx++;
+        ca += Number(l.total || 0);
+      }
+    });
+  }
 
-function sendInvoiceWhatsApp() {
-  const cid = document.getElementById('fact-client').value, comp = _ALL_DATA.companies?.[cid];
-  if (!comp?.whatsapp) return toast("Numéro WhatsApp manquant", "error");
-
-  const month = document.getElementById('fact-month').value || today().slice(0,7);
-  const abo = parseFloat(document.getElementById('fact-abo').value) || 0;
-  const sales = Object.values(comp.sale_logs || {}).filter(v => v.date?.slice(0,7) === month);
-  const comm = sales.length * 200;
+  const comm = nbTx * txFee;
   const total = abo + comm;
 
-  const msg = `*📦 FACTURE MENSUELLE - STOCKNET GN*\n🏢 *Client:* ${comp.name}\n📅 *Mois:* ${month}\n📋 Abonnement Fixe: ${gnf(abo)}\n🔢 Commission (${sales.length} ventes): ${gnf(comm)}\n💰 *TOTAL À PAYER:* ${gnf(total)}`;
+  const el_nb = document.getElementById('fact-nb-tx');
+  const el_fee = document.getElementById('fact-fee-mini');
+  const el_comm = document.getElementById('fact-comm-total');
   
-  db.ref(`companies/${cid}/invoices/INV_${Date.now()}`).set({ month, abo, commission: comm, total, sentAt: nowStr() }).then(() => {
-    window.open(`https://wa.me/${comp.whatsapp.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank');
-    renderFactureHistory();
+  if(el_nb) el_nb.textContent = nbTx + ' vente(s)';
+  if(el_fee) el_fee.textContent = txFee.toLocaleString('fr-GN') + ' GNF';
+  if(el_comm) el_comm.textContent = gnf(comm);
+
+  document.getElementById('fact-total-display').textContent = gnf(total);
+  return { abo, comm, total, nbTx, txFee, ca };
+}
+
+function buildInvoiceHTML(cid, month, abo, comm, total, note, nbTx, forPrint) {
+  const comp = _ALL_DATA.companies?.[cid];
+  if(!comp) return '';
+  const [yr,mo] = (month||today().slice(0,7)).split('-');
+  const mois = new Date(yr, parseInt(mo)-1).toLocaleString('fr-GN', {month:'long', year:'numeric'});
+  const now = new Date().toLocaleString('fr-GN');
+  const txFee = getTxFee();
+
+  return `
+  <div style="background:#fff; color:#111; border-radius:8px; padding:${forPrint?'0':'20px'}; font-family:'Segoe UI',sans-serif; font-size:13px">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:14px; border-bottom:2px solid #333; margin-bottom:16px">
+      <div>
+        <div style="font-size:24px; font-weight:900; color:#111; letter-spacing:1px">STOCKNET GN</div>
+        <div style="font-size:11px; color:#555; margin-top:2px">Solution de Gestion Intégrale de Stock</div>
+        <div style="font-size:10px; color:#666">Conakry, République de Guinée</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:14px; font-weight:800; text-transform:uppercase; color:#fff; background:#111; padding:4px 10px; border-radius:4px; display:inline-block">FACTURE MENSUELLE</div>
+        <div style="font-size:11px; color:#666; margin-top:6px">Date : <strong>${now}</strong></div>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; background:#f8f9fa; border:1px solid #e9ecef; border-radius:8px; padding:12px; margin-bottom:16px">
+      <div>
+        <div style="font-size:10px; text-transform:uppercase; color:#666; font-weight:700">Facturé à</div>
+        <div style="font-size:15px; font-weight:800; color:#111; margin-top:2px">${comp.name}</div>
+        <div style="font-size:11px; color:#555; margin-top:1px">📧 ${comp.admin_email||'—'}</div>
+        <div style="font-size:11px; color:#555">📱 WhatsApp : ${comp.whatsapp?'+'+comp.whatsapp:'—'}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:10px; text-transform:uppercase; color:#666; font-weight:700">Période</div>
+        <div style="font-size:14px; font-weight:700; color:#111; margin-top:2px; text-transform:capitalize">${mois}</div>
+      </div>
+    </div>
+
+    <table style="width:100%; border-collapse:collapse; margin:16px 0">
+      <thead>
+        <tr style="background:#f1f3f5; border:1px solid #dee2e6">
+          <th style="text-align:left; padding:10px; font-size:11px; text-transform:uppercase; color:#495057">Description des Services</th>
+          <th style="text-align:right; padding:10px; font-size:11px; text-transform:uppercase; color:#495057">Montant</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #e9ecef">
+          <td style="padding:12px 10px">
+            <strong style="color:#111">Abonnement Mensuel Fixe</strong><br>
+            <span style="font-size:11px; color:#666">Hébergement, maintenance et accès illimité</span>
+          </td>
+          <td style="text-align:right; padding:12px 10px; font-weight:700; font-family:monospace">${gnf(abo)}</td>
+        </tr>
+        <tr style="border-bottom:1px solid #e9ecef">
+          <td style="padding:12px 10px">
+            <strong style="color:#111">Commission d'activité (Usage)</strong><br>
+            <span style="font-size:11px; color:#666">${nbTx} vente(s) enregistrée(s) × ${txFee.toLocaleString('fr-GN')} GNF</span>
+          </td>
+          <td style="text-align:right; padding:12px 10px; font-weight:700; font-family:monospace">${gnf(comm)}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr style="background:#f8f9fa; border:1px solid #dee2e6">
+          <td style="padding:12px 10px; font-weight:800; font-size:14px">TOTAL À PAYER</td>
+          <td style="text-align:right; padding:12px 10px; font-size:18px; font-weight:900; color:#111; font-family:monospace">${gnf(total)}</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    ${note ? `<div style="background:#fff9db; border:1px solid #ffe066; border-radius:6px; padding:10px; font-size:11px; margin-bottom:16px; color:#665c00"><strong>Note :</strong> ${note}</div>` : ''}
+
+    <div style="text-align:center; font-size:11px; color:#aaa; border-top:1px dashed #dee2e6; padding-top:12px; margin-top:20px; line-height:1.4">
+      Merci pour votre fidélité.<br>StockNet GN — Solution Intégrale de Gestion de Stock — Conakry, Guinée
+    </div>
+  </div>`;
+}
+
+function previewInvoice() {
+  const cid = document.getElementById('fact-client').value;
+  if(!cid) return toast('Sélectionnez un administrateur.', 'error');
+  const month = document.getElementById('fact-month').value;
+  if(!month) return toast('Choisissez un mois.', 'error');
+  const { abo, comm, total, nbTx } = calcFactTotal();
+  const note = document.getElementById('fact-note').value.trim();
+
+  document.getElementById('invoice-preview-box').innerHTML = buildInvoiceHTML(cid, month, abo, comm, total, note, nbTx, false);
+  document.getElementById('invoice-preview-actions').style.display = 'grid';
+}
+
+function printInvoice() {
+  const cid = document.getElementById('fact-client').value;
+  const month = document.getElementById('fact-month').value;
+  const { abo, comm, total, nbTx } = calcFactTotal();
+  const note = document.getElementById('fact-note').value.trim();
+
+  const html = buildInvoiceHTML(cid, month, abo, comm, total, note, nbTx, true);
+  const zone = document.getElementById('active-print-zone');
+  zone.innerHTML = '<div style="background:#fff; padding:20px">' + html + '</div>';
+  zone.style.display = 'block';
+
+  window.print();
+  zone.style.display = 'none';
+  zone.innerHTML = '';
+}
+
+function sendInvoiceWA() {
+  const cid = document.getElementById('fact-client').value;
+  const comp = _ALL_DATA.companies?.[cid];
+  if(!comp?.whatsapp) return toast('Numéro WhatsApp de l\'entreprise non configuré.', 'error');
+
+  const month = document.getElementById('fact-month').value;
+  const { abo, comm, total, nbTx, txFee, ca } = calcFactTotal();
+  const note = document.getElementById('fact-note').value.trim();
+
+  const [yr,mo] = month.split('-');
+  const moisLabel = new Date(yr, parseInt(mo)-1).toLocaleString('fr-GN', {month:'long', year:'numeric'});
+
+  const msg = [
+    `*📦 STOCKNET GN — FACTURE MENSUELLE*`,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `🏢 *Société :* ${comp.name}`,
+    `📅 *Période :* ${moisLabel}`,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `📋 Abonnement fixe : *${abo.toLocaleString('fr-GN')} GNF*`,
+    `🔢 Comm. ventes : *${comm.toLocaleString('fr-GN')} GNF*`,
+    `📈 _Détail : ${nbTx} vente(s) × ${txFee.toLocaleString('fr-GN')} GNF/vente_`,
+    note ? `📝 *Note :* ${note}` : ``,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `💰 *TOTAL À PAYER : ${total.toLocaleString('fr-GN')} GNF*`,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `Merci pour votre confiance.`,
+    `_L'équipe StockNet GN_`
+  ].filter(Boolean).join('\n');
+
+  // Enregistrer en historique Firebase
+  db.ref(`companies/${cid}/invoices`).push({
+    month, abo, comm, total, note, nbTx, sentAt: nowStr()
+  }).then(() => {
+    toast('Facture enregistrée et ouverture de WhatsApp...');
+    const url = `https://api.whatsapp.com/send?phone=${comp.whatsapp}&text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
   });
 }
 
 function renderFactureHistory() {
+  const filterCid = document.getElementById('fact-hist-filter')?.value || '';
   const rows = [];
-  Object.entries(_ALL_DATA.companies || {}).forEach(([cid, c]) => {
-    Object.values(c.invoices || {}).forEach(inv => rows.push({ ...inv, compName: c.name }));
+  
+  Object.entries(_ALL_DATA.companies||{}).forEach(([cid, c]) => {
+    if (filterCid && cid !== filterCid) return;
+    Object.entries(c.invoices||{}).forEach(([iid, i]) => {
+      rows.push({ ...i, cid, iid, companyName: c.name, whatsapp: c.whatsapp });
+    });
   });
-  document.querySelector('#table-fact-history tbody').innerHTML = rows.reverse().map(i => `<tr><td><b>${i.compName}</b></td><td>${i.month}</td><td>${gnf(i.abo)}</td><td>${gnf(i.commission)}</td><td><b>${gnf(i.total)}</b></td><td><button class="btn btn-small btn-dark" onclick="toast('Facture déjà enregistrée !')">Enregistrée</button></td></tr>`).join('');
+
+  rows.sort((a,b) => b.sentAt.localeCompare(a.sentAt));
+
+  document.querySelector('#table-facture-history tbody').innerHTML = rows.length ? rows.map(r => `<tr>
+    <td><strong>${r.month}</strong></td>
+    <td>${r.companyName}<br><span style="font-size:11px; color:#25D366">+${r.whatsapp||'—'}</span></td>
+    <td style="font-size:11px; color:#555">${r.sentAt}</td>
+    <td style="font-family:monospace; font-weight:700">${gnf(r.abo)}</td>
+    <td style="font-family:monospace; color:var(--blue)">${gnf(r.comm)}</td>
+    <td style="font-family:monospace; font-weight:800; color:var(--gold)">${gnf(r.total)}</td>
+    <td style="font-size:11px; color:#555">${r.note||'—'}</td>
+    <td>
+      <button class="btn btn-small" onclick="resendInvoiceWA('${r.cid}','${r.month}',${r.abo},${r.comm},${r.total},'${r.note||''}')">🔄 WhatsApp</button>
+      <button class="btn btn-small btn-red" onclick="if(confirm('Effacer cette facture ?')) db.ref('companies/${r.cid}/invoices/${r.iid}').remove()">🗑️</button>
+    </td>
+  </tr>`).join('') : '<tr><td colspan="8" style="text-align:center; color:#333; padding:20px">Aucune facture émise</td></tr>';
 }
 
-function setPrintMode(mode, btn) {
-  _PRINT_MODE = mode; _CURRENT_FORMAT = mode;
-  document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+function resendInvoiceWA(cid, month, abo, comm, total, note) {
+  const comp = _ALL_DATA.companies?.[cid];
+  if(!comp?.whatsapp) return toast('Numéro WhatsApp non renseigné.', 'error');
+  const [yr,mo] = (month||today().slice(0,7)).split('-');
+  const moisLabel = new Date(yr, parseInt(mo)-1).toLocaleString('fr-GN',{month:'long',year:'numeric'});
+  
+  const msg = [
+    `*📦 STOCKNET GN — FACTURE MENSUELLE (RAPPEL)*`,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `🏢 *Société :* ${comp.name}`,
+    `📅 *Période :* ${moisLabel}`,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `📋 Abonnement mensuel : *${abo.toLocaleString('fr-GN')} GNF*`,
+    `🔢 Commission transactions : *${comm.toLocaleString('fr-GN')} GNF*`,
+    note ? `📝 *Note :* ${note}` : ``,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `💰 *TOTAL À PAYER : ${total.toLocaleString('fr-GN')} GNF*`,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `Merci de bien vouloir régulariser.`,
+    `_L'équipe StockNet GN_`
+  ].filter(Boolean).join('\n');
+
+  window.open(`https://api.whatsapp.com/send?phone=${comp.whatsapp}&text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function switchSuperTab(id, btn) {
+  ['stab-dash','stab-lic','stab-fact'].forEach(t => {
+    const el = document.getElementById(t); if(el) el.style.display = 'none';
+  });
+  const tBtn = document.getElementById(id);
+  if(tBtn) tBtn.style.display = 'block';
+
+  const p = btn ? btn.parentNode : null;
+  if(p) p.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+
+/* ══════════════════════════════════════════════ ACTIONS ADMIN CENTRAL ══════════════════════════════════════════════ */
+function createProduct() {
+  const name  = document.getElementById('p-name').value.trim();
+  const price = parseInt(document.getElementById('p-price').value || 0);
+  const qty   = parseInt(document.getElementById('p-qty').value || 0);
+
+  if (!name || isNaN(price) || isNaN(qty) || price < 0 || qty < 0) return toast('Données de produit invalides.', 'error');
+  
+  const refId = `PROD_${Date.now()}`;
+  db.ref(`companies/${_SESSION.companyId}/products/${refId}`).set({ name, price, qty }).then(() => {
+    toast(`Produit "${name}" ajouté.`);
+    ['p-name','p-price','p-qty'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.value='';
+    });
+  });
+}
+
+function createPDV() {
+  const name  = document.getElementById('pdv-name').value.trim();
+  const email = document.getElementById('pdv-email').value.trim();
+  const pin   = document.getElementById('pdv-pin').value.trim();
+
+  if (!name || !email || !pin) return toast('Remplissez tous les champs.', 'error');
+  db.ref(`companies/${_SESSION.companyId}/pdvs/PDV_${Date.now()}`)
+    .set({ name, email, pin, status:'actif' }).then(() => {
+      toast(`Point de vente "${name}" enregistré.`);
+      ['pdv-name','pdv-email','pdv-pin'].forEach(id => {
+        const el = document.getElementById(id); if(el) el.value='';
+      });
+    });
+}
+
+function togglePDVStatus(pid, current) {
+  db.ref(`companies/${_SESSION.companyId}/pdvs/${pid}/status`).set(current==='actif'?'bloqué':'actif')
+    .then(() => toast('Statut mis à jour.'));
+}
+
+function changePDVPin(pid) {
+  const p = prompt('Nouveau code PIN (min 4 caractères) :');
+  if (!p) return;
+  if (p.length < 4) return toast('PIN trop court.', 'error');
+  db.ref(`companies/${_SESSION.companyId}/pdvs/${pid}/pin`).set(p).then(() => toast('PIN mis à jour.'));
+}
+
+function updateTransferInfo() {
+  const pid = document.getElementById('trans-product').value;
+  const aid = document.getElementById('trans-dest').value;
+  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+  const infoEl = document.getElementById('trans-stock-info');
+  const destEl = document.getElementById('trans-dest-info');
+
+  if (!comp || !infoEl || !destEl) return;
+  infoEl.textContent = pid && comp.products?.[pid] ? `Stock central disponible : ${comp.products[pid].qty} unité(s)` : '';
+  destEl.textContent = aid && pid && comp.pdvs?.[aid] ? `Stock actuel de l'agence : ${comp.pdvs[aid].stock?.[pid] || 0} unité(s)` : '';
+}
+
+function executeTransfer() {
+  const pid = document.getElementById('trans-product').value;
+  const aid = document.getElementById('trans-dest').value;
+  const qty = parseInt(document.getElementById('trans-qty').value);
+  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+
+  if (!pid || !aid) return toast('Sélectionnez un produit et une agence.', 'error');
+  if (!qty || qty <= 0) return toast('Quantité invalide.', 'error');
+  if (!comp?.products?.[pid]) return toast('Produit introuvable.', 'error');
+  if (qty > comp.products[pid].qty) return toast(`Stock insuffisant. Disponible : ${comp.products[pid].qty}`, 'error');
+
+  const prod = comp.products[pid];
+  const agence = comp.pdvs[aid];
+  const currStk = agence.stock?.[pid] || 0;
+  const num = docNum('TR');
+  const now = nowStr();
+
+  const updates = {};
+  updates[`companies/${_SESSION.companyId}/products/${pid}/qty`] = prod.qty - qty;
+  updates[`companies/${_SESSION.companyId}/pdvs/${aid}/stock/${pid}`] = currStk + qty;
+  updates[`companies/${_SESSION.companyId}/transfer_logs/TR_${Date.now()}`] = {
+    num, date:now, pid, product:prod.name, from:'Siège', to:agence.name, qty, price:prod.price, by:_SESSION.email
+  };
+
+  db.ref('/').update(updates).then(() => {
+    toast(`Transfert de ${qty} unités réussi.`);
+    document.getElementById('trans-qty').value = '';
+    updateTransferInfo();
+    openPrintOverlay({
+      type:'transfert',
+      data: { num, date:now, compName:comp.name, agence:agence.name, by:_SESSION.email, items:[{name:prod.name, qty, price:prod.price}] }
+    });
+  }).catch(e => toast('Erreur : ' + e.message, 'error'));
+}
+
+/* ══════════════════════════════════════════════ EXÉCUTION DES VENTES (ADMIN & CAISSE) ══════════════════════════════════════════════ */
+function addToCart(mode) {
+  const pfx = mode === 'ADMIN' ? 'admin-' : 'pdv-';
+  const pid = document.getElementById(pfx + 'sale-p').value;
+  const qty = parseInt(document.getElementById(pfx + 'sale-qty').value || 1);
+
+  if (!pid) return toast('Sélectionnez un produit.', 'error');
+  if (isNaN(qty) || qty <= 0) return toast('Quantité invalide.', 'error');
+
+  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+  if (!comp) return;
+
+  const p = comp.products[pid];
+  if (!p) return;
+
+  if (mode === 'PDV') {
+    const dsp = comp.pdvs?.[_SESSION.pdvId]?.stock?.[pid] || 0;
+    if (qty > dsp) return toast(`Stock insuffisant — Disponible : ${dsp}`, 'error');
+  } else {
+    if (qty > p.qty) return toast(`Stock central insuffisant — Disponible : ${p.qty}`, 'error');
+  }
+
+  const cart = mode === 'ADMIN' ? _CART_ADMIN : _CART_PDV;
+  const exist = cart.find(i => i.pid === pid);
+  if (exist) exist.qty += qty;
+  else cart.push({ pid, name:p.name, qty, price:Number(p.price), total:0 });
+
+  cart.forEach(i => i.total = i.price * i.qty);
+  renderCart(mode);
+  document.getElementById(pfx + 'sale-qty').value = 1;
+}
+
+function quickAddPDV(pid) {
+  document.getElementById('pdv-sale-p').value = pid;
+  addToCart('PDV');
+}
+
+function renderCart(mode) {
+  const cart = mode === 'ADMIN' ? _CART_ADMIN : _CART_PDV;
+  const pfx = mode === 'ADMIN' ? 'admin-' : 'pdv-';
+  const listEl = document.getElementById(pfx + 'cart-list');
+  const totEl = document.getElementById(pfx + 'cart-total');
+  let total = 0;
+
+  if (!cart.length) {
+    listEl.innerHTML = '<div style="color:#333; font-size:12px; padding:6px 0">Panier vide</div>';
+    totEl.textContent = '0';
+    return;
+  }
+
+  listEl.innerHTML = cart.map(i => {
+    total += i.total;
+    return `<div class="cart-item">
+      <span style="font-size:12px; flex:1">${i.name} <span style="color:#555">× ${i.qty}</span></span>
+      <strong style="font-family:monospace; font-size:12px; color:var(--gold); margin-right:6px">${gnf(i.total)}</strong>
+      <span style="color:var(--red); cursor:pointer; font-size:16px; font-weight:700" onclick="removeFromCart('${mode}','${i.pid}')">×</span>
+    </div>`;
+  }).join('');
+  totEl.textContent = gnf(total);
+}
+
+function removeFromCart(mode, pid) {
+  if (mode === 'ADMIN') {
+    _CART_ADMIN = _CART_ADMIN.filter(i => i.pid !== pid);
+    renderCart('ADMIN');
+  } else {
+    _CART_PDV = _CART_PDV.filter(i => i.pid !== pid);
+    renderCart('PDV');
+  }
+}
+
+function clearCart(mode) {
+  if (mode === 'ADMIN') {
+    _CART_ADMIN = [];
+    renderCart('ADMIN');
+  } else {
+    _CART_PDV = [];
+    renderCart('PDV');
+  }
+}
+
+function checkoutSale(mode) {
+  const pfx = mode === 'ADMIN' ? 'admin-' : 'pdv-';
+  const cart = mode === 'ADMIN' ? _CART_ADMIN : _CART_PDV;
+  if (!cart.length) return toast('Le panier est vide.', 'error');
+
+  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+  if (!comp) return;
+
+  const nameEl = document.getElementById(pfx + 'client-name');
+  const telEl  = document.getElementById(pfx + 'client-tel');
+  const addrEl = document.getElementById(pfx + 'client-addr');
+
+  const clientName = nameEl?.value.trim() || 'Client Comptant';
+  const clientTel  = telEl?.value.trim()  || '—';
+  const clientAddr = addrEl?.value.trim() || '—';
+
+  const num = docNum('VT');
+  const now = nowStr();
+  let gTotal = 0;
+  let agName = 'Siège';
+
+  const updates = {};
+  for (const i of cart) {
+    if (mode === 'PDV') {
+      const pInfo = comp.pdvs?.[_SESSION.pdvId];
+      if (!pInfo) return;
+      agName = pInfo.name;
+      const dsp = pInfo.stock?.[i.pid] || 0;
+      if (i.qty > dsp) return toast(`Produit "${i.name}" insuffisant en stock.`, 'error');
+      updates[`companies/${_SESSION.companyId}/pdvs/${_SESSION.pdvId}/stock/${i.pid}`] = dsp - i.qty;
+    } else {
+      const p = comp.products[i.pid];
+      if (i.qty > p.qty) return toast(`Produit "${i.name}" insuffisant au stock central.`, 'error');
+      updates[`companies/${_SESSION.companyId}/products/${i.pid}/qty`] = p.qty - i.qty;
+    }
+    gTotal += i.total;
+  }
+
+  updates[`companies/${_SESSION.companyId}/sale_logs/SALE_${Date.now()}`] = {
+    num, date:now, client:clientName, tel:clientTel, addr:clientAddr, agency:agName, by:_SESSION.email, total:gTotal, items:cart.map(i => ({...i}))
+  };
+
+  db.ref('/').update(updates).then(() => {
+    toast(`Vente de ${gnf(gTotal)} enregistrée !`);
+    openPrintOverlay({
+      type:'vente',
+      data:{ num, date:now, compName:comp.name, agency:agName, by:_SESSION.email, client:clientName, tel:clientTel, addr:clientAddr, items:cart.map(i=>({...i})), total:gTotal }
+    });
+    clearCart(mode);
+    [nameEl, telEl, addrEl].forEach(el => { if(el) el.value=''; });
+  }).catch(e => toast('Erreur Firebase : ' + e.message, 'error'));
+}
+
+/* ══════════════════════════════════════════════ IMPRESSIONS MULTI-FORMATS ══════════════════════════════════════════════ */
+function openPrintOverlay(obj) {
+  _PRINT_DATA = obj.data;
+  _SELECTED_DOC_TYPE = obj.type;
+  document.getElementById('print-overlay').classList.add('open');
+
+  // Ajustement type doc
+  document.getElementById('dtype-vente').style.display     = obj.type==='vente'?'inline-block':'none';
+  document.getElementById('dtype-transfert').style.display = obj.type==='transfert'?'inline-block':'none';
+  
+  if (obj.type==='transfert') {
+    switchDocType('transfert', document.getElementById('dtype-transfert'));
+  } else {
+    switchDocType('vente', document.getElementById('dtype-vente'));
+  }
 }
 
 function switchFormat(fmt, btn) {
-  _CURRENT_FORMAT = fmt;
-  ['ticket','a5','a4'].forEach(f => document.getElementById('preview-'+f).classList.toggle('show', f===fmt));
-  document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
+  _SELECTED_FMT = fmt;
+  const p = btn.parentNode;
+  if(p) p.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDocPreview();
 }
 
-function switchDocType(type, btn) {
-  _CURRENT_DOC_TYPE = type;
-  document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
-  if (_PENDING_DOC) { _PENDING_DOC.type = type; renderAllFormats(_PENDING_DOC); }
+function switchDocType(dt, btn) {
+  _SELECTED_DOC_TYPE = dt;
+  const p = btn.parentNode;
+  if(p) p.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDocPreview();
 }
 
-function openPrintOverlay(payload) {
-  _PENDING_DOC = payload; _CURRENT_DOC_TYPE = payload.type;
-  renderAllFormats(payload);
-  document.getElementById('print-overlay').classList.add('open');
-}
+function renderDocPreview() {
+  const d = _PRINT_DATA;
+  if (!d) return;
 
-function closePrintOverlay() { document.getElementById('print-overlay').classList.remove('open'); }
+  ['preview-ticket','preview-a5','preview-a4'].forEach(id => document.getElementById(id).classList.remove('show'));
+  const activeBox = document.getElementById('preview-' + _SELECTED_FMT);
+  if(activeBox) activeBox.classList.add('show');
 
-function renderAllFormats(payload) {
-  const d = payload.data, isT = payload.type === 'transfert';
+  const items = d.items || [];
+  const total = d.total || items.reduce((acc,i) => acc + (i.price*i.qty), 0);
+  const isT = _SELECTED_DOC_TYPE === 'transfert';
   const label = isT ? 'BON DE TRANSFERT' : 'REÇU DE VENTE';
-  const items = isT ? [{name:d.product, qty:d.qty, price:d.price, total:d.qty*d.price}] : (d.items||[]);
-  const total = items.reduce((s,i) => s + (i.total || i.qty*i.price), 0);
 
-  document.querySelectorAll('[id$="-comp"]').forEach(el => el.textContent = d.compName || '');
-  document.querySelectorAll('[id$="-pdv-line"]').forEach(el => el.textContent = isT ? `Expédition vers ${d.agence}` : (d.agency||'Siège'));
-  document.querySelectorAll('[id$="-date"]').forEach(el => el.textContent = d.date);
-  document.querySelectorAll('[id$="-num"]').forEach(el => el.textContent = d.num);
+  if (_SELECTED_FMT === 'ticket') {
+    document.getElementById('t-comp').textContent = d.compName||'';
+    document.getElementById('t-pdv-line').textContent = isT ? `Bordereau : ${d.agence}` : `Agence : ${d.agency||'Siège'}`;
+    document.getElementById('t-date').textContent = d.date;
+    document.getElementById('t-num').textContent = d.num;
 
-  document.getElementById('t-client-block').innerHTML = isT ? `<span>Vers:</span> <b>${d.agence}</b>` : `<span>Client:</span> <b>${d.client}</b>`;
-  document.getElementById('t-items').innerHTML = items.map(i => `<div class="r-row"><span>${i.name} (x${i.qty})</span><b>${gnf(i.total || i.qty*i.price)}</b></div>`).join('');
-  document.getElementById('t-total').textContent = gnf(total);
+    document.getElementById('t-client-block').innerHTML = isT ? `<span>Vers :</span> <strong>${d.agence}</strong>` : `<span>Client :</span> <strong>${d.client}</strong>`;
+    document.getElementById('t-items').innerHTML = items.map(i => `<div class="r-row"><span>${i.name}</span><strong>${i.qty}</strong></div><div style="font-size:10px; color:#555; text-align:right; margin-bottom:5px">${gnf(i.price)} | ${gnf(i.total||i.qty*i.price)}</div>`).join('');
+    document.getElementById('t-total').textContent = gnf(total);
+    document.getElementById('t-ref').textContent = 'N° '+d.num+' — Opérateur : '+d.by;
+  }
 
-  document.getElementById('a5-type-badge').textContent = label;
-  document.getElementById('a5-items').innerHTML = items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${gnf(i.price)}</td><td><b>${gnf(i.total || i.qty*i.price)}</b></td></tr>`).join('');
-  document.getElementById('a5-total').textContent = gnf(total);
+  if (_SELECTED_FMT === 'a5') {
+    document.getElementById('a5-comp').textContent = d.compName||'';
+    document.getElementById('a5-pdv-line').textContent = isT ? `Bon de transfert — Opérateur : ${d.by}` : `Agence : ${d.agency||'Siège'} — Opérateur : ${d.by}`;
+    document.getElementById('a5-type-badge').textContent = label;
+    document.getElementById('a5-date').textContent = d.date;
+    document.getElementById('a5-num').textContent = 'N° : ' + d.num;
 
-  document.getElementById('a4-type-badge').textContent = label;
-  document.getElementById('a4-items').innerHTML = items.map((i,n) => `<tr><td>${n+1}</td><td>${i.name}</td><td>${i.qty}</td><td><b>${gnf(i.total || i.qty*i.price)}</b></td></tr>`).join('');
-  document.getElementById('a4-total').textContent = gnf(total);
+    document.getElementById('a5-client-block').innerHTML = isT ? `<div style="background:#f9f9f9; padding:9px 12px; border-radius:6px; border:1px solid #e0e0e0; font-size:12px"><strong>Destinataire :</strong> ${d.agence} &nbsp;|&nbsp; <strong>Par :</strong> ${d.by}</div>` : `<div style="background:#f9f9f9; padding:9px 12px; border-radius:6px; border:1px solid #e0e0e0; font-size:12px"><strong>Client :</strong> ${d.client} &nbsp;|&nbsp; <strong>Tél :</strong> ${d.tel} ${d.addr?`&nbsp;|&nbsp; <strong>Adresse :</strong> ${d.addr}`:''}</div>`;
 
-  switchFormat(_CURRENT_FORMAT, document.querySelector('.fmt-btn.active'));
+    document.getElementById('a5-items').innerHTML = items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${gnf(i.price)}</td><td><strong>${gnf(i.total||i.qty*i.price)}</strong></td></tr>`).join('');
+    document.getElementById('a5-total').textContent = gnf(total);
+  }
+
+  if (_SELECTED_FMT === 'a4') {
+    document.getElementById('a4-comp').textContent = d.compName||'';
+    document.getElementById('a4-pdv-line').textContent = isT ? `Bon de transfert — Agence : ${d.agence}` : `Point de vente : ${d.agency||'Siège'}`;
+    document.getElementById('a4-type-badge').textContent = label;
+    document.getElementById('a4-date').textContent = d.date;
+    document.getElementById('a4-num').textContent = 'N° : ' + d.num;
+
+    document.getElementById('a4-client-block').innerHTML = isT ? `<div class="r-client-box"><strong>Société de départ :</strong> ${d.compName}<br><strong>Point de vente récepteur :</strong> ${d.agence}<br><strong>Effectué par :</strong> ${d.by}</div>` : `<div class="r-client-box"><strong>Client :</strong> ${d.client}<br><strong>Téléphone :</strong> ${d.tel}<br><strong>Adresse :</strong> ${d.addr||'Non spécifiée'}</div>`;
+
+    document.getElementById('a4-items').innerHTML = items.map((i,idx) => `<tr><td>${idx+1}</td><td><strong>${i.name}</strong></td><td>${i.qty}</td><td>${gnf(i.price)}</td><td style="font-weight:700">${gnf(i.total||i.qty*i.price)}</td></tr>`).join('');
+    document.getElementById('a4-total').textContent = gnf(total);
+  }
 }
 
 function doPrint() {
   const zone = document.getElementById('active-print-zone');
-  zone.innerHTML = document.getElementById('preview-'+_CURRENT_FORMAT).outerHTML;
-  zone.style.display = 'block'; window.print(); zone.style.display = 'none';
+  const copy = document.getElementById('preview-' + _SELECTED_FMT).cloneNode(true);
+  zone.innerHTML = '';
+  zone.appendChild(copy);
+  zone.style.display = 'block';
+  window.print();
+  zone.style.display = 'none';
+  zone.innerHTML = '';
 }
 
-function createProduct() {
-  const name = document.getElementById('p-name').value.trim(), price = parseFloat(document.getElementById('p-price').value), qty = parseInt(document.getElementById('p-qty').value);
-  if (!name || isNaN(price)) return;
-  db.ref(`companies/${_SESSION.companyId}/products/PROD_${Date.now()}`).set({ name, price, qty }).then(() => toast('Produit créé !'));
+function closePrintOverlay() {
+  document.getElementById('print-overlay').classList.remove('open');
+  _PRINT_DATA = null;
 }
 
-function createPDV() {
-  const name = document.getElementById('pdv-name').value.trim(), email = document.getElementById('pdv-email').value.trim(), pin = document.getElementById('pdv-pin').value.trim();
-  if (!name || !email) return;
-  db.ref(`companies/${_SESSION.companyId}/pdvs/PDV_${Date.now()}`).set({ name, email, pin, status: 'actif' }).then(() => toast('Agence créée !'));
+function reprinterBon(l) {
+  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+  if(!comp) return;
+  openPrintOverlay({
+    type:'transfert',
+    data: { num:l.num, date:l.date, compName:comp.name, agence:l.to, by:l.by, items:[{name:l.product, qty:l.qty, price:l.price}] }
+  });
 }
 
-function createClientCompany() {
-  const name = document.getElementById('new-comp-name').value.trim(), email = document.getElementById('new-comp-email').value.trim(), pin = document.getElementById('new-comp-pin').value.trim(), wa = document.getElementById('new-comp-wa').value.trim(), fee = parseFloat(document.getElementById('new-comp-fee').value) || 0;
-  db.ref(`companies/COMP_${Date.now()}`).set({ name, admin_email: email, admin_pin: pin, status: 'actif', whatsapp: wa, monthly_fee: fee }).then(() => toast('Société créée !'));
+function reprinterVente(l) {
+  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+  if(!comp) return;
+  openPrintOverlay({
+    type:'vente',
+    data: { num:l.num, date:l.date, compName:comp.name, agency:l.agency, client:l.client, tel:l.tel, addr:l.addr, by:l.by, total:l.total, items:l.items }
+  });
 }
 
-function toggleCompanyStatus(cid, current) { db.ref(`companies/${cid}/status`).set(current==='actif'?'bloqué':'actif'); }
-function togglePDVStatus(pid, current) { db.ref(`companies/${_SESSION.companyId}/pdvs/${pid}/status`).set(current==='actif'?'bloqué':'actif'); }
-
-function executeTransfer() {
-  const pid = document.getElementById('trans-product').value, aid = document.getElementById('trans-dest').value, qty = parseInt(document.getElementById('trans-qty').value);
-  const comp = _ALL_DATA.companies[_SESSION.companyId];
-  if (!pid || !aid || qty > comp.products[pid].qty) return;
-
+function openProductBatchModal() { document.getElementById('batch-modal').style.display='flex'; }
+function closeProductBatchModal() { document.getElementById('batch-modal').style.display='none'; }
+function executeBatchImport() {
+  const raw = document.getElementById('batch-csv').value.trim();
+  if(!raw) return toast('Veuillez saisir des lignes de produits.', 'error');
+  const lines = raw.split('\n');
+  let importCount = 0;
   const updates = {};
-  updates[`companies/${_SESSION.companyId}/products/${pid}/qty`] = comp.products[pid].qty - qty;
-  updates[`companies/${_SESSION.companyId}/pdvs/${aid}/stock/${pid}`] = (comp.pdvs[aid].stock?.[pid] || 0) + qty;
-  updates[`companies/${_SESSION.companyId}/transfer_logs/TR_${Date.now()}`] = { date: nowStr(), product: comp.products[pid].name, to: comp.pdvs[aid].name, qty, num: docNum('TR'), compName: comp.name };
 
-  db.ref().update(updates).then(() => toast('Transfert validé !'));
-}
-
-function addToCart(mode) {
-  const pfx = mode==='ADMIN'?'admin-':'pdv-';
-  const pid = document.getElementById(pfx+'sale-p').value, qty = parseInt(document.getElementById(pfx+'sale-qty').value) || 1;
-  const comp = _ALL_DATA.companies[_SESSION.companyId], p = comp.products[pid];
-  const cart = mode==='ADMIN'?_CART_ADMIN:_CART_PDV;
-
-  cart.push({ pid, name: p.name, qty, price: p.price, total: p.price*qty });
-  renderCart(mode);
-}
-
-function quickAddPDV(pid) { document.getElementById('pdv-sale-p').value = pid; addToCart('PDV'); }
-
-function renderCart(mode) {
-  const cart = mode==='ADMIN'?_CART_ADMIN:_CART_PDV;
-  const pfx = mode==='ADMIN'?'admin-':'pdv-';
-  let t = 0;
-  document.getElementById(pfx+'cart-list').innerHTML = cart.map(i => { t+=i.total; return `<div>${i.name} (x${i.qty}) - <b>${gnf(i.total)}</b></div>`; }).join('');
-  document.getElementById(pfx+'cart-total').textContent = t.toLocaleString('fr-GN');
-}
-
-function finalizeSale(mode) {
-  const pfx = mode==='ADMIN'?'admin-':'pdv-';
-  const name = document.getElementById('client-name-'+pfx.replace('-','')).value.trim(), tel = document.getElementById('client-tel-'+pfx.replace('-','')).value.trim();
-  const cart = mode==='ADMIN'?_CART_ADMIN:_CART_PDV, comp = _ALL_DATA.companies[_SESSION.companyId];
-
-  if (!name || !tel || cart.length === 0) return toast('Informations manquantes !', 'error');
-  const updates = {}, num = docNum('VE'), now = nowStr();
-  let total = 0;
-
-  cart.forEach(i => {
-    total += i.total;
-    if (mode==='ADMIN') updates[`companies/${_SESSION.companyId}/products/${i.pid}/qty`] = comp.products[i.pid].qty - i.qty;
-    else updates[`companies/${_SESSION.companyId}/pdvs/${_SESSION.pdvId}/stock/${i.pid}`] = comp.pdvs[_SESSION.pdvId].stock[i.pid] - i.qty;
+  lines.forEach(line => {
+    const p = line.split(';');
+    if(p.length >= 2) {
+      const name = p[0].trim();
+      const price = parseInt(p[1].trim()||0);
+      const qty = parseInt(p[2] ? p[2].trim() : 0);
+      if(name && !isNaN(price) && !isNaN(qty)) {
+        updates[`companies/${_SESSION.companyId}/products/PROD_${Date.now()}_${importCount}`] = { name, price, qty };
+        importCount++;
+      }
+    }
   });
 
-  updates[`companies/${_SESSION.companyId}/sale_logs/VE_${Date.now()}`] = { num, date: now, client: name, tel, total, items: cart, agency: mode==='PDV'?comp.pdvs[_SESSION.pdvId].name:'Siège', compName: comp.name };
-  
-  db.ref().update(updates).then(() => {
-    toast('Vente finalisée !');
-    openPrintOverlay({ type: 'vente', data: { num, date: now, compName: comp.name, client: name, tel, items: cart, total, agency: mode==='PDV'?comp.pdvs[_SESSION.pdvId].name:'Siège' } });
-    if (mode==='ADMIN') _CART_ADMIN = []; else _CART_PDV = [];
-    renderCart(mode);
-  });
+  if (importCount > 0) {
+    db.ref('/').update(updates).then(() => {
+      toast(`Importation de ${importCount} produit(s) réussie !`);
+      document.getElementById('batch-csv').value = '';
+      closeProductBatchModal();
+    });
+  } else {
+    toast('Format incorrect. Assurez-vous d\'utiliser le point-virgule ( ; ).', 'error');
+  }
 }
 
-function reprinterBon(l) { openPrintOverlay({ type: 'transfert', data: l }); }
-function reprinterVente(v) { openPrintOverlay({ type: 'vente', data: v }); }
 function renderPDVHistory() {
-  const comp = _ALL_DATA.companies[_SESSION.companyId];
-  const agName = comp?.pdvs[_SESSION.pdvId]?.name;
-  const logs = Object.values(comp?.sale_logs || {}).filter(v => v.agency === agName).reverse();
-  document.querySelector('#table-pdv-history tbody').innerHTML = logs.map(v => `<tr><td>${v.date}</td><td>${v.num}</td><td>${v.client}</td><td><b>${gnf(v.total)}</b></td><td><button class="btn btn-small" onclick='reprinterVente(${JSON.stringify(v)})'>🖨️</button></td></tr>`).join('');
+  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+  if (!comp) return;
+  const myName = comp.pdvs?.[_SESSION.pdvId]?.name;
+  const logs = Object.entries(comp.sale_logs||{})
+    .filter(([,v]) => v.agency === myName)
+    .reverse().slice(0,60);
+
+  document.querySelector('#table-pdv-history tbody').innerHTML = logs.length ? logs.map(([,v]) => `<tr>
+    <td style="font-size:11px; font-family:monospace">${v.date}</td>
+    <td><span style="background:rgba(242,201,76,.15); color:#f2c94c; padding:2px 7px; border-radius:4px; font-size:11px; font-family:monospace">${v.num||'—'}</span></td>
+    <td>${v.client}</td>
+    <td style="font-size:11px; color:#666">${v.tel||'—'}</td>
+    <td style="font-weight:700; color:var(--green)">${gnf(v.total)}</td>
+    <td><button class="btn btn-small btn-dark" onclick='reprinterVente(${JSON.stringify(v)})'>🖨️ Ticket</button></td>
+  </tr>`).join('') : '<tr><td colspan="6" style="text-align:center; color:#333; padding:20px">Aucune vente effectuée</td></tr>';
 }
 </script>
 </body>

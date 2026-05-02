@@ -5,114 +5,325 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="StockNet GN — Gestion de stock multi-agences, transferts temps réel, impressions multi-formats.">
   <meta name="theme-color" content="#f2c94c">
-  <meta property="og:title" content="StockNet GN — Gestion de Stock Réseau">
-  <meta property="og:description" content="Solution complète : Dashboard Admin, points de vente, transferts automatiques.">
-  <title>StockNet GN - Solution Intégrale 2026</title>
-
+  <title>StockNet GN — Master 2026</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23f2c94c'/><text y='.9em' font-size='75' x='12'>📦</text></svg>">
+  
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
   <style>
-    /* ══════════════════ VARIABLES & BASE ══════════════════ */
+    /* ═══════════════════════════ VARIABLES & RESET ═══════════════════════════ */
     :root {
       --gold:#f2c94c; --bg:#05050a; --card:#0f0f1e; --text:#e4e6f4;
-      --border:rgba(255,255,255,0.1); --red:#eb5757; --green:#27ae60;
-      --blue:#2f80ed; --purple:#9b59b6;
+      --border:rgba(255,255,255,0.1); --red:#eb5757; --green:#27ae60; --blue:#2f80ed; --purple:#9b59b6;
     }
-    *,*::before,*::after{box-sizing:border-box}
-    body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);margin:0;padding-bottom:60px}
-    header{background:#0b0b1d;padding:15px 30px;border-bottom:2px solid var(--gold);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:1000}
-    .logo{font-size:20px;font-weight:900;color:var(--gold);letter-spacing:1px}
-    .container{max-width:1350px;margin:20px auto;padding:0 20px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:24px;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}
-    .tabs{display:flex;gap:10px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:10px;overflow-x:auto}
-    .tab-btn{background:none;border:1px solid var(--border);color:#888;padding:10px 20px;border-radius:6px;cursor:pointer;white-space:nowrap;transition:all .2s;font-size:13px;font-weight:600}
-    .tab-btn.active{background:var(--gold);color:#000;font-weight:bold;border-color:var(--gold)}
-    .tab-btn:hover:not(.active){border-color:var(--gold);color:var(--gold)}
-    h3{color:var(--gold);text-transform:uppercase;font-size:11px;margin-top:0;border-left:3px solid var(--gold);padding-left:10px;margin-bottom:18px;letter-spacing:1px}
-    input,select{width:100%;padding:12px;margin:8px 0;background:#000;border:1px solid var(--border);color:#fff;border-radius:8px;box-sizing:border-box;font-size:13px}
-    input:focus,select:focus{outline:none;border-color:var(--gold)}
-    .btn{background:var(--gold);color:#000;border:none;padding:12px;border-radius:8px;cursor:pointer;font-weight:800;width:100%;text-transform:uppercase;transition:all .2s;font-size:13px;letter-spacing:0.5px}
-    .btn:hover{opacity:0.9;transform:translateY(-1px)}
-    .btn-blue{background:var(--blue);color:#fff}
-    .btn-green{background:var(--green);color:#fff}
-    .btn-red{background:var(--red);color:#fff}
-    .btn-purple{background:var(--purple);color:#fff}
-    .btn-dark{background:#222;color:#aaa;border:1px solid var(--border)}
-    .btn-dark:hover{border-color:var(--gold);color:var(--gold)}
-    .btn-back{background:#1a1a2e;color:#aaa;border:1px solid var(--border);width:auto;padding:8px 18px;font-size:12px;border-radius:8px;cursor:pointer;margin-bottom:18px;transition:all .2s}
-    .btn-back:hover{border-color:var(--gold);color:var(--gold)}
-    table{width:100%;border-collapse:collapse;font-size:13px}
-    th{text-align:left;padding:12px;color:#6e6e8e;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:0.5px}
-    td{padding:11px 12px;border-bottom:1px solid rgba(255,255,255,0.03);vertical-align:middle}
-    .st-badge{padding:4px 10px;border-radius:12px;font-size:10px;font-weight:700;text-transform:uppercase}
-    .st-actif{background:rgba(39,174,96,0.15);color:#2ecc71}
-    .st-bloque{background:rgba(235,87,87,0.15);color:#eb5757}
-    #toast-container{position:fixed;bottom:24px;right:24px;z-index:9999}
-    .toast{background:#1a1a2e;border-left:4px solid var(--gold);color:var(--text);padding:14px 20px;border-radius:8px;font-size:13px;margin-top:8px;box-shadow:0 8px 24px rgba(0,0,0,0.5);min-width:250px;animation:slide .3s ease-out}
-    .toast.error{border-left-color:var(--red)}
-    @keyframes slide{from{opacity:0;transform:translateX(50px)}to{opacity:1;transform:translateX(0)}}
-    #active-print-zone{display:none}
-    @media print{
-      body * {visibility:hidden !important}
-      #active-print-zone,#active-print-zone *{visibility:visible !important}
-      #active-print-zone{display:block !important;position:absolute;top:0;left:0;width:100%;background:#fff !important;color:#000 !important}
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:60px; -webkit-font-smoothing:antialiased; }
+    ::-webkit-scrollbar { width:5px; height:5px; }
+    ::-webkit-scrollbar-track { background:var(--bg); }
+    ::-webkit-scrollbar-thumb { background:#2a2a40; border-radius:10px; }
+    ::-webkit-scrollbar-thumb:hover { background:var(--gold); }
+
+    /* ═══════════════════════════ LAYOUT ═══════════════════════════ */
+    header { background:#0b0b1d; padding:14px 28px; border-bottom:2px solid var(--gold); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:1000; }
+    .logo { font-size:19px; font-weight:900; color:var(--gold); letter-spacing:1px; display:flex; align-items:center; gap:8px; }
+    .container { max-width:1200px; margin:22px auto; padding:0 20px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 10px 30px rgba(0,0,0,.4); }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; }
+
+    /* ═══════════════════════════ ONGLETS ═══════════════════════════ */
+    .tabs { display:flex; gap:8px; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px; overflow-x:auto; }
+    .tab-btn { background:none; border:1px solid var(--border); color:#888; padding:9px 18px; border-radius:6px; cursor:pointer; white-space:nowrap; font-size:13px; transition:all .2s; }
+    .tab-btn:hover:not(.active) { border-color:var(--gold); color:var(--gold); }
+    .tab-btn.active { background:var(--gold); color:#000; font-weight:700; border-color:var(--gold); }
+
+    /* ═══════════════════════════ TITRES ═══════════════════════════ */
+    h3 { color:var(--gold); text-transform:uppercase; font-size:11px; letter-spacing:1.2px; margin:0 0 16px; border-left:3px solid var(--gold); padding-left:10px; }
+
+    /* ═══════════════════════════ FORMULAIRES ═══════════════════════════ */
+    input, select { width:100%; padding:11px 13px; margin:7px 0; background:#080816; border:1px solid var(--border); color:#fff; border-radius:8px; font-size:13px; transition:border-color .2s; }
+    input:focus, select:focus { outline:none; border-color:var(--gold); }
+    input::placeholder { color:#444; }
+    select option { background:#0f0f1e; }
+    .field-label { display:block; font-size:10px; color:#666; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px; margin-top:8px; }
+
+    /* ═══════════════════════════ BOUTONS ═══════════════════════════ */
+    .btn { background:var(--gold); color:#000; border:none; padding:11px 16px; border-radius:8px; cursor:pointer; font-weight:800; font-size:13px; width:100%; text-transform:uppercase; letter-spacing:.5px; transition:all .2s; }
+    .btn:hover { opacity:.88; transform:translateY(-1px); }
+    .btn:active { transform:translateY(0); }
+    .btn-blue   { background:var(--blue);   color:#fff; }
+    .btn-green  { background:var(--green);  color:#fff; }
+    .btn-red    { background:var(--red);    color:#fff; }
+    .btn-dark   { background:#1a1a2e; color:#aaa; border:1px solid var(--border); }
+    .btn-dark:hover { border-color:var(--gold); color:var(--gold); }
+    .btn-back { display:inline-flex; align-items:center; gap:6px; background:#111128; color:#888; border:1px solid var(--border); padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; width:auto; margin-bottom:18px; transition:all .2s; text-transform:none; letter-spacing:0; }
+    .btn-back:hover { border-color:var(--gold); color:var(--gold); }
+    .btn-small  { padding:5px 11px; font-size:11px; width:auto; margin:2px; border-radius:5px; }
+    .btn-icon   { padding:10px 14px; font-size:13px; width:auto; }
+    .btn-inline { width:auto; padding:9px 18px; }
+
+    /* ═══════════════════════════ TABLEAUX ═══════════════════════════ */
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    thead th { text-align:left; padding:11px 12px; color:#5a5a7a; border-bottom:1px solid var(--border); font-size:10px; text-transform:uppercase; letter-spacing:.8px; white-space:nowrap; }
+    tbody td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.025); vertical-align:middle; }
+    tbody tr:hover { background:rgba(255,255,255,.02); }
+    .st-badge { padding:3px 8px; border-radius:12px; font-size:10px; font-weight:700; white-space:nowrap; }
+    .st-actif  { background:rgba(39,174,96,.2);  color:#2ecc71; }
+    .st-bloque { background:rgba(235,87,87,.2);  color:#eb5757; }
+    .st-warn   { background:rgba(242,201,76,.2); color:#f2c94c; }
+
+    /* ═══════════════════════════ BOÎTES INFO ═══════════════════════════ */
+    .info-box { background:rgba(47,128,237,.08); border:1px solid rgba(47,128,237,.25); border-radius:8px; padding:11px 14px; font-size:12px; color:#7ec8e3; margin-bottom:12px; line-height:1.5; }
+    .warn-box { background:rgba(242,201,76,.08); border:1px solid rgba(242,201,76,.25); border-radius:8px; padding:11px 14px; font-size:12px; color:#f2c94c; margin-bottom:12px; }
+    .empty-state { text-align:center; padding:40px 20px; color:#333; }
+    .empty-state .ei { font-size:42px; margin-bottom:12px; opacity:.5; }
+
+    /* ═══════════════════════════ TOASTS ═══════════════════════════ */
+    #toast-container { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+    .toast { background:#12122a; border:1px solid var(--gold); color:var(--text); padding:13px 18px; border-radius:10px; font-size:13px; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,.5); animation:tIn .3s ease; max-width:340px; line-height:1.4; }
+    .toast.ok    { border-color:var(--green); }
+    .toast.error { border-color:var(--red); }
+    @keyframes tIn { from { transform:translateX(40px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+
+    /* ═══════════════════════════ PANIER ═══════════════════════════ */
+    .cart-item { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.05); gap:8px; }
+
+    /* ═══════════════════════════ TUILES PRODUITS ═══════════════════════════ */
+    .prod-tile { background:#080816; border:1px solid var(--border); border-radius:8px; padding:10px; cursor:pointer; text-align:center; transition:all .18s; user-select:none; }
+    .prod-tile:hover { border-color:var(--gold); background:rgba(242,201,76,.06); transform:translateY(-1px); }
+
+    /* ═══════════════════════════ OVERLAY D'IMPRESSION ═══════════════════════════ */
+    #print-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:4000; align-items:flex-start; justify-content:center; padding:20px; overflow-y:auto; }
+    #print-overlay.open { display:flex; }
+    .print-modal { background:#0d0d20; border:1px solid var(--gold); border-radius:16px; padding:26px; width:100%; max-width:860px; margin:auto; }
+    .fmt-tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+    .fmt-btn { padding:8px 16px; border-radius:7px; border:1px solid var(--border); background:none; color:#888; cursor:pointer; font-size:12px; font-weight:700; transition:all .2s; }
+    .fmt-btn.active { background:var(--gold); color:#000; border-color:var(--gold); font-weight:700; }
+    .print-preview-wrap { background:#f0f0f0; border-radius:8px; padding:16px; overflow-x:auto; }
+
+    /* Formats de reçus */
+    #preview-ticket { display:none; width:302px; margin:0 auto; background:#fff; color:#111; font-family:'Courier New',monospace; font-size:12px; padding:14px; border-radius:4px; }
+    #preview-a5     { display:none; width:560px; margin:0 auto; background:#fff; color:#111; font-family:'Segoe UI',sans-serif; font-size:13px; padding:28px; border-radius:4px; }
+    #preview-a4     { display:none; width:794px; margin:0 auto; background:#fff; color:#111; font-family:'Segoe UI',sans-serif; font-size:13px; padding:40px; border-radius:4px; }
+    #preview-ticket.show, #preview-a5.show, #preview-a4.show { display:block; }
+
+    .r-sep      { border:none; border-top:1px dashed #999; margin:8px 0; }
+    .r-row      { display:flex; justify-content:space-between; margin-bottom:4px; font-size:12px; align-items:center; }
+    .r-total-line { display:flex; justify-content:space-between; border-top:2px solid #111; padding-top:8px; margin-top:8px; font-weight:900; font-size:15px; }
+    .r-footer-receipt { text-align:center; font-size:10px; color:#666; margin-top:10px; padding-top:8px; border-top:1px dashed #ccc; line-height:1.6; }
+    .r-table { width:100%; border-collapse:collapse; margin:14px 0; }
+    .r-table thead th { background:#f5f5f5; padding:9px 11px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:#555; border:1px solid #e0e0e0; }
+    .r-table tbody td { padding:9px 11px; border:1px solid #efefef; font-size:13px; }
+    .r-total-box { background:#111; color:#fff; padding:14px 18px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+    .r-total-box .r-lbl { font-size:13px; font-weight:600; opacity:.8; }
+    .r-total-box .r-amt { font-size:22px; font-weight:900; color:#f2c94c; }
+    .r-client-box { background:#f9f9f9; border:1px solid #e0e0e0; border-radius:8px; padding:14px; margin-top:14px; font-size:13px; }
+    .r-footer-a4  { text-align:center; font-size:11px; color:#999; margin-top:24px; padding-top:12px; border-top:1px solid #e0e0e0; line-height:1.7; }
+
+    /* Impression réelle */
+    @media print {
+      body, body * { visibility:hidden !important; }
+      #active-print-zone, #active-print-zone * { visibility:visible !important; }
+      #active-print-zone { position:fixed !important; top:0 !important; left:0 !important; width:100% !important; background:#fff !important; z-index:99999 !important; padding:0 !important; }
     }
-    .print-mode-btn{border:1px solid var(--border);background:none;color:#888;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;transition:all .2s}
-    .print-mode-btn.active{background:var(--gold);color:#000;border-color:var(--gold);font-weight:700}
+
+    @media (max-width:768px) {
+      header { padding:12px 16px; }
+      .container { padding:0 12px; }
+      .grid { grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
 
-<div id="active-print-zone"></div>
+<div id="active-print-zone" style="display:none"></div>
 
-<div id="login-screen" style="height:100vh;display:flex;align-items:center;justify-content:center">
-  <div class="card" style="width:380px;text-align:center;border-top:4px solid var(--gold)">
-    <h2 style="color:var(--gold);margin-bottom:4px;font-size:24px">STOCKNET GN</h2>
-    <p style="color:#666;font-size:13px;margin-bottom:24px">Solution Intégrale de Gestion de Stock</p>
-    <input id="auth-email" type="email" placeholder="Email ou identifiant">
-    <input id="auth-pin" type="password" placeholder="Code PIN">
-    <button class="btn btn-blue" onclick="handleAuth()" style="margin-top:8px">Accéder à la plateforme</button>
-    <p id="auth-err" style="color:var(--red);font-size:12px;margin-top:12px;display:none;font-weight:600">Identifiants incorrects.</p>
+<div id="loading-screen" style="position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:9999; flex-direction:column; gap:14px">
+  <div style="font-size:48px">📦</div>
+  <div style="width:40px; height:40px; border:3px solid rgba(242,201,76,.2); border-top-color:var(--gold); border-radius:50%; animation:spin .7s linear infinite"></div>
+  <div style="color:#555; font-size:13px; margin-top:4px">Connexion à Firebase…</div>
+</div>
+
+<style>@keyframes spin { to { transform:rotate(360deg); } }</style>
+
+<div id="print-overlay">
+  <div class="print-modal">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px">
+      <div>
+        <div style="font-size:15px; font-weight:800; color:var(--gold); text-transform:uppercase">🖨️ Aperçu & Impression</div>
+        <div style="font-size:11px; color:#555; margin-top:3px">Choisissez le format avant d'imprimer</div>
+      </div>
+      <button onclick="closePrintOverlay()" style="background:none; border:none; color:#555; font-size:28px; cursor:pointer; line-height:1">×</button>
+    </div>
+    <div class="fmt-tabs">
+      <button class="fmt-btn active" onclick="switchFormat('ticket',this)">🧾 Ticket 80mm</button>
+      <button class="fmt-btn"        onclick="switchFormat('a5',this)">📄 Format A5</button>
+      <button class="fmt-btn"        onclick="switchFormat('a4',this)">📋 Format A4</button>
+    </div>
+    <div class="fmt-tabs" style="margin-bottom:18px">
+      <button class="fmt-btn active" id="dtype-vente"      onclick="switchDocType('vente',this)">💰 Reçu de vente</button>
+      <button class="fmt-btn"        id="dtype-transfert"  onclick="switchDocType('transfert',this)">🚚 Bon de transfert</button>
+    </div>
+    <div class="print-preview-wrap">
+      <div id="preview-ticket">
+        <div style="text-align:center; margin-bottom:10px">
+          <div style="font-size:16px; font-weight:900; text-transform:uppercase" id="t-comp"></div>
+          <div style="font-size:11px; margin-top:2px; color:#444" id="t-pdv-line"></div>
+          <div style="font-size:10px; color:#777; margin-top:2px" id="t-date"></div>
+        </div>
+        <hr class="r-sep">
+        <div class="r-row"><span>N° Doc.</span><strong id="t-num"></strong></div>
+        <div id="t-client-block" style="margin:5px 0"></div>
+        <hr class="r-sep">
+        <div style="font-size:10px; text-transform:uppercase; color:#777; margin-bottom:7px">Désignation · Qté · Montant</div>
+        <div id="t-items"></div>
+        <div class="r-total-line"><span>TOTAL</span><strong id="t-total"></strong></div>
+        <div class="r-footer-receipt">Merci pour votre confiance !<br>StockNet GN — Conakry<br><span id="t-ref" style="font-size:9px"></span></div>
+      </div>
+      <div id="preview-a5">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; padding-bottom:14px; border-bottom:2px solid #111">
+          <div>
+            <div style="font-size:19px; font-weight:900; text-transform:uppercase" id="a5-comp"></div>
+            <div style="font-size:11px; color:#666; margin-top:3px" id="a5-pdv-line"></div>
+          </div>
+          <div style="text-align:right">
+            <div style="background:#111; color:#fff; padding:5px 12px; border-radius:5px; font-size:11px; font-weight:700" id="a5-type-badge"></div>
+            <div style="font-size:11px; color:#666; margin-top:7px" id="a5-date"></div>
+            <div style="font-size:12px; font-weight:700; margin-top:2px" id="a5-num"></div>
+          </div>
+        </div>
+        <div id="a5-client-block" style="margin-bottom:14px"></div>
+        <table class="r-table">
+          <thead><tr><th>Désignation</th><th>Qté</th><th>Prix Unit.</th><th>Montant</th></tr></thead>
+          <tbody id="a5-items"></tbody>
+          <tfoot><tr><td colspan="3" style="text-align:right; font-weight:700">TOTAL</td><td id="a5-total" style="font-weight:900; font-size:15px"></td></tr></tfoot>
+        </table>
+        <div class="r-footer-a4">StockNet GN — Solution Intégrale de Gestion — Conakry, Guinée</div>
+      </div>
+      <div id="preview-a4">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:26px; padding-bottom:18px; border-bottom:3px solid #111">
+          <div>
+            <div style="font-size:26px; font-weight:900; text-transform:uppercase" id="a4-comp"></div>
+            <div style="font-size:12px; color:#666; margin-top:4px" id="a4-pdv-line"></div>
+          </div>
+          <div style="text-align:right">
+            <div style="background:#111; color:#fff; padding:6px 16px; border-radius:6px; font-size:12px; font-weight:700; text-transform:uppercase" id="a4-type-badge"></div>
+            <div style="font-size:12px; color:#555; margin-top:10px" id="a4-date"></div>
+            <div style="font-size:13px; font-weight:800; margin-top:2px" id="a4-num"></div>
+          </div>
+        </div>
+        <div id="a4-client-block" style="margin-bottom:16px"></div>
+        <table class="r-table">
+          <thead><tr><th>#</th><th>Désignation</th><th>Quantité</th><th>Montant (GNF)</th></tr></thead>
+          <tbody id="a4-items"></tbody>
+        </table>
+        <div class="r-total-box"><span class="r-lbl">TOTAL À PAYER</span><span class="r-amt" id="a4-total"></span></div>
+        <div id="a4-client-box"></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:32px">
+          <div style="border-top:1px solid #ccc; padding-top:8px; text-align:center; font-size:12px; color:#666">Signature Vendeur / Expéditeur</div>
+          <div style="border-top:1px solid #ccc; padding-top:8px; text-align:center; font-size:12px; color:#666">Signature Client / Receveur</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:18px; padding-top:14px; border-top:1px solid var(--border)">
+      <button onclick="closePrintOverlay()" class="btn btn-dark btn-inline">Fermer</button>
+      <button onclick="doPrint()" class="btn btn-inline">🖨️ Imprimer</button>
+    </div>
+  </div>
+</div>
+
+<div id="login-screen" style="display:none; min-height:100vh; align-items:center; justify-content:center; padding:20px">
+  <div style="width:100%; max-width:380px">
+    <div style="text-align:center; margin-bottom:28px">
+      <div style="font-size:54px; margin-bottom:10px">📦</div>
+      <div style="font-size:22px; font-weight:900; color:var(--gold)">STOCKNET GN</div>
+      <div style="font-size:12px; color:#444; margin-top:5px">Gestion de Stock de Réseau</div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--gold)">
+      <h3>Accès Plateforme</h3>
+      <label class="field-label">Email / Identifiant</label>
+      <input id="auth-email" type="email" placeholder="votre@email.com">
+      <label class="field-label">Code PIN</label>
+      <input id="auth-pin" type="password" placeholder="••••••">
+      <button class="btn" style="margin-top:12px" onclick="handleAuth()">🔐 Connexion</button>
+      <div id="auth-err" style="display:none; color:var(--red); font-size:12px; text-align:center; margin-top:10px; padding:8px; background:rgba(235,87,87,.1)">
+        Identifiants incorrects.
+      </div>
+    </div>
   </div>
 </div>
 
 <div id="app-screen" style="display:none">
   <header>
-    <div class="logo">📦 STOCKNET <span id="display-comp-name" style="color:white;font-size:12px;opacity:.6"></span></div>
-    <div style="display:flex;align-items:center;gap:16px">
-      <span id="header-user-info" style="font-size:12px;color:#888"></span>
-      <button class="btn btn-red" style="width:auto;padding:6px 14px;font-size:12px" onclick="location.reload()">Quitter</button>
+    <div class="logo">📦 STOCKNET <span id="display-comp-name" style="color:#fff; font-size:12px; font-weight:400; opacity:.45"></span></div>
+    <div style="display:flex; align-items:center; gap:12px">
+      <span id="header-role-badge" style="font-size:11px; padding:3px 10px; border-radius:12px; font-weight:700"></span>
+      <button class="btn btn-red btn-inline" style="padding:7px 16px; font-size:12px" onclick="doLogout()">Déconnexion</button>
     </div>
   </header>
-
   <div class="container">
+
     <div id="view-super" style="display:none">
+      <div style="display:flex; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px">
+        <div>
+          <div style="font-size:22px; font-weight:800">🛡️ Super Administration</div>
+          <div style="font-size:13px; color:#555; margin-top:3px">Contrôle global · Licences · Factures</div>
+        </div>
+      </div>
+      
       <div class="tabs">
-        <button class="tab-btn active" onclick="switchTabSA('sa-clients',this)">🏢 Entreprises</button>
-        <button class="tab-btn" onclick="switchTabSA('sa-factures',this)">📄 Factures & Rappels</button>
-        <button class="tab-btn" onclick="switchTabSA('sa-config',this)">⚙️ Paramètres</button>
+        <button class="tab-btn active" onclick="switchSuperTab('stab-dash',this)">📊 Tableau de Bord</button>
+        <button class="tab-btn"        onclick="switchSuperTab('stab-lic',this)">📋 Licences</button>
+        <button class="tab-btn"        onclick="switchSuperTab('stab-fact',this)">💳 Facturation WhatsApp</button>
       </div>
 
-      <div id="sa-clients" class="sa-tab-content">
+      <div id="stab-dash">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:22px">
+          <div class="card" style="border-top:3px solid var(--purple); text-align:center">
+            <div style="font-size:26px; font-weight:900; color:var(--purple)" id="kpi-companies">—</div>
+            <div style="font-size:10px; text-transform:uppercase; color:#555; margin-top:4px">Licences actives</div>
+          </div>
+          <div class="card" style="border-top:3px solid var(--green); text-align:center">
+            <div style="font-size:26px; font-weight:900; color:var(--green)" id="kpi-pdv">—</div>
+            <div style="font-size:10px; text-transform:uppercase; color:#555; margin-top:4px">Points de vente</div>
+          </div>
+          <div class="card" style="border-top:3px solid var(--gold); text-align:center">
+            <div style="font-size:20px; font-weight:900; color:var(--gold)" id="kpi-ca">—</div>
+            <div style="font-size:10px; text-transform:uppercase; color:#555; margin-top:4px">CA global (mois)</div>
+          </div>
+          <div class="card" style="border-top:3px solid var(--blue); text-align:center">
+            <div style="font-size:24px; font-weight:900; color:var(--blue)" id="kpi-tx-mois">—</div>
+            <div style="font-size:10px; text-transform:uppercase; color:#555; margin-top:4px">Ventes ce mois</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>📈 Statistiques des Entreprises (Mois en cours)</h3>
+          <div style="overflow-x:auto">
+            <table id="table-super-activity">
+              <thead><tr><th>Société</th><th>Agences</th><th>Ventes (Mois)</th><th>CA (Mois)</th><th>Commission (200 GNF/vte)</th><th>État</th><th>Actions</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="stab-lic" style="display:none">
         <div class="grid">
           <div class="card">
-            <h3>🛡️ Déployer une Licence Client</h3>
-            <input id="new-comp-name" placeholder="Nom de l'Entreprise">
-            <input id="new-comp-email" type="email" placeholder="Email Administrateur">
-            <input id="new-comp-pin" placeholder="Code PIN Admin">
-            <input id="new-comp-wa" placeholder="WhatsApp Admin (ex: 224622111111)">
-            <input id="new-comp-abo" type="number" placeholder="Montant Mensuel Fixe (GNF)">
-            <button class="btn btn-blue" style="margin-top:8px" onclick="createClientCompany()">Enregistrer la Licence</button>
+            <h3>🛡️ Enregistrer une Entreprise Client</h3>
+            <label class="field-label">Nom de la société</label><input id="new-comp-name" placeholder="Ex: ETS Diallo">
+            <label class="field-label">Email administrateur</label><input id="new-comp-email" type="email" placeholder="admin@ets.com">
+            <label class="field-label">PIN administrateur</label><input id="new-comp-pin" placeholder="PIN maître">
+            <label class="field-label">WhatsApp (format international)</label><input id="new-comp-wa" placeholder="Ex: 224622000000">
+            <label class="field-label">Abonnement Mensuel fixe (GNF)</label><input id="new-comp-fee" type="number" placeholder="Ex: 500000">
+            <button class="btn btn-blue" style="margin-top:12px" onclick="createClientCompany()">➕ Créer la Licence</button>
           </div>
-          <div class="card" style="grid-column:span 2">
-            <h3>📊 Liste des Clients Actifs</h3>
-            <div style="max-height:400px;overflow-y:auto">
+          <div class="card" style="grid-column: span 2">
+            <h3>📋 Portefeuille Clients</h3>
+            <div style="overflow-x:auto">
               <table id="table-saas-clients">
-                <thead>
-                  <tr><th>Société</th><th>Email Admin</th><th>Mensualité</th><th>WhatsApp</th><th>État</th><th>Actions</th></tr>
-                </thead>
+                <thead><tr><th>Société</th><th>Admin</th><th>Abonnement</th><th>WhatsApp</th><th>État</th><th>Actions</th></tr></thead>
                 <tbody></tbody>
               </table>
             </div>
@@ -120,28 +331,36 @@
         </div>
       </div>
 
-      <div id="sa-factures" class="sa-tab-content" style="display:none">
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
-            <h3>📄 Factures Système des Entreprises</h3>
-            <div style="display:flex;gap:10px">
-              <input id="filter-invoice-month" type="month" style="width:160px;margin:0" onchange="updateUI()">
+      <div id="stab-fact" style="display:none">
+        <div class="grid">
+          <div class="card">
+            <h3>💳 Émettre une Facture</h3>
+            <label class="field-label">Client / Société</label>
+            <select id="fact-client" onchange="onFactClientChange()"><option value="">— Sélectionner —</option></select>
+            <label class="field-label">Mois de facturation</label><input id="fact-month" type="month" onchange="onFactClientChange()">
+            <label class="field-label">Montant de l'abonnement (Fixe)</label><input id="fact-abo" type="number" oninput="calcFactTotal()">
+            
+            <div class="info-box" style="margin:10px 0">
+              <div style="display:flex; justify-content:space-between"><span>Transactions enregistrées :</span><strong id="fact-nb-tx">0 vte</strong></div>
+              <div style="display:flex; justify-content:space-between; margin-top:4px"><span>Commission accumulée (200 GNF/vte) :</span><strong id="fact-line-comm">0 GNF</strong></div>
+            </div>
+
+            <div style="background:#0a0a18; padding:12px; border:1px solid var(--border); border-radius:8px; margin-bottom:12px">
+              <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:800">
+                <span>TOTAL :</span><span id="fact-total-display" style="color:var(--gold)">0 GNF</span>
+              </div>
+            </div>
+            <button class="btn btn-green" onclick="sendInvoiceWhatsApp()">📲 Notifier via WhatsApp</button>
+          </div>
+          <div class="card">
+            <h3>📂 Historique des Factures Émises</h3>
+            <div style="overflow-x:auto">
+              <table id="table-fact-history">
+                <thead><tr><th>Client</th><th>Mois</th><th>Abonnement</th><th>Commission</th><th>Total</th><th>Actions</th></tr></thead>
+                <tbody></tbody>
+              </table>
             </div>
           </div>
-          <table id="table-saas-invoices">
-            <thead>
-              <tr><th>Société</th><th>Période</th><th>Fixe (Abo)</th><th>Commission</th><th>Total dû</th><th>Statut</th><th>Actions</th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="sa-config" class="sa-tab-content" style="display:none">
-        <div class="card" style="max-width:420px">
-          <h3>⚙️ Commission sur vente</h3>
-          <input id="sys-fee" type="number" placeholder="Frais par transaction (ex: 500 GNF)">
-          <button class="btn btn-blue" onclick="saveSysFee()">Enregistrer la configuration</button>
         </div>
       </div>
     </div>
@@ -149,48 +368,26 @@
     <div id="view-admin" style="display:none">
       <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('tab-stock',this)">📦 Stocks</button>
-        <button class="tab-btn" onclick="switchTab('tab-transfert',this)">🚚 Transferts</button>
-        <button class="tab-btn" onclick="switchTab('tab-ag',this)">🏢 Agences / PdV</button>
-        <button class="tab-btn" onclick="switchTab('tab-sales',this)">💰 Historique Ventes</button>
+        <button class="tab-btn"        onclick="switchTab('tab-transfert',this)">🚚 Transferts</button>
+        <button class="tab-btn"        onclick="switchTab('tab-ag',this)">🏢 Agences</button>
+        <button class="tab-btn"        onclick="switchTab('tab-caiss',this)">💰 Vente Siège</button>
+        <button class="tab-btn"        onclick="switchTab('tab-logs',this)">📋 Historique</button>
       </div>
 
       <div id="tab-stock" class="tab-content">
         <div class="grid">
           <div class="card">
-            <h3>📥 Entrée de Marchandise</h3>
-            <input id="p-name" placeholder="Nom du produit">
-            <input id="p-price" type="number" placeholder="Prix unitaire de vente (GNF)">
-            <input id="p-qty" type="number" placeholder="Quantité reçue">
-            <button class="btn btn-blue" onclick="createProduct()">Enregistrer au Stock Central</button>
+            <h3>📥 Réception au Stock Central</h3>
+            <label class="field-label">Désignation du produit</label><input id="p-name" placeholder="Ex: Sac de ciment">
+            <label class="field-label">Prix unitaire (GNF)</label><input id="p-price" type="number" placeholder="Ex: 65000">
+            <label class="field-label">Quantité reçue</label><input id="p-qty" type="number" placeholder="Ex: 500">
+            <button class="btn" style="margin-top:10px" onclick="createProduct()">✅ Entrer au Stock Central</button>
           </div>
-          <div class="card" style="grid-column:span 2">
-            <h3>📊 Niveau des Stocks Centraux</h3>
-            <table id="table-central-stock">
-              <thead>
-                <tr><th>Désignation</th><th>Prix de vente</th><th>Stock dispo</th><th>Valeur totale</th><th>Actions</th></tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div id="tab-transfert" class="tab-content" style="display:none">
-        <div class="grid">
           <div class="card">
-            <h3>🚚 Effectuer un transfert</h3>
-            <select id="trans-product"></select>
-            <select id="trans-dest"></select>
-            <input id="trans-qty" type="number" placeholder="Quantité à envoyer">
-            <button class="btn btn-blue" onclick="executeTransfer()">Valider l'expédition</button>
-          </div>
-          <div class="card" style="grid-column:span 2">
-            <h3>📋 Bons de transferts récents</h3>
-            <div style="max-height:350px;overflow-y:auto">
-              <table id="table-logs-transfert">
-                <thead>
-                  <tr><th>Date</th><th>Produit</th><th>Destination</th><th>Qté</th><th>Actions</th></tr>
-                </thead>
+            <h3>📊 État du Stock Central</h3>
+            <div style="max-height:340px; overflow-y:auto">
+              <table id="table-central-stock">
+                <thead><tr><th>Désignation</th><th>Prix de Vente</th><th>En Stock</th><th>Total</th></tr></thead>
                 <tbody></tbody>
               </table>
             </div>
@@ -198,67 +395,126 @@
         </div>
       </div>
 
+      <div id="tab-transfert" class="tab-content" style="display:none">
+        <div class="grid">
+          <div class="card">
+            <h3>🚚 Expédier vers une agence</h3>
+            <div class="info-box">ℹ️ Envoi immédiat : Le stock transféré est <strong>crédité directement</strong> à l'agence ciblée.</div>
+            <label class="field-label">Produit</label><select id="trans-product" onchange="updateTransferInfo()"></select>
+            <div id="trans-stock-info" style="font-size:11px; color:var(--gold); font-family:monospace; margin:-3px 0 8px"></div>
+            <label class="field-label">Agence de destination</label><select id="trans-dest"></select>
+            <label class="field-label">Quantité</label><input id="trans-qty" type="number">
+            <button class="btn btn-blue" style="margin-top:10px" onclick="executeTransfer()">🚀 Envoyer maintenant</button>
+          </div>
+          <div class="card">
+            <h3>📑 Dernier Bon de Transfert</h3>
+            <div id="last-transfer-preview" class="empty-state"><div class="ei">📤</div><p>Aucun envoi effectué.</p></div>
+          </div>
+        </div>
+      </div>
+
       <div id="tab-ag" class="tab-content" style="display:none">
         <div class="grid">
           <div class="card">
-            <h3>➕ Enregistrer une nouvelle agence</h3>
+            <h3>➕ Ajouter une Agence</h3>
             <input id="pdv-name" placeholder="Nom de l'agence">
-            <input id="pdv-email" type="email" placeholder="Email gérant">
-            <input id="pdv-pin" placeholder="Code PIN gérant">
-            <button class="btn btn-blue" onclick="createPDV()">Créer l'agence</button>
+            <input id="pdv-email" type="email" placeholder="Email du responsable">
+            <input id="pdv-pin" placeholder="PIN d'accès">
+            <button class="btn btn-blue" style="margin-top:10px" onclick="createPDV()">Créer l'agence</button>
           </div>
-          <div class="card" style="grid-column:span 2">
-            <h3>🏢 Agences affiliées</h3>
+          <div class="card">
+            <h3>🏢 Liste des Agences</h3>
             <table id="table-control-pdv">
-              <thead>
-                <tr><th>Agence</th><th>Email</th><th>Statut</th><th>Actions</th></tr>
-              </thead>
+              <thead><tr><th>Nom</th><th>Email</th><th>Stock</th><th>État</th><th>Actions</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <div id="tab-sales" class="tab-content" style="display:none">
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
-            <h3>💰 Registre des ventes clients</h3>
-            <button class="btn btn-dark" style="width:auto;padding:6px 14px" onclick="clearAllSales()">Effacer toutes les ventes</button>
+      <div id="tab-caiss" class="tab-content" style="display:none">
+        <div class="card" style="max-width:620px; margin:0 auto">
+          <h3>💰 Vente au Siège</h3>
+          <div class="grid" style="grid-template-columns:1fr 1fr; gap:10px">
+            <input id="client-name-admin" placeholder="Client">
+            <input id="client-tel-admin" placeholder="Téléphone">
           </div>
-          <table id="table-logs-ventes">
-            <thead>
-              <tr><th>Date</th><th>Client</th><th>Détails</th><th>Montant total</th><th>PdV</th><th>Actions</th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+          <div style="display:flex; gap:8px; align-items:flex-end">
+            <select id="admin-sale-p" style="flex:1"></select>
+            <input id="admin-sale-qty" type="number" value="1" style="width:70px">
+            <button class="btn btn-blue btn-icon" onclick="addToCart('ADMIN')">+</button>
+          </div>
+          <div id="admin-cart-list" style="margin:14px 0"></div>
+          <div style="text-align:right; font-size:18px; font-weight:800; margin-bottom:14px">Total: <span id="admin-cart-total">0</span> GNF</div>
+          <button class="btn btn-green" onclick="finalizeSale('ADMIN')">🖨️ Valider & Imprimer</button>
+        </div>
+      </div>
+
+      <div id="tab-logs" class="tab-content" style="display:none">
+        <div class="grid">
+          <div class="card">
+            <h3>📤 Transferts effectués</h3>
+            <table id="table-logs-transfert">
+              <thead><tr><th>Date</th><th>Produit</th><th>Vers</th><th>Qté</th><th>Actions</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="card">
+            <h3>💳 Ventes du Réseau</h3>
+            <table id="table-logs-ventes">
+              <thead><tr><th>Date</th><th>Agence</th><th>Client</th><th>Montant</th><th>Actions</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
 
     <div id="view-pdv" style="display:none">
-      <div id="pdv-main-screen">
+      <div style="display:flex; justify-content:space-between; margin-bottom:18px">
+        <div><h2 id="pdv-title" style="color:var(--gold)">Caisse</h2><div id="pdv-subtitle"></div></div>
+        <button class="btn btn-dark btn-inline" onclick="showPDVSection('history')">📋 Historique</button>
+      </div>
+
+      <div id="pdv-sale-section">
         <div class="grid">
           <div class="card">
-            <h3>🛒 Nouvelle Vente Client</h3>
-            <input id="client-name-pdv" placeholder="Nom complet du client">
-            <input id="client-tel-pdv" placeholder="Numéro de téléphone">
-            <select id="pdv-sale-p" onchange="checkMaxPdvQty()"></select>
-            <input id="pdv-sale-qty" type="number" value="1" min="1" placeholder="Quantité">
-            <button class="btn btn-blue" onclick="addToCart()">+ Ajouter au panier</button>
+            <h3>🛒 Catalogue & Stock Agence</h3>
+            <div id="pdv-no-stock-msg" class="warn-box" style="display:none">⚠️ Aucun produit n'est disponible. L'administrateur doit vous transférer du stock.</div>
+            <div id="pdv-has-stock" style="display:none">
+              <div style="display:flex; gap:8px">
+                <select id="pdv-sale-p" style="flex:1"></select>
+                <input id="pdv-sale-qty" type="number" value="1" style="width:70px">
+                <button class="btn btn-blue btn-icon" onclick="addToCart('PDV')">+</button>
+              </div>
+              <div id="pdv-product-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; margin-top:12px"></div>
+            </div>
           </div>
           <div class="card">
-            <h3>🧾 Panier de caisse</h3>
-            <div id="pdv-cart-list" style="min-height:80px;margin-bottom:12px;border-bottom:1px solid var(--border)"></div>
-            <div style="text-align:right;font-size:20px;font-weight:800;margin-bottom:16px">
-              Total : <span id="pdv-cart-total" style="color:var(--gold)">0</span> GNF
+            <h3>🧾 Facturation Client</h3>
+            <input id="client-name-pdv" placeholder="Nom complet">
+            <input id="client-tel-pdv" placeholder="Téléphone">
+            <input id="client-addr-pdv" placeholder="Adresse (Optionnel)">
+            <div id="pdv-cart-list" style="margin-top:14px"></div>
+            <div style="text-align:right; font-size:18px; font-weight:800; margin:14px 0">Total : <span id="pdv-cart-total" style="color:var(--gold)">0</span> GNF</div>
+            <div style="display:flex; gap:8px; margin-bottom:12px">
+              <button class="fmt-btn active" onclick="setPrintMode('ticket',this)">Ticket (80mm)</button>
+              <button class="fmt-btn" onclick="setPrintMode('a5',this)">Format A5</button>
+              <button class="fmt-btn" onclick="setPrintMode('a4',this)">Format A4</button>
             </div>
-            <div style="display:flex;gap:10px;margin-bottom:12px">
-              <button class="print-mode-btn active" onclick="setPrintMode('80mm',this)">🎟️ Ticket (80mm)</button>
-              <button class="print-mode-btn" onclick="setPrintMode('a5',this)">📄 Format A5</button>
-              <button class="print-mode-btn" onclick="setPrintMode('a4',this)">📋 Format A4</button>
-            </div>
-            <button class="btn btn-green" onclick="finalizeSale()">Valider & Imprimer le reçu</button>
+            <button class="btn btn-green" onclick="finalizeSale('PDV')">Valider & Imprimer</button>
           </div>
+        </div>
+      </div>
+
+      <div id="pdv-history-section" style="display:none">
+        <button class="btn-back" onclick="showPDVSection('sale')">← Caisse</button>
+        <div class="card">
+          <h3>📋 Historique des ventes de l'agence</h3>
+          <table id="table-pdv-history">
+            <thead><tr><th>Date</th><th>N°</th><th>Client</th><th>Montant</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -269,697 +525,385 @@
 <div id="toast-container"></div>
 
 <script>
-/* ── CONFIGURATION & INSTANCIATION FIREBASE ── */
+/* ── CONFIGURATION FIREBASE ── */
 const firebaseConfig = {
   apiKey: "AIzaSyDxtMeYoigD5pLHJFaE3hFYZsWxgINmnXA",
   databaseURL: "https://planning-with-ai-e9826-default-rtdb.firebaseio.com/",
   projectId: "planning-with-ai-e9826"
 };
-
-// Initialisation globale
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let _SESSION = {}; 
-let _ALL_DATA = {}; 
-let _CART = [];
-let _PRINT_MODE = '80mm';
+let _SESSION = {}, _ALL_DATA = {}, _CART_ADMIN = [], _CART_PDV = [];
+let _PRINT_MODE = 'ticket', _CURRENT_FORMAT = 'ticket', _CURRENT_DOC_TYPE = 'vente', _PENDING_DOC = null;
 
-// Synchronisation en temps réel avec Firebase
 db.ref('/').on('value', snap => {
   _ALL_DATA = snap.val() || {};
-  if(_SESSION.role) updateUI();
+  document.getElementById('loading-screen').style.display = 'none';
+  if (!_SESSION.role) document.getElementById('login-screen').style.display = 'flex';
+  if (_SESSION.role) updateUI();
 });
 
-/* ── OUTILS DE BASE ── */
-function today() { return new Date().toISOString().split('T')[0]; }
-function gnf(v) { return Number(v||0).toLocaleString('fr-GN')+' GNF'; }
-function toast(msg, type='success') {
+function gnf(n) { return Number(n||0).toLocaleString('fr-GN') + ' GNF'; }
+function nowStr() { return new Date().toLocaleString('fr-GN'); }
+function today() { return new Date().toISOString().slice(0,10); }
+function docNum(p) { return p + '-' + today().replace(/-/g,'') + '-' + String(Math.floor(Math.random()*10000)).padStart(4,'0'); }
+
+function toast(msg, type='ok') {
   const c = document.getElementById('toast-container');
   const d = document.createElement('div');
-  d.className = 'toast '+(type==='error'?'error':'');
+  d.className = 'toast ' + (type==='error'?'error':'');
   d.textContent = msg;
   c.appendChild(d);
-  setTimeout(() => d.remove(), 4000);
-}
-function setPrintMode(mode, btn) {
-  _PRINT_MODE = mode;
-  document.querySelectorAll('.print-mode-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+  setTimeout(() => d.remove(), 3500);
 }
 
-/* ── GESTION DE L'AUTHENTIFICATION ── */
 function handleAuth() {
   const e = document.getElementById('auth-email').value.toLowerCase().trim();
   const p = document.getElementById('auth-pin').value.trim();
   document.getElementById('auth-err').style.display = 'none';
 
-  if (e === "mamadouneguetkeita@gmail.com" && p === "admin123") {
-    return login("SUPER", e);
-  }
+  if (e === "mamadouneguetkeita@gmail.com" && p === "admin123") return login("SUPER", e);
 
   let found = null;
-  if (_ALL_DATA.companies) {
-    Object.entries(_ALL_DATA.companies).forEach(([cid, comp]) => {
-      if (comp.admin_email === e && comp.admin_pin === p) {
-        found = { role: "ADMIN", companyId: cid };
-      }
-      if (comp.pdvs) {
-        Object.entries(comp.pdvs).forEach(([pid, pdv]) => {
-          if (pdv.email === e && pdv.pin === p && pdv.status === 'actif') {
-            found = { role: "PDV", companyId: cid, pdvId: pid };
-          }
-        });
-      }
+  Object.entries(_ALL_DATA.companies || {}).forEach(([cid, comp]) => {
+    if (comp.admin_email === e && comp.admin_pin === p) found = { role: "ADMIN", cid };
+    Object.entries(comp.pdvs || {}).forEach(([pid, a]) => {
+      if (a.email === e && a.pin === p && a.status === 'actif') found = { role: "PDV", cid, pid };
     });
-  }
+  });
 
-  if (found) {
-    login(found.role, e, found.companyId, found.pdvId);
-  } else {
-    document.getElementById('auth-err').style.display = 'block';
-  }
+  if (found) login(found.role, e, found.cid, found.pid);
+  else document.getElementById('auth-err').style.display = 'block';
 }
 
 function login(role, email, cid, pid) {
   _SESSION = { role, email, companyId: cid, pdvId: pid };
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-screen').style.display = 'block';
+  document.getElementById('view-super').style.display = role==='SUPER'?'block':'none';
+  document.getElementById('view-admin').style.display = role==='ADMIN'?'block':'none';
+  document.getElementById('view-pdv').style.display = role==='PDV'?'block':'none';
   
-  document.getElementById('view-super').style.display = role === 'SUPER' ? 'block' : 'none';
-  document.getElementById('view-admin').style.display = role === 'ADMIN' ? 'block' : 'none';
-  document.getElementById('view-pdv').style.display = role === 'PDV' ? 'block' : 'none';
-  
-  document.getElementById('header-user-info').textContent = role + ' : ' + email;
-  
-  // Remplissage du sélecteur de mois si Super Admin
-  if (role==='SUPER' && !document.getElementById('filter-invoice-month').value) {
-    document.getElementById('filter-invoice-month').value = today().slice(0,7);
-  }
-  
+  const b = document.getElementById('header-role-badge');
+  b.textContent = role === 'SUPER' ? '🛡️ Super Admin' : role === 'ADMIN' ? '⚙️ Admin' : '🏪 PdV';
+  b.style.background = 'rgba(255,255,255,0.1)';
   updateUI();
 }
 
-/* ── NAVIGATION DES ONGLETS ── */
-function switchTabSA(id, btn) {
-  document.querySelectorAll('.sa-tab-content').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('#sa-clients .tab-btn, #sa-factures .tab-btn, #sa-config .tab-btn').forEach(b => b.classList.remove('active'));
+function doLogout() {
+  _SESSION = {}; _CART_ADMIN = []; _CART_PDV = [];
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('auth-pin').value = '';
+}
+
+function switchSuperTab(id, btn) {
+  ['stab-dash','stab-lic','stab-fact'].forEach(t => document.getElementById(t).style.display = t===id?'block':'none');
+  document.querySelectorAll('#view-super .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function switchTab(id, triggerBtn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(id).style.display = 'block';
-  if (btn) btn.classList.add('active');
+  triggerBtn.classList.add('active');
 }
 
-function switchTab(id, btn) {
-  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-  const parent = btn.parentElement;
-  parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(id).style.display = 'block';
-  if (btn) btn.classList.add('active');
+function showPDVSection(sec) {
+  document.getElementById('pdv-sale-section').style.display = sec==='sale'?'block':'none';
+  document.getElementById('pdv-history-section').style.display = sec==='history'?'block':'none';
+  if (sec === 'history') renderPDVHistory();
 }
 
-/* ── CALCULS SAAS & FACTURATION ── */
-function getTxFee() { return parseFloat(_ALL_DATA.system_fee || 0); }
-
-function getCompCaMois(cid, month) {
-  const comp = _ALL_DATA.companies?.[cid];
-  if(!comp?.sales_logs) return 0;
-  return Object.values(comp.sales_logs)
-    .filter(s=>s.date && s.date.includes(month.split('-').reverse().join('/')))
-    .reduce((acc,s)=>acc+s.total,0);
-}
-
-function getCompTxMois(cid, month) {
-  const comp = _ALL_DATA.companies?.[cid];
-  if(!comp?.sales_logs) return 0;
-  return Object.values(comp.sales_logs)
-    .filter(s=>s.date && s.date.includes(month.split('-').reverse().join('/'))).length;
-}
-
-/* ── MISE À JOUR DE L'INTERFACE UTILISATEUR (UI) ── */
 function updateUI() {
-  const comp = _ALL_DATA.companies?.[_SESSION.companyId];
+  const comp = _ALL_DATA.companies ? _ALL_DATA.companies[_SESSION.companyId] : null;
   if (comp) document.getElementById('display-comp-name').textContent = '| ' + comp.name;
 
-  // -- VUE : SUPER ADMIN
   if (_SESSION.role === 'SUPER') {
-    const tbody = document.querySelector('#table-saas-clients tbody');
-    if (_ALL_DATA.companies) {
-      tbody.innerHTML = Object.entries(_ALL_DATA.companies).map(([cid, c]) => `
-        <tr>
-          <td><b>${c.name}</b></td>
-          <td>${c.admin_email}</td>
-          <td>${gnf(c.abo_mensuel)}</td>
-          <td>${c.whatsapp || '-'}</td>
-          <td><span class="st-badge ${c.status === 'actif' ? 'st-actif' : 'st-bloque'}">${c.status}</span></td>
-          <td>
-            <button class="btn btn-dark" onclick="toggleCompanyStatus('${cid}', '${c.status}')" style="width: auto; padding: 4px 10px; font-size: 11px;">
-              ${c.status === 'actif' ? 'Bloquer' : 'Activer'}
-            </button>
-            <button class="btn btn-red" onclick="deleteCompany('${cid}')" style="width:auto;padding:4px 10px;font-size:11px">Supprimer</button>
-          </td>
-        </tr>
-      `).join('');
-    } else {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucune entreprise enregistrée.</td></tr>';
-    }
+    const entries = Object.entries(_ALL_DATA.companies || {});
+    const curMonth = today().slice(0,7);
+    
+    let activeLicences = 0, totalPdv = 0, totalCaMois = 0, totalTxMois = 0;
+    
+    document.querySelector('#table-super-activity tbody').innerHTML = entries.map(([id, c]) => {
+      if (c.status === 'actif') activeLicences++;
+      const np = Object.keys(c.pdvs || {}).length;
+      totalPdv += np;
 
-    // Gestion des factures SaaS
-    const m = document.getElementById('filter-invoice-month').value || today().slice(0,7);
-    const iBody = document.querySelector('#table-saas-invoices tbody');
-    if (_ALL_DATA.companies) {
-      iBody.innerHTML = Object.entries(_ALL_DATA.companies).map(([cid, c]) => {
-        const abo = parseFloat(c.abo_mensuel||0);
-        const nb = getCompTxMois(cid, m);
-        const comm = nb * getTxFee();
-        const total = abo + comm;
-        const inv = c.invoices?.[m];
-        const status = inv ? inv.status : 'en attente';
-        return `
-          <tr>
-            <td><b>${c.name}</b></td>
-            <td>${m}</td>
-            <td>${gnf(abo)}</td>
-            <td>${gnf(comm)} <small style="color:#666">(${nb} tx)</small></td>
-            <td><b>${gnf(total)}</b></td>
-            <td><span class="st-badge ${status==='payée'?'st-actif':'st-bloque'}">${status}</span></td>
-            <td>
-              ${status==='en attente'?`<button class="btn btn-green" onclick="markInvoicePaid('${cid}','${m}')" style="width:auto;padding:4px 10px;font-size:11px">Marquer Payée</button>`:''}
-              <button class="btn btn-purple" onclick="sendInvoiceWhatsApp('${cid}','${m}',${abo},${comm},${total})" style="width:auto;padding:4px 10px;font-size:11px">Rappel WA</button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    } else {
-      iBody.innerHTML = '<tr><td colspan="7" style="text-align:center">Aucune facture émise</td></tr>';
+      const sales = Object.values(c.sale_logs || {});
+      const moisSales = sales.filter(v => v.date?.slice(0,7) === curMonth);
+      const nbSales = moisSales.length;
+      const ca = moisSales.reduce((s,v) => s + v.total,0);
+
+      totalCaMois += ca;
+      totalTxMois += nbSales;
+
+      return `<tr>
+        <td><b>${c.name}</b></td>
+        <td>${np} Agence(s)</td>
+        <td>${nbSales} vente(s)</td>
+        <td><b>${gnf(ca)}</b></td>
+        <td style="color:#e67e22; font-weight:bold">${gnf(nbSales * 200)}</td>
+        <td><span class="st-badge st-${c.status==='actif'?'actif':'bloque'}">${c.status||'actif'}</span></td>
+        <td><button class="btn btn-small" onclick="quickFact('${id}')">💳 Facturer</button></td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('kpi-companies').textContent = activeLicences;
+    document.getElementById('kpi-pdv').textContent = totalPdv;
+    document.getElementById('kpi-ca').textContent = gnf(totalCaMois);
+    document.getElementById('kpi-tx-mois').textContent = totalTxMois;
+
+    document.querySelector('#table-saas-clients tbody').innerHTML = entries.map(([id, c]) => `
+      <tr>
+        <td><b>${c.name}</b></td>
+        <td>${c.admin_email}</td>
+        <td>${gnf(c.monthly_fee)}</td>
+        <td>${c.whatsapp || '-'}</td>
+        <td><span class="st-badge st-${c.status==='actif'?'actif':'bloque'}">${c.status||'actif'}</span></td>
+        <td>
+          <button class="btn btn-small btn-${c.status==='actif'?'red':'green'}" onclick="toggleCompanyStatus('${id}','${c.status||'actif'}')">Lock</button>
+        </td>
+      </tr>`).join('');
+
+    const factSel = document.getElementById('fact-client');
+    if (factSel && factSel.children.length <= 1) {
+      factSel.innerHTML = '<option value="">— Sélectionner —</option>' + entries.map(([id, c]) => `<option value="${id}">${c.name}</option>`).join('');
     }
-    document.getElementById('sys-fee').value = getTxFee();
   }
 
-  // -- VUE : ADMINISTRATEUR
   if (_SESSION.role === 'ADMIN' && comp) {
-    const pBody = document.querySelector('#table-central-stock tbody');
-    const prods = comp.products ? Object.entries(comp.products) : [];
-    pBody.innerHTML = prods.map(([id, p]) => `
-      <tr>
-        <td><b>${p.name}</b></td>
-        <td>${gnf(p.price)}</td>
-        <td>${p.qty}</td>
-        <td>${gnf(p.price * p.qty)}</td>
-        <td>
-          <button class="btn btn-dark" onclick="editProductPrice('${id}', ${p.price})" style="width:auto;padding:4px 10px;font-size:11px">Éditer Prix</button>
-          <button class="btn btn-red" onclick="deleteProduct('${id}')" style="width:auto;padding:4px 10px;font-size:11px">Supprimer</button>
-        </td>
-      </tr>
-    `).join('');
+    const prods = Object.entries(comp.products || {});
+    document.querySelector('#table-central-stock tbody').innerHTML = prods.map(([id, p]) => `
+      <tr><td><b>${p.name}</b></td><td>${gnf(p.price)}</td><td>${p.qty}</td><td><b>${gnf(p.price*p.qty)}</b></td></tr>`).join('');
 
-    document.getElementById('trans-product').innerHTML = prods.map(([id, p]) => `<option value="${id}">${p.name} (Dispo : ${p.qty})</option>`).join('');
-    const pdvs = comp.pdvs ? Object.entries(comp.pdvs) : [];
-    document.getElementById('trans-dest').innerHTML = pdvs.map(([id, a]) => `<option value="${id}">${a.name}</option>`).join('');
+    const pOpt = prods.map(([id, p]) => `<option value="${id}">${p.name} (Dispo: ${p.qty})</option>`).join('');
+    ['trans-product','admin-sale-p'].forEach(s => document.getElementById(s).innerHTML = pOpt);
 
-    document.querySelector('#table-control-pdv tbody').innerHTML = pdvs.map(([id, a]) => `
-      <tr>
-        <td><b>${a.name}</b></td>
-        <td>${a.email}</td>
-        <td><span class="st-badge ${a.status === 'actif' ? 'st-actif' : 'st-bloque'}">${a.status}</span></td>
-        <td>
-          <button class="btn btn-dark" onclick="togglePDVStatus('${id}', '${a.status}')" style="width:auto;padding:4px 10px;font-size:11px">
-            ${a.status === 'actif' ? 'Bloquer' : 'Activer'}
-          </button>
-          <button class="btn btn-dark" onclick="changePDVPin('${id}')" style="width:auto;padding:4px 10px;font-size:11px">Changer PIN</button>
-          <button class="btn btn-red" onclick="deletePDV('${id}')" style="width:auto;padding:4px 10px;font-size:11px">Supprimer</button>
-        </td>
-      </tr>
-    `).join('');
+    const ags = Object.entries(comp.pdvs || {});
+    document.getElementById('trans-dest').innerHTML = ags.map(([id, a]) => `<option value="${id}">${a.name}</option>`).join('');
 
-    const tLogs = comp.transfer_logs ? Object.entries(comp.transfer_logs).reverse().slice(0, 10) : [];
-    document.querySelector('#table-logs-transfert tbody').innerHTML = tLogs.map(([lid, l]) => `
+    document.querySelector('#table-control-pdv tbody').innerHTML = ags.map(([id, a]) => `
       <tr>
-        <td>${l.date}</td>
-        <td>${l.product}</td>
-        <td>${l.to}</td>
-        <td>${l.qty}</td>
-        <td><button class="btn btn-red" onclick="deleteTransferLog('${lid}')" style="width:auto;padding:4px 10px;font-size:11px">Annuler</button></td>
-      </tr>
-    `).join('');
+        <td><b>${a.name}</b></td><td>${a.email}</td>
+        <td>${Object.values(a.stock||{}).reduce((s,q)=>s+q,0)} unités</td>
+        <td><span class="st-badge st-${a.status==='actif'?'actif':'bloque'}">${a.status}</span></td>
+        <td><button class="btn btn-small" onclick="togglePDVStatus('${id}','${a.status}')">Lock</button></td>
+      </tr>`).join('');
 
-    const sLogs = comp.sales_logs ? Object.entries(comp.sales_logs).reverse().slice(0, 15) : [];
-    document.querySelector('#table-logs-ventes tbody').innerHTML = sLogs.map(([sid, s]) => `
-      <tr>
-        <td>${s.date}</td>
-        <td><b>${s.client_name}</b> <br><small style="color:#666">${s.client_tel}</small></td>
-        <td><small>${s.items ? s.items.map(i => `${i.name} (x${i.qty})`).join(', ') : '-'}</small></td>
-        <td>${gnf(s.total)}</td>
-        <td>${s.pdv_name || 'Direct'}</td>
-        <td><button class="btn btn-red" onclick="deleteSaleLog('${sid}')" style="width:auto;padding:4px 10px;font-size:11px">Annuler</button></td>
-      </tr>
-    `).join('');
+    document.querySelector('#table-logs-transfert tbody').innerHTML = Object.entries(comp.transfer_logs||{}).reverse().slice(0, 10).map(([id, l]) => `
+      <tr><td>${l.date}</td><td>${l.product}</td><td>${l.to}</td><td>${l.qty}</td><td><button class="btn btn-small" onclick='reprinterBon(${JSON.stringify(l)})'>🖨️</button></td></tr>`).join('');
+
+    document.querySelector('#table-logs-ventes tbody').innerHTML = Object.entries(comp.sale_logs||{}).reverse().slice(0, 10).map(([id, v]) => `
+      <tr><td>${v.date}</td><td>${v.agency||'Siège'}</td><td>${v.client}</td><td><b>${gnf(v.total)}</b></td><td><button class="btn btn-small" onclick='reprinterVente(${JSON.stringify(v)})'>🖨️</button></td></tr>`).join('');
   }
 
-  // -- VUE : POINT DE VENTE
   if (_SESSION.role === 'PDV' && comp) {
     const ag = comp.pdvs?.[_SESSION.pdvId];
     if (ag) {
-      const availableProducts = Object.entries(comp.products || {}).filter(([id, p]) => (ag.stock?.[id] || 0) > 0);
-      document.getElementById('pdv-sale-p').innerHTML = availableProducts.map(([id, p]) => `
-        <option value="${id}">${p.name} (${ag.stock[id]} dispo)</option>
-      `).join('');
+      const pList = Object.entries(comp.products || {}).map(([id, p]) => ({ id, ...p, pdvQty: ag.stock?.[id] || 0 })).filter(p => p.pdvQty > 0);
+      document.getElementById('pdv-no-stock-msg').style.display = pList.length === 0 ? 'block' : 'none';
+      document.getElementById('pdv-has-stock').style.display = pList.length === 0 ? 'none' : 'block';
+
+      document.getElementById('pdv-sale-p').innerHTML = pList.map(p => `<option value="${p.id}">${p.name} (${p.pdvQty} dispo)</option>`).join('');
+      document.getElementById('pdv-product-grid').innerHTML = pList.map(p => `<div class="prod-tile" onclick="quickAddPDV('${p.id}')"><b>${p.name}</b><br><span style="color:var(--gold)">${gnf(p.price)}</span></div>`).join('');
     }
   }
 }
 
-/* ── ACTIONS SUPER ADMIN ── */
-function createClientCompany() {
-  const name = document.getElementById('new-comp-name').value.trim();
-  const email = document.getElementById('new-comp-email').value.toLowerCase().trim();
-  const pin = document.getElementById('new-comp-pin').value.trim();
-  const wa = document.getElementById('new-comp-wa').value.trim();
-  const abo = parseFloat(document.getElementById('new-comp-abo').value) || 0;
+function onFactClientChange() {
+  const cid = document.getElementById('fact-client').value, comp = _ALL_DATA.companies?.[cid];
+  if (!comp) return;
+  document.getElementById('fact-abo').value = comp.monthly_fee || 0;
+  calcFactTotal();
+}
 
-  if (!name || !email || !pin) return toast("Remplissez tous les champs.", "error");
+function calcFactTotal() {
+  const cid = document.getElementById('fact-client').value, comp = _ALL_DATA.companies?.[cid];
+  if (!comp) return;
+  const month = document.getElementById('fact-month').value || today().slice(0,7);
+  const abo = parseFloat(document.getElementById('fact-abo').value) || 0;
 
-  const cid = 'COMP_' + Date.now();
-  db.ref(`companies/${cid}`).set({
-    name,
-    admin_email: email,
-    admin_pin: pin,
-    whatsapp: wa,
-    abo_mensuel: abo,
-    status: 'actif'
-  }).then(() => {
-    toast(`Entreprise "${name}" enregistrée.`);
-    ['new-comp-name','new-comp-email','new-comp-pin','new-comp-wa','new-comp-abo'].forEach(id => document.getElementById(id).value='');
+  const sales = Object.values(comp.sale_logs || {}).filter(v => v.date?.slice(0,7) === month);
+  const nbSales = sales.length;
+  const comm = nbSales * 200;
+
+  document.getElementById('fact-nb-tx').textContent = nbSales + ' vte(s)';
+  document.getElementById('fact-line-comm').textContent = gnf(comm);
+  document.getElementById('fact-total-display').textContent = gnf(abo + comm);
+}
+
+function sendInvoiceWhatsApp() {
+  const cid = document.getElementById('fact-client').value, comp = _ALL_DATA.companies?.[cid];
+  if (!comp?.whatsapp) return toast("Numéro WhatsApp manquant", "error");
+
+  const month = document.getElementById('fact-month').value || today().slice(0,7);
+  const abo = parseFloat(document.getElementById('fact-abo').value) || 0;
+  const sales = Object.values(comp.sale_logs || {}).filter(v => v.date?.slice(0,7) === month);
+  const comm = sales.length * 200;
+  const total = abo + comm;
+
+  const msg = `*📦 FACTURE MENSUELLE - STOCKNET GN*\n🏢 *Client:* ${comp.name}\n📅 *Mois:* ${month}\n📋 Abonnement Fixe: ${gnf(abo)}\n🔢 Commission (${sales.length} ventes): ${gnf(comm)}\n💰 *TOTAL À PAYER:* ${gnf(total)}`;
+  
+  db.ref(`companies/${cid}/invoices/INV_${Date.now()}`).set({ month, abo, commission: comm, total, sentAt: nowStr() }).then(() => {
+    window.open(`https://wa.me/${comp.whatsapp.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank');
+    renderFactureHistory();
   });
 }
 
-function toggleCompanyStatus(cid, current) {
-  const ns = current === 'actif' ? 'bloqué' : 'actif';
-  db.ref(`companies/${cid}/status`).set(ns).then(() => toast(`Statut mis à jour : ${ns}`));
+function renderFactureHistory() {
+  const rows = [];
+  Object.entries(_ALL_DATA.companies || {}).forEach(([cid, c]) => {
+    Object.values(c.invoices || {}).forEach(inv => rows.push({ ...inv, compName: c.name }));
+  });
+  document.querySelector('#table-fact-history tbody').innerHTML = rows.reverse().map(i => `<tr><td><b>${i.compName}</b></td><td>${i.month}</td><td>${gnf(i.abo)}</td><td>${gnf(i.commission)}</td><td><b>${gnf(i.total)}</b></td><td><button class="btn btn-small btn-dark" onclick="toast('Facture déjà enregistrée !')">Enregistrée</button></td></tr>`).join('');
 }
 
-function deleteCompany(cid) {
-  if (confirm("Supprimer définitivement cette entreprise ?")) {
-    db.ref(`companies/${cid}`).remove().then(() => toast("Entreprise supprimée."));
-  }
+function setPrintMode(mode, btn) {
+  _PRINT_MODE = mode; _CURRENT_FORMAT = mode;
+  document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 }
 
-function markInvoicePaid(cid, month) {
-  db.ref(`companies/${cid}/invoices/${month}`).set({ status: 'payée', paidAt: today() })
-    .then(() => toast("Facture marquée payée !"));
+function switchFormat(fmt, btn) {
+  _CURRENT_FORMAT = fmt;
+  ['ticket','a5','a4'].forEach(f => document.getElementById('preview-'+f).classList.toggle('show', f===fmt));
+  document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
 }
 
-function sendInvoiceWhatsApp(cid, month, abo, comm, total) {
-  const comp = _ALL_DATA.companies?.[cid];
-  if (!comp?.whatsapp) return toast("Numéro WhatsApp manquant.", "error");
-  const moisLabel = new Date(month + "-01").toLocaleString('fr-GN', { month: 'long', year: 'numeric' });
-  const msg = `*📦 STOCKNET GN — FACTURE MENSUELLE*\n\n` +
-              `🏢 *Société :* ${comp.name}\n` +
-              `📅 *Période :* ${moisLabel}\n` +
-              `━━━━━━━━━━━━━━━━━━━━\n` +
-              `📋 Abonnement fixe : *${gnf(abo)}*\n` +
-              `🔢 Comm. transactions : *${gnf(comm)}*\n` +
-              `💰 *TOTAL À PAYER : ${gnf(total)}*\n\n` +
-              `Merci de régulariser votre facture.`;
-  window.open(`https://wa.me/${comp.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
+function switchDocType(type, btn) {
+  _CURRENT_DOC_TYPE = type;
+  document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
+  if (_PENDING_DOC) { _PENDING_DOC.type = type; renderAllFormats(_PENDING_DOC); }
 }
 
-function saveSysFee() {
-  const fee = parseFloat(document.getElementById('sys-fee').value) || 0;
-  db.ref('system_fee').set(fee).then(() => toast("Frais mis à jour."));
+function openPrintOverlay(payload) {
+  _PENDING_DOC = payload; _CURRENT_DOC_TYPE = payload.type;
+  renderAllFormats(payload);
+  document.getElementById('print-overlay').classList.add('open');
 }
 
-/* ── ACTIONS ADMINISTRATEUR ── */
+function closePrintOverlay() { document.getElementById('print-overlay').classList.remove('open'); }
+
+function renderAllFormats(payload) {
+  const d = payload.data, isT = payload.type === 'transfert';
+  const label = isT ? 'BON DE TRANSFERT' : 'REÇU DE VENTE';
+  const items = isT ? [{name:d.product, qty:d.qty, price:d.price, total:d.qty*d.price}] : (d.items||[]);
+  const total = items.reduce((s,i) => s + (i.total || i.qty*i.price), 0);
+
+  document.querySelectorAll('[id$="-comp"]').forEach(el => el.textContent = d.compName || '');
+  document.querySelectorAll('[id$="-pdv-line"]').forEach(el => el.textContent = isT ? `Expédition vers ${d.agence}` : (d.agency||'Siège'));
+  document.querySelectorAll('[id$="-date"]').forEach(el => el.textContent = d.date);
+  document.querySelectorAll('[id$="-num"]').forEach(el => el.textContent = d.num);
+
+  document.getElementById('t-client-block').innerHTML = isT ? `<span>Vers:</span> <b>${d.agence}</b>` : `<span>Client:</span> <b>${d.client}</b>`;
+  document.getElementById('t-items').innerHTML = items.map(i => `<div class="r-row"><span>${i.name} (x${i.qty})</span><b>${gnf(i.total || i.qty*i.price)}</b></div>`).join('');
+  document.getElementById('t-total').textContent = gnf(total);
+
+  document.getElementById('a5-type-badge').textContent = label;
+  document.getElementById('a5-items').innerHTML = items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${gnf(i.price)}</td><td><b>${gnf(i.total || i.qty*i.price)}</b></td></tr>`).join('');
+  document.getElementById('a5-total').textContent = gnf(total);
+
+  document.getElementById('a4-type-badge').textContent = label;
+  document.getElementById('a4-items').innerHTML = items.map((i,n) => `<tr><td>${n+1}</td><td>${i.name}</td><td>${i.qty}</td><td><b>${gnf(i.total || i.qty*i.price)}</b></td></tr>`).join('');
+  document.getElementById('a4-total').textContent = gnf(total);
+
+  switchFormat(_CURRENT_FORMAT, document.querySelector('.fmt-btn.active'));
+}
+
+function doPrint() {
+  const zone = document.getElementById('active-print-zone');
+  zone.innerHTML = document.getElementById('preview-'+_CURRENT_FORMAT).outerHTML;
+  zone.style.display = 'block'; window.print(); zone.style.display = 'none';
+}
+
 function createProduct() {
-  const name = document.getElementById('p-name').value.trim();
-  const price = parseFloat(document.getElementById('p-price').value);
-  const qty = parseInt(document.getElementById('p-qty').value);
-
-  if (!name || isNaN(price) || isNaN(qty)) return toast("Champs incorrects.", "error");
-
-  const pid = 'PROD_' + Date.now();
-  db.ref(`companies/${_SESSION.companyId}/products/${pid}`).set({ name, price, qty }).then(() => {
-    toast(`Produit "${name}" créé.`);
-    ['p-name','p-price','p-qty'].forEach(id => document.getElementById(id).value='');
-  });
-}
-
-function deleteProduct(pid) {
-  if (confirm("Supprimer ce produit du stock central ?")) {
-    db.ref(`companies/${_SESSION.companyId}/products/${pid}`).remove().then(() => toast("Produit retiré."));
-  }
-}
-
-function editProductPrice(pid, currentPrice) {
-  const np = prompt("Entrez le nouveau prix de vente (GNF) :", currentPrice);
-  if (np && !isNaN(np)) {
-    db.ref(`companies/${_SESSION.companyId}/products/${pid}/price`).set(parseFloat(np))
-      .then(() => toast("Prix mis à jour."));
-  }
+  const name = document.getElementById('p-name').value.trim(), price = parseFloat(document.getElementById('p-price').value), qty = parseInt(document.getElementById('p-qty').value);
+  if (!name || isNaN(price)) return;
+  db.ref(`companies/${_SESSION.companyId}/products/PROD_${Date.now()}`).set({ name, price, qty }).then(() => toast('Produit créé !'));
 }
 
 function createPDV() {
-  const name = document.getElementById('pdv-name').value.trim();
-  const email = document.getElementById('pdv-email').value.toLowerCase().trim();
-  const pin = document.getElementById('pdv-pin').value.trim();
-
-  if (!name || !email || !pin) return toast("Champs obligatoires manquants.", "error");
-
-  const aid = 'PDV_' + Date.now();
-  db.ref(`companies/${_SESSION.companyId}/pdvs/${aid}`).set({ name, email, pin, status: 'actif' }).then(() => {
-    toast(`Agence "${name}" créée.`);
-    ['pdv-name','pdv-email','pdv-pin'].forEach(id => document.getElementById(id).value='');
-  });
+  const name = document.getElementById('pdv-name').value.trim(), email = document.getElementById('pdv-email').value.trim(), pin = document.getElementById('pdv-pin').value.trim();
+  if (!name || !email) return;
+  db.ref(`companies/${_SESSION.companyId}/pdvs/PDV_${Date.now()}`).set({ name, email, pin, status: 'actif' }).then(() => toast('Agence créée !'));
 }
 
-function togglePDVStatus(pid, current) {
-  const ns = current === 'actif' ? 'bloqué' : 'actif';
-  db.ref(`companies/${_SESSION.companyId}/pdvs/${pid}/status`).set(ns).then(() => toast(`Statut mis à jour : ${ns}`));
+function createClientCompany() {
+  const name = document.getElementById('new-comp-name').value.trim(), email = document.getElementById('new-comp-email').value.trim(), pin = document.getElementById('new-comp-pin').value.trim(), wa = document.getElementById('new-comp-wa').value.trim(), fee = parseFloat(document.getElementById('new-comp-fee').value) || 0;
+  db.ref(`companies/COMP_${Date.now()}`).set({ name, admin_email: email, admin_pin: pin, status: 'actif', whatsapp: wa, monthly_fee: fee }).then(() => toast('Société créée !'));
 }
 
-function changePDVPin(pid) {
-  const newPin = prompt("Nouveau PIN pour cette agence :");
-  if (newPin && newPin.trim().length > 0) {
-    db.ref(`companies/${_SESSION.companyId}/pdvs/${pid}/pin`).set(newPin.trim())
-      .then(() => toast("PIN d'agence modifié avec succès."));
-  }
-}
-
-function deletePDV(pid) {
-  if (confirm("Supprimer définitivement cette agence ?")) {
-    db.ref(`companies/${_SESSION.companyId}/pdvs/${pid}`).remove().then(() => toast("Agence supprimée."));
-  }
-}
+function toggleCompanyStatus(cid, current) { db.ref(`companies/${cid}/status`).set(current==='actif'?'bloqué':'actif'); }
+function togglePDVStatus(pid, current) { db.ref(`companies/${_SESSION.companyId}/pdvs/${pid}/status`).set(current==='actif'?'bloqué':'actif'); }
 
 function executeTransfer() {
-  const pid = document.getElementById('trans-product').value;
-  const aid = document.getElementById('trans-dest').value;
-  const qty = parseInt(document.getElementById('trans-qty').value);
-
+  const pid = document.getElementById('trans-product').value, aid = document.getElementById('trans-dest').value, qty = parseInt(document.getElementById('trans-qty').value);
   const comp = _ALL_DATA.companies[_SESSION.companyId];
-  if (!pid || !aid || isNaN(qty) || qty <= 0) return toast("Quantité ou sélection invalide.", "error");
-  if (qty > comp.products[pid].qty) return toast("Le stock central est insuffisant.", "error");
+  if (!pid || !aid || qty > comp.products[pid].qty) return;
 
   const updates = {};
   updates[`companies/${_SESSION.companyId}/products/${pid}/qty`] = comp.products[pid].qty - qty;
   updates[`companies/${_SESSION.companyId}/pdvs/${aid}/stock/${pid}`] = (comp.pdvs[aid].stock?.[pid] || 0) + qty;
-  
-  const logId = 'TRANS_' + Date.now();
-  updates[`companies/${_SESSION.companyId}/transfer_logs/${logId}`] = {
-    date: new Date().toLocaleString('fr-GN'),
-    product: comp.products[pid].name,
-    productId: pid,
-    to: comp.pdvs[aid].name,
-    pdvId: aid,
-    qty: qty
-  };
+  updates[`companies/${_SESSION.companyId}/transfer_logs/TR_${Date.now()}`] = { date: nowStr(), product: comp.products[pid].name, to: comp.pdvs[aid].name, qty, num: docNum('TR'), compName: comp.name };
 
-  db.ref().update(updates).then(() => {
-    toast("Transfert de marchandise exécuté !");
-    document.getElementById('trans-qty').value = '';
-  });
+  db.ref().update(updates).then(() => toast('Transfert validé !'));
 }
 
-function deleteTransferLog(lid) {
-  if (confirm("Voulez-vous annuler ce transfert et restaurer les stocks ?")) {
-    const comp = _ALL_DATA.companies[_SESSION.companyId];
-    const log = comp.transfer_logs[lid];
-    if (log && log.productId && log.pdvId) {
-      const updates = {};
-      const currentCentral = comp.products[log.productId]?.qty || 0;
-      const currentPdv = comp.pdvs[log.pdvId]?.stock?.[log.productId] || 0;
-      
-      updates[`companies/${_SESSION.companyId}/products/${log.productId}/qty`] = currentCentral + log.qty;
-      updates[`companies/${_SESSION.companyId}/pdvs/${log.pdvId}/stock/${log.productId}`] = Math.max(0, currentPdv - log.qty);
-      updates[`companies/${_SESSION.companyId}/transfer_logs/${lid}`] = null;
-      
-      db.ref().update(updates).then(() => toast("Transfert annulé et stocks réajustés."));
-    } else {
-      db.ref(`companies/${_SESSION.companyId}/transfer_logs/${lid}`).remove();
-    }
-  }
+function addToCart(mode) {
+  const pfx = mode==='ADMIN'?'admin-':'pdv-';
+  const pid = document.getElementById(pfx+'sale-p').value, qty = parseInt(document.getElementById(pfx+'sale-qty').value) || 1;
+  const comp = _ALL_DATA.companies[_SESSION.companyId], p = comp.products[pid];
+  const cart = mode==='ADMIN'?_CART_ADMIN:_CART_PDV;
+
+  cart.push({ pid, name: p.name, qty, price: p.price, total: p.price*qty });
+  renderCart(mode);
 }
 
-function clearAllSales() {
-  if (confirm("Supprimer définitivement TOUTES les ventes ?")) {
-    db.ref(`companies/${_SESSION.companyId}/sales_logs`).remove().then(() => toast("Ventes effacées."));
-  }
-}
+function quickAddPDV(pid) { document.getElementById('pdv-sale-p').value = pid; addToCart('PDV'); }
 
-function deleteSaleLog(sid) {
-  if (confirm("Annuler cette vente et rétablir le stock du PdV ?")) {
-    const comp = _ALL_DATA.companies[_SESSION.companyId];
-    const sale = comp.sales_logs[sid];
-    if (sale && sale.items) {
-      const updates = {};
-      // Recherche du PdV concerné
-      const pid = Object.keys(comp.pdvs || {}).find(k=>comp.pdvs[k].name===sale.pdv_name);
-      if (pid) {
-        sale.items.forEach(i => {
-          const curStock = comp.pdvs[pid].stock?.[i.productId] || 0;
-          updates[`companies/${_SESSION.companyId}/pdvs/${pid}/stock/${i.productId}`] = curStock + i.qty;
-        });
-      }
-      updates[`companies/${_SESSION.companyId}/sales_logs/${sid}`] = null;
-      db.ref().update(updates).then(() => toast("Vente annulée avec succès."));
-    } else {
-      db.ref(`companies/${_SESSION.companyId}/sales_logs/${sid}`).remove();
-    }
-  }
-}
-
-/* ── ACTIONS POINT DE VENTE (VENTE) ── */
-function checkMaxPdvQty() {
-  const pid = document.getElementById('pdv-sale-p').value;
-  const ag = _ALL_DATA.companies[_SESSION.companyId]?.pdvs?.[_SESSION.pdvId];
-  if (ag && pid) {
-    document.getElementById('pdv-sale-qty').max = ag.stock?.[pid] || 1;
-  }
-}
-
-function addToCart() {
-  const pid = document.getElementById('pdv-sale-p').value;
-  const qty = parseInt(document.getElementById('pdv-sale-qty').value);
-  
-  const comp = _ALL_DATA.companies[_SESSION.companyId];
-  const p = comp?.products?.[pid];
-  const ag = comp?.pdvs?.[_SESSION.pdvId];
-
-  if (!pid || isNaN(qty) || qty <= 0) return toast("Saisie incorrecte.", "error");
-  if (qty > (ag.stock?.[pid] || 0)) return toast("Marchandise indisponible.", "error");
-
-  const inCart = _CART.find(i => i.productId === pid);
-  if (inCart) {
-    if ((inCart.qty + qty) > ag.stock[pid]) return toast("Limite de stock dépassée.", "error");
-    inCart.qty += qty;
-    inCart.total = inCart.qty * p.price;
-  } else {
-    _CART.push({
-      productId: pid,
-      name: p.name,
-      qty: qty,
-      price: p.price,
-      total: p.price * qty
-    });
-  }
-  
-  document.getElementById('pdv-sale-qty').value = 1;
-  renderCart();
-}
-
-function removeFromCart(idx) {
-  _CART.splice(idx, 1);
-  renderCart();
-}
-
-function renderCart() {
-  const list = document.getElementById('pdv-cart-list');
+function renderCart(mode) {
+  const cart = mode==='ADMIN'?_CART_ADMIN:_CART_PDV;
+  const pfx = mode==='ADMIN'?'admin-':'pdv-';
   let t = 0;
-  list.innerHTML = _CART.map((item, idx) => {
-    t += item.total;
-    return `
-      <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px">
-        <span><b>${item.name}</b> (x${item.qty})</span>
-        <span>${gnf(item.total)} <button class="btn btn-red" onclick="removeFromCart(${idx})" style="width:auto;padding:2px 6px;font-size:10px">x</button></span>
-      </div>
-    `;
-  }).join('');
-  document.getElementById('pdv-cart-total').textContent = t.toLocaleString('fr-GN');
+  document.getElementById(pfx+'cart-list').innerHTML = cart.map(i => { t+=i.total; return `<div>${i.name} (x${i.qty}) - <b>${gnf(i.total)}</b></div>`; }).join('');
+  document.getElementById(pfx+'cart-total').textContent = t.toLocaleString('fr-GN');
 }
 
-function finalizeSale() {
-  const nom = document.getElementById('client-name-pdv').value.trim();
-  const tel = document.getElementById('client-tel-pdv').value.trim();
-  
-  if (!nom || !tel) return toast("Veuillez renseigner le nom et téléphone du client.", "error");
-  if (_CART.length === 0) return toast("Votre panier est vide.", "error");
+function finalizeSale(mode) {
+  const pfx = mode==='ADMIN'?'admin-':'pdv-';
+  const name = document.getElementById('client-name-'+pfx.replace('-','')).value.trim(), tel = document.getElementById('client-tel-'+pfx.replace('-','')).value.trim();
+  const cart = mode==='ADMIN'?_CART_ADMIN:_CART_PDV, comp = _ALL_DATA.companies[_SESSION.companyId];
 
-  const comp = _ALL_DATA.companies[_SESSION.companyId];
-  const ag = comp.pdvs[_SESSION.pdvId];
-  const total = _CART.reduce((acc, i) => acc + i.total, 0);
+  if (!name || !tel || cart.length === 0) return toast('Informations manquantes !', 'error');
+  const updates = {}, num = docNum('VE'), now = nowStr();
+  let total = 0;
 
-  const updates = {};
-  
-  _CART.forEach(item => {
-    updates[`companies/${_SESSION.companyId}/pdvs/${_SESSION.pdvId}/stock/${item.productId}`] = ag.stock[item.productId] - item.qty;
+  cart.forEach(i => {
+    total += i.total;
+    if (mode==='ADMIN') updates[`companies/${_SESSION.companyId}/products/${i.pid}/qty`] = comp.products[i.pid].qty - i.qty;
+    else updates[`companies/${_SESSION.companyId}/pdvs/${_SESSION.pdvId}/stock/${i.pid}`] = comp.pdvs[_SESSION.pdvId].stock[i.pid] - i.qty;
   });
 
-  const saleId = 'SALE_' + Date.now();
-  updates[`companies/${_SESSION.companyId}/sales_logs/${saleId}`] = {
-    date: new Date().toLocaleString('fr-GN'),
-    client_name: nom,
-    client_tel: tel,
-    items: _CART,
-    total: total,
-    pdv_name: ag.name
-  };
-
+  updates[`companies/${_SESSION.companyId}/sale_logs/VE_${Date.now()}`] = { num, date: now, client: name, tel, total, items: cart, agency: mode==='PDV'?comp.pdvs[_SESSION.pdvId].name:'Siège', compName: comp.name };
+  
   db.ref().update(updates).then(() => {
-    toast("Vente enregistrée.");
-    
-    // Rendu spécifique du format de facture sélectionné
-    const pZone = document.getElementById('active-print-zone');
-    
-    if (_PRINT_MODE === '80mm') {
-      pZone.innerHTML = `
-        <div style="font-family:monospace;padding:15px;font-size:12px;color:#000 !important;background:#fff;max-width:300px;margin:auto">
-          <center>
-            <h2 style="margin-bottom:2px;font-size:16px;text-transform:uppercase"><b>${comp.name}</b></h2>
-            <p style="margin:0">${ag.name}</p>
-            <p style="margin:2px 0 10px 0">Date : ${new Date().toLocaleString('fr-GN')}</p>
-          </center>
-          <hr style="border:none;border-top:1px dashed #000;margin-bottom:10px">
-          <p style="margin:4px 0"><b>Client :</b> ${nom}</p>
-          <p style="margin:4px 0"><b>Tél :</b> ${tel}</p>
-          <hr style="border:none;border-top:1px dashed #000;margin-bottom:10px">
-          <div style="min-height:40px">
-            ${_CART.map(i=>`
-              <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-                <span>${i.name} (x${i.qty})</span>
-                <span>${i.total.toLocaleString('fr-GN')} GNF</span>
-              </div>
-            `).join('')}
-          </div>
-          <hr style="border:none;border-top:1px dashed #000;margin-top:10px">
-          <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:bold">
-            <span>TOTAL :</span>
-            <span>${total.toLocaleString('fr-GN')} GNF</span>
-          </div>
-          <hr style="border:none;border-top:1px dashed #000;margin-top:10px">
-          <center><p style="font-size:10px;margin-top:12px">Merci de votre confiance !<br>StockNet GN — Solution digitale</p></center>
-        </div>
-      `;
-    } else if (_PRINT_MODE === 'a5') {
-      pZone.innerHTML = `
-        <div style="font-family:'Segoe UI',sans-serif;padding:30px;color:#000 !important;background:#fff;max-width:600px;margin:auto;border:1px solid #ddd;border-radius:6px">
-          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #333;padding-bottom:10px">
-            <div>
-              <h1 style="margin:0;font-size:22px;color:#111;text-transform:uppercase"><b>${comp.name}</b></h1>
-              <p style="margin:3px 0;font-size:12px;color:#555">Point de vente : ${ag.name}</p>
-            </div>
-            <div style="text-align:right">
-              <h3 style="margin:0;font-size:14px;color:#444">REÇU DE VENTE</h3>
-              <p style="margin:3px 0;font-size:11px;color:#666">${new Date().toLocaleString('fr-GN')}</p>
-            </div>
-          </div>
-          <div style="margin:20px 0;display:flex;justify-content:space-between;font-size:13px">
-            <div>
-              <span style="color:#777">FACTURÉ À :</span><br>
-              <b style="font-size:15px;color:#111">${nom}</b><br>
-              Tél : ${tel}
-            </div>
-          </div>
-          <table style="width:100%;border-collapse:collapse;margin:20px 0;font-size:12px;color:#111">
-            <thead>
-              <tr style="background:#f5f5f5;text-align:left">
-                <th style="padding:10px;border:1px solid #ddd;color:#333">Article</th>
-                <th style="padding:10px;border:1px solid #ddd;color:#333">P.U</th>
-                <th style="padding:10px;border:1px solid #ddd;color:#333">Qté</th>
-                <th style="padding:10px;border:1px solid #ddd;color:#333">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${_CART.map(i=>`
-                <tr>
-                  <td style="padding:10px;border:1px solid #ddd">${i.name}</td>
-                  <td style="padding:10px;border:1px solid #ddd">${i.price.toLocaleString('fr-GN')} GNF</td>
-                  <td style="padding:10px;border:1px solid #ddd">${i.qty}</td>
-                  <td style="padding:10px;border:1px solid #ddd;font-weight:600">${i.total.toLocaleString('fr-GN')} GNF</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-          <div style="display:flex;justify-content:flex-end;margin-top:15px">
-            <div style="width:220px;border-top:2px solid #333;padding-top:10px;text-align:right">
-              <span style="font-size:13px;color:#444"><b>NET À PAYER :</b></span><br>
-              <span style="font-size:20px;font-weight:bold;color:#111">${total.toLocaleString('fr-GN')} GNF</span>
-            </div>
-          </div>
-          <div style="margin-top:40px;text-align:center;font-size:11px;color:#777;border-top:1px solid #eee;padding-top:15px">
-            Merci de votre fidélité ! — StockNet GN
-          </div>
-        </div>
-      `;
-    } else {
-      pZone.innerHTML = `
-        <div style="font-family:'Segoe UI',sans-serif;padding:50px;color:#000 !important;background:#fff;min-height:800px">
-          <div style="display:flex;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:20px">
-            <div>
-              <h1 style="margin:0;font-size:32px;color:#111;text-transform:uppercase"><b>${comp.name}</b></h1>
-              <p style="margin:5px 0;font-size:14px;color:#555">Agence : ${ag.name}</p>
-            </div>
-            <div style="text-align:right">
-              <h2 style="margin:0;font-size:18px;color:#333">FACTURE OFFICIELLE</h2>
-              <p style="margin:5px 0;font-size:13px;color:#666">Le ${new Date().toLocaleString('fr-GN')}</p>
-            </div>
-          </div>
-          <div style="margin:40px 0;font-size:14px">
-            <b style="color:#555">CLIENT :</b><br>
-            <span style="font-size:18px;color:#111"><b>${nom}</b></span><br>
-            Numéro de téléphone : ${tel}
-          </div>
-          <table style="width:100%;border-collapse:collapse;margin:40px 0;font-size:14px;color:#111">
-            <thead>
-              <tr style="background:#f4f4f4;text-align:left">
-                <th style="padding:14px;border-bottom:2px solid #222;color:#222">Désignation</th>
-                <th style="padding:14px;border-bottom:2px solid #222;color:#222">Prix Unitaire</th>
-                <th style="padding:14px;border-bottom:2px solid #222;color:#222">Quantité</th>
-                <th style="padding:14px;border-bottom:2px solid #222;color:#222">Montant</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${_CART.map(i=>`
-                <tr>
-                  <td style="padding:14px;border-bottom:1px solid #eee">${i.name}</td>
-                  <td style="padding:14px;border-bottom:1px solid #eee">${i.price.toLocaleString('fr-GN')} GNF</td>
-                  <td style="padding:14px;border-bottom:1px solid #eee">${i.qty}</td>
-                  <td style="padding:14px;border-bottom:1px solid #eee;font-weight:600">${i.total.toLocaleString('fr-GN')} GNF</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-          <div style="display:flex;justify-content:flex-end;margin-top:30px">
-            <div style="width:300px;border-top:2px solid #111;padding-top:15px;text-align:right">
-              <span style="font-size:14px;color:#555"><b>MONTANT TOTAL :</b></span><br>
-              <span style="font-size:26px;font-weight:900;color:#111">${total.toLocaleString('fr-GN')} GNF</span>
-            </div>
-          </div>
-          <div style="margin-top:120px;display:flex;justify-content:space-between;font-size:12px;color:#444">
-            <div>Signature & Cachet Agence</div>
-            <div>Signature Client</div>
-          </div>
-          <div style="margin-top:100px;text-align:center;font-size:12px;color:#888;border-top:1px solid #eee;padding-top:20px">
-            Émis via StockNet GN — Votre partenaire de gestion.
-          </div>
-        </div>
-      `;
-    }
-
-    window.print();
-    pZone.innerHTML = '';
-
-    _CART = [];
-    renderCart();
-    document.getElementById('client-name-pdv').value = '';
-    document.getElementById('client-tel-pdv').value = '';
+    toast('Vente finalisée !');
+    openPrintOverlay({ type: 'vente', data: { num, date: now, compName: comp.name, client: name, tel, items: cart, total, agency: mode==='PDV'?comp.pdvs[_SESSION.pdvId].name:'Siège' } });
+    if (mode==='ADMIN') _CART_ADMIN = []; else _CART_PDV = [];
+    renderCart(mode);
   });
+}
+
+function reprinterBon(l) { openPrintOverlay({ type: 'transfert', data: l }); }
+function reprinterVente(v) { openPrintOverlay({ type: 'vente', data: v }); }
+function renderPDVHistory() {
+  const comp = _ALL_DATA.companies[_SESSION.companyId];
+  const agName = comp?.pdvs[_SESSION.pdvId]?.name;
+  const logs = Object.values(comp?.sale_logs || {}).filter(v => v.agency === agName).reverse();
+  document.querySelector('#table-pdv-history tbody').innerHTML = logs.map(v => `<tr><td>${v.date}</td><td>${v.num}</td><td>${v.client}</td><td><b>${gnf(v.total)}</b></td><td><button class="btn btn-small" onclick='reprinterVente(${JSON.stringify(v)})'>🖨️</button></td></tr>`).join('');
 }
 </script>
 </body>
